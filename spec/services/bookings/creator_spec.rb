@@ -1,0 +1,118 @@
+require "rails_helper"
+
+RSpec.describe Bookings::Creator do
+  let(:branch) { create(:branch, active: true) }
+  let(:court) { create(:court, branch: branch, price_per_hour: 100.00) }
+
+  let(:valid_params) do
+    {
+      court_id: court.id,
+      user_name: "Test User",
+      user_phone: "+201001234567",
+      date: Date.tomorrow.to_s,
+      start_time: "10:00",
+      end_time: "12:00"
+    }
+  end
+
+  subject { described_class.new(params: valid_params, branch: branch) }
+
+  describe "#call" do
+    it "creates a booking successfully" do
+      result = subject.call
+
+      expect(result).to be_success
+      expect(result.data).to be_a(Booking)
+      expect(result.data.status).to eq("confirmed")
+      expect(result.data.hours).to eq(2)
+      expect(result.data.total_price).to eq(200.00)
+    end
+
+    it "returns failure for inactive branch" do
+      branch.update!(active: false)
+      result = subject.call
+      expect(result).to be_failure
+      expect(result.errors).to include("Branch is not active")
+    end
+
+    it "returns failure for inactive court" do
+      court.update!(active: false)
+      result = subject.call
+      expect(result).to be_failure
+      expect(result.errors).to include("Court is not active")
+    end
+
+    it "returns failure for past date" do
+      params = valid_params.merge(date: Date.yesterday.to_s)
+      result = described_class.new(params: params, branch: branch).call
+      expect(result).to be_failure
+      expect(result.errors).to include("Cannot book in the past")
+    end
+
+    it "prevents overlapping bookings" do
+      create(:booking, court: court, date: Date.tomorrow,
+             start_time: "10:00", end_time: "12:00", status: :confirmed)
+
+      result = subject.call
+      expect(result).to be_failure
+      expect(result.errors).to include("Time slot is not available")
+    end
+
+    it "prevents booking on blocked slots" do
+      create(:blocked_slot, court: court, date: Date.tomorrow,
+             start_time: "10:00", end_time: "11:00")
+
+      result = subject.call
+      expect(result).to be_failure
+      expect(result.errors).to include("Time slot is not available")
+    end
+
+    it "invalidates Redis cache" do
+      cache_key = "availability:#{branch.id}:#{court.id}:#{Date.tomorrow}"
+      REDIS.set(cache_key, "cached_data")
+
+      subject.call
+
+      expect(REDIS.get(cache_key)).to be_nil
+    end
+
+    context "race condition prevention" do
+      it "handles concurrent booking attempts safely" do
+        results = []
+        threads = 2.times.map do
+          Thread.new do
+            result = described_class.new(params: valid_params, branch: branch).call
+            results << result
+          end
+        end
+
+        threads.each(&:join)
+
+        successes = results.select(&:success?)
+        expect(successes.length).to eq(1)
+        expect(Booking.where(court: court, date: Date.tomorrow, status: :confirmed).count).to eq(1)
+      end
+    end
+
+    context "with hourly pricing ranges" do
+      it "uses range price when booking hour falls inside configured range" do
+        create(:court_hourly_rate, court: court, start_hour: 10, end_hour: 12, price_per_hour: 150.00)
+
+        result = subject.call
+
+        expect(result).to be_success
+        expect(result.data.total_price).to eq(300.00)
+      end
+
+      it "falls back to base court price for uncovered hours" do
+        create(:court_hourly_rate, court: court, start_hour: 10, end_hour: 11, price_per_hour: 150.00)
+
+        result = subject.call
+
+        expect(result).to be_success
+        # 10:00-11:00 custom(150) + 11:00-12:00 base(100)
+        expect(result.data.total_price).to eq(250.00)
+      end
+    end
+  end
+end

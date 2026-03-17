@@ -1,0 +1,51 @@
+upstream atmor_frontend {
+    server 127.0.0.1:9720; # docker-compose frontend exposed port
+}
+
+upstream atmor_backend {
+    server 127.0.0.1:3398; # docker-compose backend exposed port
+}
+
+server {
+    server_name al-atmor.mavoid.com;
+
+    # Redirect API requests to backend container
+    location ^~ /api/v1/ {
+        proxy_pass http://atmor_backend/api/v1/;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+
+    # Everything else goes to Next.js frontend
+    location / {
+        proxy_pass http://atmor_frontend;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+
+    listen 443 ssl; # managed by Certbot
+    ssl_certificate /etc/letsencrypt/live/al-atmor.mavoid.com/fullchain.pem; # managed by Certbot
+    ssl_certificate_key /etc/letsencrypt/live/al-atmor.mavoid.com/privkey.pem; # managed by Certbot
+    include /etc/letsencrypt/options-ssl-nginx.conf; # managed by Certbot
+    ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem; # managed by Certbot
+
+}
+
+
+
+server {
+    if ($host = al-atmor.mavoid.com) {
+        return 301 https://$host$request_uri;
+    } # managed by Certbot
+
+
+    listen 80;
+    server_name al-atmor.mavoid.com;
+    return 404; # managed by Certbot
+
+
+}

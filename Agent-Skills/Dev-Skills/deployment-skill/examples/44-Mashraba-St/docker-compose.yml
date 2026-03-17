@@ -1,0 +1,81 @@
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:18-alpine
+    container_name: 44_mashraba_st_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    volumes:
+      - 44_mashraba_st_postgres_data:/var/lib/postgresql/data
+      - ./backup:/backup
+    ports:
+      - "${POSTGRES_PORT:-5767}:5432"
+    networks:
+      - 44_mashraba_st_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # Rails Backend API (Thruster + Puma, listens on port 80)
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: 44_mashraba_st_backend
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      RAILS_ENV: production
+      DATABASE_URL: ${DATABASE_URL}
+      SECRET_KEY_BASE: ${SECRET_KEY_BASE}
+      RAILS_MASTER_KEY: ${RAILS_MASTER_KEY:-}
+      DEVISE_JWT_SECRET_KEY: ${DEVISE_JWT_SECRET_KEY}
+      RESEND_API_KEY: ${RESEND_API_KEY}
+      RAILS_LOG_TO_STDOUT: "true"
+      RAILS_SERVE_STATIC_FILES: "true"
+      RAILS_MAX_THREADS: ${RAILS_MAX_THREADS:-5}
+      WEB_CONCURRENCY: ${WEB_CONCURRENCY:-1}
+      FRONTEND_URL: ${FRONTEND_URL}
+      APP_HOST: ${APP_HOST}
+    volumes:
+      - 44_mashraba_st_backend_storage:/rails/storage
+      - 44_mashraba_st_backend_logs:/rails/log
+    ports:
+      - "${BACKEND_PORT:-3767}:80"
+    networks:
+      - 44_mashraba_st_network
+
+  # Vite + React Frontend (served by nginx on port 80)
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        VITE_API_URL: ${VITE_API_URL}
+    container_name: 44_mashraba_st_frontend
+    restart: unless-stopped
+    depends_on:
+      - backend
+    ports:
+      - "${FRONTEND_PORT:-3735}:80"
+    networks:
+      - 44_mashraba_st_network
+
+volumes:
+  44_mashraba_st_postgres_data:
+    driver: local
+  44_mashraba_st_backend_storage:
+    driver: local
+  44_mashraba_st_backend_logs:
+    driver: local
+
+networks:
+  44_mashraba_st_network:
+    driver: bridge

@@ -1,0 +1,918 @@
+{
+  "admins": {
+    "form": {
+      "addButtonLabel": "إضافة مشرف",
+      "editTitle": "تعديل المشرف",
+      "createTitle": "إنشاء مشرف",
+      "editDesc": "تحديث صلاحيات ودور المشرف.",
+      "createDesc": "إنشاء حساب مشرف جديد.",
+      "emailLabel": "البريد الإلكتروني",
+      "passwordLabel": "كلمة المرور",
+      "roleLabel": "الدور",
+      "selectRole": "اختر الدور",
+      "roleOptions": {
+        "branchAdmin": "مشرف فرع",
+        "superAdmin": "مشرف عام"
+      },
+      "branchLabel": "الفرع",
+      "selectBranch": "اختر الفرع",
+      "cancelButton": "إلغاء",
+      "savingButton": "جارٍ الحفظ...",
+      "saveButton": "حفظ",
+      "passwordConfirmLabel": "تأكيد كلمة المرور",
+      "validation": {
+        "invalidEmail": "عنوان البريد الإلكتروني غير صحيح",
+        "passwordMinLength": "كلمة المرور يجب أن تكون 8 أحرف على الأقل",
+        "passwordsDoNotMatch": "كلمتا المرور غير متطابقتين"
+      }
+    },
+    "page": {
+      "title": "المشرفون",
+      "subtitle": "إدارة صلاحيات الوصول للموظفين.",
+      "accessDeniedTitle": "وصول مرفوض",
+      "accessDeniedDesc": "يمكن للمشرفين العامين فقط الوصول إلى إدارة حسابات المشرفين."
+    },
+    "toast": {
+      "created": "تم إنشاء المشرف بنجاح",
+      "updated": "تم تحديث دور المشرف بنجاح",
+      "deleted": "تم حذف المشرف بنجاح"
+    },
+    "table": {
+      "allBranches": "جميع الفروع",
+      "unknownBranch": "غير معروف",
+      "emailHeader": "البريد الإلكتروني",
+      "youBadge": "أنت",
+      "roleHeader": "الدور",
+      "branchHeader": "الفرع",
+      "createdHeader": "تاريخ الإنشاء",
+      "actionsHeader": "الإجراءات",
+      "deleteConfirmTitle": "حذف المشرف",
+      "deleteConfirmDesc": "هل أنت متأكد من حذف {email}؟",
+      "noAdmins": "لا يوجد مشرفون",
+      "noAdminsDesc": "لا توجد حسابات مشرفين حتى الآن."
+    }
+  },
+  "events": {
+    "page": {
+      "title": "الفعاليات",
+      "subtitle": "إدارة البطولات والتجمعات والمناسبات الخاصة.",
+      "filterByBranch": "تصفية حسب الفرع:",
+      "allBranches": "كل الفروع"
+    },
+    "table": {
+      "titleHeader": "العنوان",
+      "branchHeader": "الفرع",
+      "dateHeader": "التاريخ",
+      "priceHeader": "السعر",
+      "limitHeader": "الحد",
+      "quantitySuffix": "مشارك",
+      "unlimited": "غير محدود",
+      "actionsHeader": "الإجراءات",
+      "unknownBranch": "فرع غير معروف",
+      "deleteTitle": "حذف الفعالية",
+      "deleteDescription": "هل أنت متأكد أنك تريد حذف \"{title}\"؟",
+      "emptyTitle": "لا توجد فعاليات",
+      "emptyDescription": "يمكنك إنشاء فعالية جديدة لبدء عرض الفعاليات."
+    },
+    "form": {
+      "addButton": "إضافة فعالية",
+      "editTitle": "تعديل الفعالية",
+      "createTitle": "إضافة فعالية",
+      "editDescription": "تحديث تفاصيل البطولة أو الفعالية الخاصة.",
+      "createDescription": "إنشاء فعالية أو بطولة أو تجمع جديد.",
+      "branchLabel": "الفرع",
+      "selectBranch": "اختر فرعًا",
+      "titleLabel": "عنوان الفعالية",
+      "titlePlaceholder": "مثال: بطولة البادل الصيفية",
+      "startDateLabel": "تاريخ البداية",
+      "priceLabel": "السعر (ج.م)",
+      "priceHint": "اتركه 0 إذا كانت الفعالية مجانية.",
+      "maxParticipantsLabel": "الحد الأقصى للمشاركين (اختياري)",
+      "maxParticipantsPlaceholder": "بدون حد",
+      "descriptionLabel": "الوصف",
+      "descriptionPlaceholder": "قوانين الفعالية، الجوائز، إلخ...",
+      "cancelButton": "إلغاء",
+      "savingButton": "جارٍ الحفظ...",
+      "saveButton": "حفظ"
+    },
+    "toasts": {
+      "created": "تم إنشاء الفعالية بنجاح",
+      "updated": "تم تحديث الفعالية بنجاح",
+      "deleted": "تم حذف الفعالية بنجاح"
+    }
+  },
+  "landing": {
+    "nav": {
+      "packages": "الباقات",
+      "events": "الفعاليات",
+      "bookACourt": "احجز ملعبًا",
+      "signIn": "تسجيل الدخول"
+    },
+    "hero": {
+      "headline1": "احجز",
+      "headline2": "ملعبك.",
+      "subtitle": "تحقق من التوفر الفوري، قارن الملاعب، وأتمّ حجزك على الفور. بلا مكالمات.",
+      "bookACourt": "احجز ملعبًا",
+      "browseEvents": "استعرض الفعاليات",
+      "scrollToExplore": "مرر للاستكشاف"
+    },
+    "packages": {
+      "eyebrow": "وفّر أكثر",
+      "title": "باقات الملاعب",
+      "viewAll": "عرض جميع الباقات",
+      "bookNow": "احجز الآن",
+      "global": "عامة",
+      "failedToLoad": "تعذر تحميل الباقات.",
+      "tryAgain": "حاول مرة أخرى",
+      "noPackages": "لا توجد باقات متاحة حاليًا."
+    },
+    "events": {
+      "eyebrow": "انضم إلى المجتمع",
+      "title": "الفعاليات القادمة",
+      "viewAll": "عرض جميع الفعاليات",
+      "free": "مجاني",
+      "maxParticipants": "{count} مشارك كحد أقصى",
+      "perEntry": "/ مشاركة",
+      "viewEvent": "عرض الفعالية",
+      "failedToLoad": "تعذر تحميل الفعاليات.",
+      "tryAgain": "حاول مرة أخرى",
+      "noEvents": "لا توجد فعاليات قادمة حاليًا."
+    },
+    "courts": {
+      "eyebrow": "ابحث عن ملعب",
+      "title": "الملاعب المتاحة",
+      "failedToLoad": "تعذر تحميل الملاعب.",
+      "tryAgain": "حاول مرة أخرى",
+      "noCourts": "لا توجد ملاعب متاحة حاليًا.",
+      "available": "متاح",
+      "maintenance": "صيانة",
+      "bookNow": "احجز الآن",
+      "unavailable": "غير متاح حاليًا",
+      "perHour": "/ ساعة"
+    },
+    "footer": {
+      "systemsOperational": "جميع الأنظمة تعمل",
+      "copyright": "© {year} CourtManager. جميع الحقوق محفوظة.",
+      "builtWith": "مبني باستخدام Rails 8 · Next.js · JWT Auth · JSON:API",
+      "explore": "استكشف",
+      "company": "الشركة",
+      "packages": "الباقات",
+      "events": "الفعاليات",
+      "bookACourt": "احجز ملعبًا",
+      "about": "حول",
+      "contact": "اتصل بنا",
+      "privacy": "الخصوصية",
+      "terms": "الشروط"
+    }
+  },
+  "dashboard": {
+    "welcomeBack": "مرحبًا بعودتك، {name}!",
+    "scopeAllBranches": "عبر جميع الفروع",
+    "scopeYourBranch": "في فرعك",
+    "happeningRecently": "إليك ما يحدث {scope} مؤخرًا.",
+    "cards": {
+      "totalRevenue30d": "إجمالي الإيرادات (30 يومًا)",
+      "revenueDeltaVsLastMonth": "+12% مقارنة بالشهر الماضي",
+      "confirmedBookings30d": "الحجوزات المؤكدة (30 يومًا)",
+      "bookingsDeltaVsLastMonth": "+5% مقارنة بالشهر الماضي",
+      "globalOccupancy": "معدل الإشغال العام",
+      "capacityFilled": "نسبة السعة المشغولة",
+      "averageOrderValue": "متوسط قيمة الطلب",
+      "perBookingTransaction": "لكل عملية حجز"
+    },
+    "utilization": {
+      "title": "استخدام الملاعب",
+      "description": "تفصيل الحجوزات حسب موقع الملعب وفقًا للمرشحات الحالية.",
+      "bookingUnit": "حجز",
+      "emptyState": "لا توجد بيانات ملاعب متاحة لهذا النطاق."
+    },
+    "recentActivity": {
+      "title": "النشاط الأخير",
+      "description": "اقتراحات وتنبيهات النظام الآلية.",
+      "highDemandOnCourt": "طلب مرتفع على {court}",
+      "createPremiumPackage": "فكر في إنشاء باقة مميزة.",
+      "newAdminOnboarded": "تمت إضافة مشرف جديد",
+      "userJoinedAgo": "انضم {email} قبل {time}."
+    }
+  },
+  "reviews": {
+    "page": {
+      "title": "المراجعات",
+      "subtitle": "إدارة ومراقبة مراجعات العملاء لملاعبك.",
+      "totalReviews": "إجمالي المراجعات",
+      "avgRating": "متوسط التقييم",
+      "fiveStarReviews": "مراجعات 5 نجوم",
+      "filterCourt": "الملعب",
+      "allCourts": "جميع الملاعب",
+      "filterRating": "التقييم",
+      "allRatings": "جميع التقييمات",
+      "noReviewsFound": "لا توجد مراجعات",
+      "noReviewsDesc": "عدّل الفلاتر أو انتظر حتى يترك العملاء مراجعاتهم.",
+      "noWrittenReview": "لا توجد مراجعة مكتوبة"
+    },
+    "starsFilter": {
+      "1": "★ 1 نجمة",
+      "2": "★★ 2 نجمتان",
+      "3": "★★★ 3 نجوم",
+      "4": "★★★★ 4 نجوم",
+      "5": "★★★★★ 5 نجوم"
+    },
+    "badge": {
+      "excellent": "ممتاز",
+      "great": "رائع",
+      "good": "جيد",
+      "fair": "مقبول",
+      "poor": "ضعيف"
+    },
+    "delete": {
+      "title": "حذف المراجعة",
+      "description": "هل أنت متأكد من حذف مراجعة \"{name}\" بشكل دائم؟ لا يمكن التراجع عن هذا الإجراء."
+    },
+    "toast": {
+      "deleted": "تم حذف المراجعة بنجاح"
+    }
+  },
+  "ratings": {
+    "page": {
+      "title": "تحليلات التقييمات",
+      "subtitle": "متوسطات التقييمات وتوزيعها لجميع ملاعبك.",
+      "overallAvg": "المتوسط العام",
+      "totalReviews": "إجمالي المراجعات",
+      "topCourt": "أفضل ملعب",
+      "needsAttention": "يحتاج اهتمامًا",
+      "filterBranch": "الفرع",
+      "allBranches": "جميع الفروع",
+      "sortBy": "ترتيب حسب",
+      "highestRated": "الأعلى تقييمًا",
+      "lowestRated": "الأدنى تقييمًا",
+      "mostReviewed": "الأكثر مراجعةً",
+      "noCourtsFound": "لا توجد ملاعب",
+      "noCourtsDesc": "جرب تغيير فلتر الفرع.",
+      "failedToLoad": "تعذر تحميل بيانات التقييمات."
+    },
+    "courtCount": "{count} ملعب",
+    "courtCountPlural": "{count} ملاعب",
+    "reviewCount": "{count} مراجعة",
+    "reviewCountPlural": "{count} مراجعات",
+    "positiveLabel": "{pct}% إيجابي (4-5★)",
+    "negativeLabel": "{pct}% سلبي (1-2★)",
+    "label": {
+      "noRatings": "لا توجد تقييمات",
+      "excellent": "ممتاز",
+      "great": "رائع",
+      "good": "جيد",
+      "fair": "مقبول",
+      "poor": "ضعيف"
+    }
+  },
+  "reviewPrompt": {
+    "ratingLabel": {
+      "1": "ضعيف",
+      "2": "مقبول",
+      "3": "جيد",
+      "4": "رائع",
+      "5": "ممتاز!"
+    },
+    "errorNoRating": "يرجى اختيار تقييم بالنجوم قبل الإرسال.",
+    "successSubmitted": "شكرًا على مراجعتك!",
+    "doneTitle": "تم إرسال المراجعة!",
+    "doneThanks": "شكرًا على مشاركة تجربتك في {courtName}.",
+    "header": "كيف كانت تجربتك؟",
+    "subheader": "شارك مراجعة سريعة لـ {courtName}",
+    "placeholder": "أخبر الآخرين عن تجربتك (اختياري)…",
+    "submit": "إرسال المراجعة",
+    "submitting": "جارٍ الإرسال…"
+  },
+  "bookingConfirmation": {
+    "title": "تم تأكيد الحجز!",
+    "subtitle": "شكرًا، {name}. تم حجز ملعبك.",
+    "orderLabel": "طلب",
+    "courtLabel": "الملعب",
+    "dateLabel": "التاريخ",
+    "timeLabel": "الوقت",
+    "totalLabel": "المبلغ الإجمالي",
+    "free": "مجاني",
+    "notesLabel": "ملاحظات",
+    "promoCodeLabel": "رمز ترويجي مُطبق",
+    "promoCode": "رمز ترويجي",
+    "promoCodePlaceholder": "أدخل رمز الترويج",
+    "promoCodeDescription": "هل لديك رمز ترويجي؟ أدخله هنا للحصول على خصم على حجزك.",
+    "returnHome": "العودة للرئيسية",
+    "bookAnother": "احجز ملعبًا آخر"
+  },
+  "login": {
+    "title": "تسجيل دخول المشرف",
+    "subtitle": "أدخل بريدك الإلكتروني وكلمة المرور للوصول إلى لوحة التحكم.",
+    "emailLabel": "البريد الإلكتروني",
+    "emailPlaceholder": "m@example.com",
+    "passwordLabel": "كلمة المرور",
+    "loggingIn": "جارٍ تسجيل الدخول...",
+    "loginButton": "تسجيل الدخول",
+    "toast": {
+      "success": "تم تسجيل الدخول بنجاح"
+    }
+  },
+  "promoInput": {
+    "label": "الرمز الترويجي (اختياري)",
+    "placeholder": "أدخل الرمز الترويجي",
+    "validating": "جارٍ التحقق...",
+    "apply": "تطبيق",
+    "summary": {
+      "originalAmount": "المبلغ الأصلي:",
+      "discount": "الخصم:",
+      "finalAmount": "المبلغ النهائي:"
+    },
+    "toasts": {
+      "enterPromoCode": "يرجى إدخال رمز ترويجي",
+      "selectCourtAndTime": "يرجى اختيار الملعب والوقت أولًا",
+      "applied": "تم تطبيق الرمز الترويجي! وفّرت {amount}",
+      "invalidPromoCode": "الرمز الترويجي غير صالح",
+      "validateFailed": "تعذر التحقق من الرمز الترويجي"
+    }
+  },
+  "availability": {
+    "emptyTitle": "لا توجد أوقات متاحة",
+    "emptyDescription": "يرجى تجربة تاريخ أو ملعب آخر.",
+    "to": "إلى {endTime}"
+  },
+  "publicBook": {
+    "title": "احجز ملعبًا",
+    "subtitle": "اختر الملعب والتاريخ ووقت اللعب المناسب لك.",
+    "steps": {
+      "chooseBranch": "اختر الفرع",
+      "chooseCourt": "اختر الملعب",
+      "selectDate": "اختر التاريخ",
+      "availableSlots": "الأوقات المتاحة",
+      "yourInfo": "بياناتك"
+    },
+    "courtLabel": "الملعب",
+    "selectCourtPlaceholder": "اختر ملعبًا",
+    "selectBranchPlaceholder": "اختر فرعًا",
+    "selectBranchFirst": "يرجى اختيار الفرع أولاً",
+    "loading": "جارٍ التحميل...",
+    "noBranchesAvailable": "لا توجد فروع متاحة",
+    "noCourtsAvailable": "لا توجد ملاعب متاحة لهذا الفرع",
+    "courtPerks": "مميزات الملعب",
+    "perHour": "/ساعة",
+    "morePerks": "+{count} أخرى",
+    "selectCourtAndDate": "يرجى اختيار ملعب وتاريخ لعرض الأوقات المتاحة.",
+    "selectAvailableSlot": "يرجى اختيار وقت متاح.",
+    "fullNameLabel": "الاسم الكامل",
+    "fullNamePlaceholder": "محمد أحمد",
+    "phoneLabel": "رقم الهاتف",
+    "phonePlaceholder": "+201234567890",
+    "notesLabel": "ملاحظات إضافية (اختياري)",
+    "notesPlaceholder": "أي طلبات خاصة أو معلومات تود مشاركتها مع صاحب الملعب...",
+    "promoCode": "رمز ترويجي",
+    "promoCodePlaceholder": "أدخل رمز الترويج",
+    "promoCodeDescription": "هل لديك رمز ترويجي؟ أدخله هنا للحصول على خصم على حجزك.",
+    "processingBooking": "جارٍ معالجة الحجز...",
+    "confirmBooking": "تأكيد الحجز",
+    "bookingSuccess": "تم حجز ملعبك بنجاح!",
+    "bookingFailed": "حدث خطأ. يرجى المحاولة مرة أخرى.",
+    "selectCourtFirst": "يرجى اختيار ملعب أولاً.",
+    "noCourts": "لا توجد ملاعب متاحة لهذا الفرع.",
+    "termsPrefix": "أوافق على",
+    "termsLink": "الشروط والأحكام",
+    "screenshotLabel": "إيصال الدفع",
+    "screenshotOptional": "اختياري",
+    "screenshotDescription": "يرجى إرفاق صورة من إيصال التحويل.",
+    "paymentInstructionsTitle": "طريقة الدفع",
+    "paymentInstructionsBody": "يرجى إرسال مبلغ الدفع على الرقم أدناه، ثم قم بتحميل صورة إيصال التحويل.",
+    "screenshotRemove": "إزالة",
+    "screenshotDropzone": "انقر أو اسحب الصورة هنا",
+    "screenshotFormats": "JPEG, PNG, WEBP (كحد أقصى 5 م.ب)",
+    "screenshotBrowse": "تصفح الملفات",
+    "screenshotInvalidType": "نوع الملف غير مدعوم. يرجى رفع صورة.",
+    "screenshotTooLarge": "الملف كبير جداً. الحد الأقصى {mb} ميجابايت.",
+    "termsAndConditions": "الشروط والأحكام",
+    "acceptTerms": "أوافق على {terms}"
+  },
+  "bookingTerms": {
+    "title": "شروط وأحكام الحجز",
+    "close": "إغلاق",
+    "accept": "أوافق على الشروط والأحكام"
+  },
+  "publicEvents": {
+    "errorLoading": "حدث خطأ أثناء تحميل الفعاليات",
+    "tryAgain": "حاول مرة أخرى",
+    "badge": "البطولات القادمة",
+    "title": "الفعاليات والبطولات",
+    "subtitle": "انضم إلى فعالياتنا التنافسية والترفيهية. الأماكن تمتلئ بسرعة!",
+    "emptyTitle": "لا توجد فعاليات قادمة",
+    "emptyDescription": "تحقق لاحقًا لفعاليات وأنشطة جديدة.",
+    "upcoming": "قادمة",
+    "spots": "{current} / {max} أماكن",
+    "unlimitedSpots": "أماكن غير محدودة",
+    "free": "مجاني",
+    "details": "التفاصيل",
+    "soldOut": "اكتمل العدد",
+    "signUp": "سجّل الآن"
+  },
+  "publicPackages": {
+    "errorLoading": "حدث خطأ أثناء تحميل الباقات",
+    "tryAgain": "حاول مرة أخرى",
+    "badge": "باقاتنا",
+    "title": "باقات ملاعب مرنة",
+    "subtitle": "وفّر أكثر عند شراء الساعات بالجملة. اختر الباقة المناسبة لجدول لعبك.",
+    "emptyTitle": "لا توجد باقات متاحة",
+    "emptyDescription": "تحقق لاحقًا لعروض جديدة.",
+    "globalPackage": "باقة عامة",
+    "bookNow": "احجز الآن"
+  },
+  "eventDetail": {
+    "errorLoading": "حدث خطأ أثناء تحميل الفعالية",
+    "backToEvents": "العودة إلى الفعاليات",
+    "backToAll": "العودة إلى جميع الفعاليات",
+    "status": {
+      "upcoming": "قادمة",
+      "past": "فعالية سابقة",
+      "freeEntry": "دخول مجاني"
+    },
+    "noDescription": "لا يوجد وصف متاح لهذه الفعالية.",
+    "guidelinesTitle": "إرشادات الفعالية",
+    "guidelines": {
+      "arriveEarly": "يرجى الحضور قبل 15 دقيقة لإتمام التسجيل",
+      "bringGear": "إحضار الأدوات والأحذية الرياضية المناسبة",
+      "followReferee": "اتباع تعليمات الحكم في جميع الأوقات",
+      "sportsmanship": "التحلي بالروح الرياضية"
+    },
+    "labels": {
+      "date": "التاريخ",
+      "time": "الوقت",
+      "capacity": "السعة",
+      "participationPrice": "سعر المشاركة"
+    },
+    "capacityMax": "الحد الأقصى {count} مشارك",
+    "unlimitedSpots": "أماكن غير محدودة",
+    "spotsRemaining": "المتبقي {count} مكان",
+    "free": "مجاني",
+    "actions": {
+      "soldOut": "اكتمل العدد",
+      "signUpWhatsapp": "سجّل عبر واتساب",
+      "signUpNow": "سجّل الآن",
+      "eventEnded": "انتهت الفعالية"
+    }
+  },
+  "common": {
+    "signIn": "تسجيل الدخول",
+    "superAdmin": "مشرف عام",
+    "toggleUserMenu": "تبديل قائمة المستخدم",
+    "adminUser": "مستخدم مشرف",
+    "rolePrefix": "الدور:",
+    "goToDashboard": "الانتقال إلى لوحة التحكم",
+    "logOut": "تسجيل الخروج",
+    "language": "اللغة",
+    "toggleMenu": "تبديل القائمة",
+    "switchLanguage": "تبديل اللغة",
+    "switchToEnglish": "التبديل إلى الإنجليزية",
+    "switchToArabic": "التبديل إلى العربية",
+    "toggleTheme": "تبديل السمة",
+    "toggleNavigationMenu": "تبديل قائمة التنقل",
+    "confirm": {
+      "title": "هل أنت متأكد؟",
+      "description": "لا يمكن التراجع عن هذا الإجراء. سيؤدي هذا إلى حذف السجل نهائيًا من خوادمنا.",
+      "cancel": "إلغاء",
+      "deleting": "جارٍ الحذف...",
+      "continue": "متابعة"
+    }
+  },
+  "pagination": {
+    "showing": "عرض {from} إلى {to} من إجمالي {total} عنصر",
+    "rowsPerPage": "عدد الصفوف لكل صفحة",
+    "pageOf": "الصفحة {page} من {total}",
+    "previousPage": "الانتقال إلى الصفحة السابقة",
+    "nextPage": "الانتقال إلى الصفحة التالية"
+  },
+  "paginationUi": {
+    "pagination": "التصفح",
+    "previousPage": "الانتقال إلى الصفحة السابقة",
+    "nextPage": "الانتقال إلى الصفحة التالية",
+    "previous": "السابق",
+    "next": "التالي",
+    "morePages": "صفحات إضافية"
+  },
+  "settings": {
+    "page": {
+      "title": "الإعدادات العامة",
+      "subtitle": "تكوين ساعات العمل وقنوات التواصل.",
+      "savedSuccessfully": "تم حفظ الإعدادات بنجاح."
+    },
+    "form": {
+      "branchSelector": {
+        "label": "اختر نطاق التكوين",
+        "placeholder": "اختر فرعًا للتكوين",
+        "description": "الإعدادات مرتبطة مباشرة بالفروع. يجب على المشرفين العامين اختيار فرع معين.",
+        "selectBranch": "يرجى اختيار فرع لعرض وتعديل إعداداته."
+      },
+      "contactInfo": {
+        "title": "معلومات التواصل",
+        "whatsappLabel": "رقم الواتساب",
+        "whatsappPlaceholder": "+201234567890",
+        "phoneLabel": "هاتف التواصل",
+        "phonePlaceholder": "+201234567890",
+        "emailLabel": "بريد التواصل",
+        "emailPlaceholder": "info@courts.com"
+      },
+      "operatingHours": {
+        "title": "ساعات العمل",
+        "openingLabel": "ساعة الافتتاح",
+        "closingLabel": "ساعة الإغلاق",
+        "description": "حدد ساعات توفر الملاعب للحجز."
+      },
+      "bookingTerms": {
+        "title": "شروط وأحكام الحجز",
+        "label": "الشروط والأحكام",
+        "placeholder": "أدخل شروط وأحكام الحجز هنا. يمكنك تضمين القواعد وسياسات الإلغاء وشروط الدفع وغيرها.",
+        "description": "سيتم عرض هذه الشروط على المستخدمين قبل إجراء الحجز."
+      },
+      "payment": {
+        "title": "إعدادات الدفع",
+        "numberLabel": "رقم الدفع",
+        "numberPlaceholder": "+201234567890",
+        "numberDescription": "رقم الهاتف الذي سيحول إليه المستخدمون مبالغ الدفع. سيظهر هذا الرقم على صفحة الحجز مع تعليمات التحويل."
+      },
+      "actions": {
+        "saving": "جارٍ الحفظ...",
+        "updateSettings": "تحديث الإعدادات",
+        "saveSettings": "حفظ الإعدادات"
+      }
+    }
+  },
+  "promoCodes": {
+    "title": "الرموز الترويجية",
+    "subtitle": "إدارة أكواد الخصم حسب الفرع من صفحة واحدة.",
+    "selectBranch": "اختر الفرع",
+    "addPromoCode": "إضافة رمز ترويجي",
+    "createPromoCode": "إنشاء رمز ترويجي",
+    "selectedBranchFallback": "الفرع المحدد",
+    "emptyTitle": "لا توجد رموز ترويجية لـ {branch}",
+    "emptyDescription": "أنشئ أول رمز لبدء تطبيق الخصومات.",
+    "status": {
+      "active": "نشط",
+      "inactive": "غير نشط"
+    },
+    "discountPercent": "خصم {value}%",
+    "discountAmount": "خصم بقيمة {value}",
+    "minimumAmount": "الحد الأدنى {value}",
+    "usage": "تم الاستخدام {used}/{limit}",
+    "unlimited": "∞",
+    "deleteTitle": "حذف الرمز الترويجي",
+    "deleteDescription": "هل أنت متأكد أنك تريد حذف \"{code}\"؟",
+    "form": {
+      "addTitle": "إضافة رمز ترويجي",
+      "editTitle": "تعديل الرمز الترويجي",
+      "codeLabel": "الرمز",
+      "codePlaceholder": "SUMMER20",
+      "descriptionLabel": "الوصف",
+      "descriptionPlaceholder": "تفاصيل العرض الترويجي...",
+      "discountTypeLabel": "نوع الخصم",
+      "discountTypePlaceholder": "اختر النوع",
+      "discountTypePercentage": "نسبة مئوية",
+      "discountTypeAmount": "مبلغ ثابت",
+      "discountPercentageLabel": "نسبة الخصم",
+      "discountAmountLabel": "مبلغ الخصم",
+      "minimumAmountLabel": "الحد الأدنى للمبلغ",
+      "usageLimitLabel": "حد الاستخدام",
+      "startsAtLabel": "يبدأ في",
+      "expiresAtLabel": "ينتهي في",
+      "activeLabel": "نشط",
+      "cancel": "إلغاء",
+      "update": "تحديث",
+      "create": "إنشاء"
+    },
+    "toasts": {
+      "loadPromoCodesError": "تعذر تحميل الرموز الترويجية",
+      "loadBranchesError": "تعذر تحميل الفروع",
+      "created": "تم إنشاء الرمز الترويجي بنجاح",
+      "updated": "تم تحديث الرمز الترويجي بنجاح",
+      "deleted": "تم حذف الرمز الترويجي بنجاح",
+      "saveError": "تعذر حفظ الرمز الترويجي",
+      "deleteError": "تعذر حذف الرمز الترويجي"
+    }
+  },
+  "blockedSlots": {
+    "page": {
+      "title": "الأوقات المحجوبة",
+      "subtitle": "منع الحجوزات لأغراض الصيانة أو الفعاليات الخاصة."
+    },
+    "form": {
+      "createButton": "حجب أوقات",
+      "editTitle": "تعديل الوقت المحجوب",
+      "createTitle": "حجب فترات فرعية",
+      "editDescription": "تحديث الساعات المحجوبة أو السبب.",
+      "createDescription": "منع الحجز لساعات محددة بسبب الصيانة أو أسباب أخرى.",
+      "branchLabel": "الفرع",
+      "selectBranch": "اختر فرعًا",
+      "courtLabel": "الملعب",
+      "selectCourt": "اختر ملعبًا",
+      "dateLabel": "التاريخ",
+      "startTimeLabel": "وقت البداية",
+      "endTimeLabel": "وقت النهاية",
+      "reasonLabel": "سبب الحجب",
+      "reasonPlaceholder": "مثال: صيانة، فعالية خاصة",
+      "cancel": "إلغاء",
+      "saving": "جارٍ الحفظ...",
+      "save": "حفظ"
+    },
+    "table": {
+      "unknown": "غير معروف",
+      "dateHeader": "التاريخ",
+      "locationHeader": "الموقع",
+      "fromHeader": "من",
+      "toHeader": "إلى",
+      "reasonHeader": "السبب",
+      "actionsHeader": "الإجراءات",
+      "deleteTitle": "إلغاء حجب الفترة",
+      "deleteDescription": "هل أنت متأكد أنك تريد إزالة هذه الفترة المحجوبة؟ ستصبح متاحة للحجز فورًا.",
+      "emptyTitle": "لا توجد أوقات محجوبة",
+      "emptyDescription": "استخدم الأوقات المحجوبة لتحديد الملاعب غير المتاحة بسبب الصيانة أو الفعاليات الخاصة."
+    },
+    "toasts": {
+      "created": "تم حجب التواريخ بنجاح",
+      "updated": "تم تحديث الوقت المحجوب بنجاح",
+      "deleted": "تم إلغاء حجب التواريخ بنجاح"
+    }
+  },
+  "packages": {
+    "page": {
+      "title": "الباقات",
+      "subtitle": "باقات الحجز العامة أو الخاصة بالفرع.",
+      "filterByScope": "تصفية حسب النطاق:",
+      "allScopesPlaceholder": "جميع النطاقات",
+      "allScopes": "الكل (عام والفروع)",
+      "globalOnly": "الباقات العامة فقط"
+    },
+    "table": {
+      "titleHeader": "العنوان",
+      "scopeHeader": "النطاق/الفرع",
+      "priceHeader": "السعر",
+      "descriptionHeader": "الوصف",
+      "actionsHeader": "الجراءات",
+      "global": "عام",
+      "unknown": "غير معروف",
+      "deleteTitle": "حذف الباقة",
+      "deleteDescription": "هل أنت متأكد من حذف \"{title}\"؟",
+      "emptyTitle": "لا توجد باقات",
+      "emptyDescription": "أنشئ باقات حجز مخصصة لتقديم عروض خاصة."
+    },
+    "form": {
+      "addButton": "إضافة باقة",
+      "editTitle": "تعديل الباقة",
+      "createTitle": "إضافة باقة",
+      "editDescription": "تحديث تفاصيل الباقة.",
+      "createDescription": "إنشاء باقة حجز جديدة. يمكن أن تكون عامة أو خاصة بالفرع.",
+      "branchLabel": "الفرع (اختياري)",
+      "branchPlaceholder": "عام (جميع الفروع)",
+      "branchOption": "عام (جميع الفروع)",
+      "branchHelp": "اتركها عامة إذا تنطبق على جميع الفروع.",
+      "titleLabel": "العنوان",
+      "titlePlaceholder": "مثال: باقة المحترفين 10 ساعات",
+      "priceLabel": "السعر (ج.م)",
+      "descriptionLabel": "الوصف",
+      "descriptionPlaceholder": "تفاصيل الباقة والمزايا...",
+      "cancel": "إلغاء",
+      "saving": "جارٍ الحفظ...",
+      "save": "حفظ"
+    },
+    "toasts": {
+      "created": "تم إنشاء الباقة بنجاح",
+      "updated": "تم تحديث الباقة بنجاح",
+      "deleted": "تم حذف الباقة بنجاح"
+    }
+  },
+  "bookings": {
+    "page": {
+      "title": "الحجوزات",
+      "subtitle": "مراقبة وإدارة حجوزات الملاعب.",
+      "exportButton": "تصدير",
+      "statusFilter": "الحالة:",
+      "branchFilter": "الفرع:",
+      "allStatuses": "الكل",
+      "allBranches": "جميع الفروع"
+    },
+    "table": {
+      "userHeader": "المستخدم",
+      "locationHeader": "الموقع",
+      "scheduleHeader": "الجدول",
+      "priceHeader": "السعر",
+      "notesHeader": "ملاحظات",
+      "statusHeader": "الحالة",
+      "actionsHeader": "الإجراءات",
+      "unknown": "غير معروف",
+      "noNotes": "لا توجد ملاحظات",
+      "openMenu": "فتح القائمة",
+      "markAsPaid": "تحديد كمدفوع",
+      "markAsRefunded": "تحديد كمُسترد",
+      "cancelTitle": "إلغاء الحجز",
+      "cancelDescription": "إلغاء حجز {userName}؟ لا يمكن التراجع عن هذا.",
+      "screenshotHeader": "الإيصال",
+      "noScreenshot": "لا يوجد إيصال",
+      "viewScreenshot": "عرض الإيصال",
+      "screenshotDialogTitle": "إيصال الدفع",
+      "screenshotOpenFull": "عرض بحجم كامل",
+      "screenshotClose": "إغلاق",
+      "emptyTitle": "لا توجد حجوزات",
+      "emptyDescription": "لم يتم إجراء أي حجوزات بعد."
+    },
+    "status": {
+      "confirmed": "مؤكد",
+      "cancelled": "ملغي",
+      "pending": "معلق",
+      "paid": "مدفوع",
+      "refunded": "مُسترد"
+    },
+    "export": {
+      "currentPageExcel": "تصدير الصفحة الحالية (Excel)",
+      "currentPageCSV": "تصدير الصفحة الحالية (CSV)",
+      "exportAllFiltered": "تصدير كل المفلترة (Excel)"
+    },
+    "toasts": {
+      "paymentStatusUpdated": "تم تحديث حالة الدفع إلى {status}",
+      "cancelled": "تم إلغاء الحجز بنجاح",
+      "excelExported": "تم تصدير ملف Excel بنجاح",
+      "csvExported": "تم تصدير ملف CSV بنجاح",
+      "allExported": "تم تصدير جميع الحجوزات بنجاح",
+      "exportFailed": "فشل تصدير ملف {format}",
+      "exportAllFailed": "فشل تصدير جميع الحجوزات"
+    }
+  },
+  "branches": {
+    "page": {
+      "title": "الفروع",
+      "subtitle": "إدارة مواقع الملاعب وإعداداتها."
+    },
+    "table": {
+      "nameHeader": "الاسم",
+      "addressHeader": "العنوان",
+      "timezoneHeader": "المنطقة الزمنية",
+      "statusHeader": "الحالة",
+      "createdAtHeader": "تاريخ الإنشاء",
+      "actionsHeader": "الإجراءات",
+      "active": "نشط",
+      "inactive": "غير نشط",
+      "promoCodes": "الرموز الترويجية",
+      "deleteTitle": "حذف الفرع",
+      "deleteDescription": "هل أنت متأكد أنك تريد حذف {name}؟ سيؤثر هذا على جميع الملاعب والحجوزات في هذا الفرع.",
+      "emptyTitle": "لا توجد فروع",
+      "emptyDescription": "أضف فرعًا جديدًا باستخدام الزر بالأعلى."
+    },
+    "form": {
+      "addButton": "إضافة فرع",
+      "editTitle": "تعديل الفرع",
+      "createTitle": "إضافة فرع",
+      "editDescription": "عدّل بيانات الفرع هنا ثم اضغط حفظ.",
+      "createDescription": "إضافة موقع فرع جديد.",
+      "nameLabel": "الاسم",
+      "addressLabel": "العنوان",
+      "timezoneLabel": "المنطقة الزمنية",
+      "timezoneHint": "مثال: Africa/Cairo أو UTC أو America/New_York",
+      "activeStatusLabel": "الحالة النشطة",
+      "activeStatusHelp": "هل هذا الفرع يعمل حاليًا؟",
+      "cancel": "إلغاء",
+      "saving": "جارٍ الحفظ...",
+      "save": "حفظ"
+    },
+    "toasts": {
+      "created": "تم إنشاء الفرع بنجاح",
+      "updated": "تم تحديث الفرع بنجاح",
+      "deleted": "تم حذف الفرع بنجاح"
+    }
+  },
+  "courts": {
+    "page": {
+      "title": "الملاعب",
+      "subtitle": "إدارة الملاعب الفردية والتسعير.",
+      "filterByBranch": "تصفية حسب الفرع:",
+      "allBranches": "جميع الفروع"
+    },
+    "table": {
+      "branchHeader": "الفرع",
+      "nameHeader": "الاسم",
+      "priceHeader": "السعر/ساعة",
+      "statusHeader": "الحالة",
+      "perksHeader": "المزايا",
+      "actionsHeader": "الإجراءات",
+      "unknownBranch": "فرع غير معروف",
+      "active": "نشط",
+      "inactive": "غير نشط",
+      "perksCount": "{count} مزايا",
+      "morePerks": "+{count} أخرى",
+      "viewDetails": "عرض التفاصيل",
+      "managePerks": "إدارة المزايا",
+      "deleteTitle": "حذف الملعب",
+      "deleteButton": "حذف",
+      "deleteDescription": "هل أنت متأكد من حذف \"{name}\"؟ لا يمكن التراجع عن هذا الإجراء.",
+      "emptyTitle": "لا توجد ملاعب",
+      "emptyDescription": "أضف ملعبًا إلى فرع موجود للبدء."
+    },
+    "detail": {
+      "notFoundTitle": "الملعب غير موجود",
+      "notFoundDescription": "الملعب الذي تبحث عنه غير موجود.",
+      "backToCourts": "العودة إلى الملاعب",
+      "active": "نشط",
+      "inactive": "غير نشط",
+      "availableForBooking": "متاح للحجز",
+      "unavailable": "غير متاح",
+      "informationTitle": "معلومات الملعب",
+      "pricePerHour": "السعر لكل ساعة",
+      "status": "الحالة",
+      "branch": "الفرع"
+    },
+    "form": {
+      "addButton": "إضافة ملعب",
+      "editTitle": "تعديل الملعب",
+      "createTitle": "إضافة ملعب",
+      "editDescription": "تحديث تفاصيل الملعب والتسعير. انقر حفظ عند الانتهاء.",
+      "createDescription": "إضافة ملعب جديد إلى فرع.",
+      "branchLabel": "الفرع",
+      "branchPlaceholder": "اختر فرعًا",
+      "nameLabel": "اسم الملعب",
+      "namePlaceholder": "مثال: الملعب 1",
+      "priceLabel": "السعر لكل ساعة (ج.م)",
+      "activeStatusLabel": "الحالة النشطة",
+      "activeStatusHelp": "هل هذا الملعب متاح للحجز؟",
+      "cancel": "إلغاء",
+      "saving": "جارٍ الحفظ...",
+      "save": "حفظ"
+    },
+    "hourlyRates": {
+      "title": "نطاقات السعر بالساعة",
+      "defaultFallbackPrice": "السعر الافتراضي البديل: {price} لكل ساعة.",
+      "addRange": "إضافة نطاق",
+      "editTitle": "تعديل نطاق السعر",
+      "createTitle": "إضافة نطاق سعر",
+      "description": "حدّد سعرًا مخصصًا لنطاق ساعات محدد.",
+      "startHour": "ساعة البداية",
+      "endHour": "ساعة النهاية",
+      "pricePerHour": "السعر لكل ساعة",
+      "active": "نشط",
+      "cancel": "إلغاء",
+      "saving": "جارٍ الحفظ...",
+      "save": "حفظ",
+      "empty": "لا توجد نطاقات مخصصة. جميع الحجوزات تستخدم السعر الأساسي حاليًا.",
+      "perHour": "{price} / ساعة",
+      "statusActive": "نشط",
+      "statusInactive": "غير نشط",
+      "deleteTitle": "حذف نطاق السعر",
+      "deleteDescription": "حذف النطاق {start}-{end}؟",
+      "toasts": {
+        "created": "تم إنشاء نطاق السعر",
+        "updated": "تم تحديث نطاق السعر",
+        "deleted": "تم حذف نطاق السعر",
+        "saveFailed": "فشل حفظ نطاق السعر",
+        "deleteFailed": "فشل حذف نطاق السعر"
+      }
+    },
+    "perks": {
+      "title": "مزايا الملعب",
+      "subtitle": "إدارة المزايا والخدمات الخاصة لـ {courtName}",
+      "addPerk": "إضافة ميزة",
+      "editTitle": "تعديل الميزة",
+      "createTitle": "إضافة ميزة جديدة",
+      "nameLabel": "اسم الميزة",
+      "namePlaceholder": "مثال: مياه مجانية، واي فاي، موقف سيارات",
+      "descriptionLabel": "الوصف (اختياري)",
+      "descriptionPlaceholder": "تفاصيل إضافية حول هذه الميزة...",
+      "activeLabel": "نشط",
+      "activeHelp": "إظهار هذه الميزة للعملاء",
+      "cancel": "إلغاء",
+      "saving": "جارٍ الحفظ...",
+      "update": "تحديث",
+      "create": "إنشاء",
+      "emptyTitle": "لا توجد مزايا بعد",
+      "emptyDescription": "أضف مزايا لإبراز الخدمات والخصائص الخاصة بهذا الملعب.",
+      "addFirstPerk": "إضافة أول ميزة",
+      "statusActive": "نشط",
+      "statusInactive": "غير نشط",
+      "deleteTitle": "حذف الميزة",
+      "deleteDescription": "هل أنت متأكد من حذف \"{name}\"؟",
+      "errors": {
+        "loadFailed": "فشل تحميل المزايا:",
+        "saveFailed": "فشل حفظ الميزة:",
+        "deleteFailed": "فشل حذف الميزة:"
+      }
+    },
+    "toasts": {
+      "created": "تم إنشاء الملعب بنجاح",
+      "updated": "تم تحديث الملعب بنجاح",
+      "deleted": "تم حذف الملعب بنجاح",
+      "loadFailed": "فشل تحميل الملعب"
+    }
+  },
+  "sidebar": {
+    "dashboard": "لوحة التحكم",
+    "branches": "الفروع",
+    "courts": "الملاعب",
+    "bookings": "الحجوزات",
+    "packages": "الباقات",
+    "events": "الفعاليات",
+    "promoCodes": "الرموز الترويجية",
+    "blockedSlots": "الأوقات المحجوبة",
+    "reviews": "المراجعات",
+    "ratings": "التقييمات",
+    "admins": "المشرفون",
+    "settings": "الإعدادات",
+    "backToHome": "العودة للرئيسية"
+  }
+}

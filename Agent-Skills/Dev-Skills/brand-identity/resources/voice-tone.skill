@@ -1,0 +1,8 @@
+{
+  "type": "antigravity-skill",
+  "name": "voice-tone",
+  "description": "",
+  "argumentHint": "",
+  "sourceFile": "Agent-Skills/Dev-Skills/brand-identity/resources/voice-tone.copy.md",
+  "content": "# Copywriting: Voice & Tone Guidelines\n\nWhen generating text, adhere to this brand persona.\n\n## Brand Personality Keywords\n* Professional but approachable\n* Direct and efficient\n* Tech-savvy but jargon-free\n* Empathetic\n\n## Grammar & Mechanics rules\n* **Headings:** Use Title Case for main headings (H1, H2). Use sentence case for subheadings (H3+).\n* **Punctuation:** Avoid exclamation points (!) in standard interface copy. Use periods for complete sentences.\n* **Clarity:** Prefer active voice over passive voice. Keep sentences concise.\n\n## Terminology Guide\n\n| Do Not Use | Use Instead |\n| :--- | :--- |\n| \"Utilize\" | \"Use\" |\n| \"In order to...\" | \"To...\" |\n| [Add word] | [Add replacement] |\n"
+}

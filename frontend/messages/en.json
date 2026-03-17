@@ -1,0 +1,918 @@
+{
+  "admins": {
+    "form": {
+      "addButtonLabel": "Add Admin",
+      "editTitle": "Edit Admin",
+      "createTitle": "Create Admin",
+      "editDesc": "Update admin access and role.",
+      "createDesc": "Create a new admin account.",
+      "emailLabel": "Email",
+      "passwordLabel": "Password",
+      "roleLabel": "Role",
+      "selectRole": "Select role",
+      "roleOptions": {
+        "branchAdmin": "Branch Admin",
+        "superAdmin": "Super Admin"
+      },
+      "branchLabel": "Branch",
+      "selectBranch": "Select branch",
+      "cancelButton": "Cancel",
+      "savingButton": "Saving...",
+      "saveButton": "Save",
+      "passwordConfirmLabel": "Confirm Password",
+      "validation": {
+        "invalidEmail": "Invalid email address",
+        "passwordMinLength": "Password must be at least 8 characters",
+        "passwordsDoNotMatch": "Passwords do not match"
+      }
+    },
+    "page": {
+      "title": "Administrators",
+      "subtitle": "Manage system access for your staff.",
+      "accessDeniedTitle": "Access Denied",
+      "accessDeniedDesc": "Only super administrators can access and manage system administrators."
+    },
+    "toast": {
+      "created": "Admin created successfully",
+      "updated": "Admin role updated successfully",
+      "deleted": "Admin deleted successfully"
+    },
+    "table": {
+      "allBranches": "All Branches",
+      "unknownBranch": "Unknown",
+      "emailHeader": "Email",
+      "youBadge": "You",
+      "roleHeader": "Role",
+      "branchHeader": "Branch",
+      "createdHeader": "Created",
+      "actionsHeader": "Actions",
+      "deleteConfirmTitle": "Delete Admin",
+      "deleteConfirmDesc": "Are you sure you want to delete {email}?",
+      "noAdmins": "No admins found",
+      "noAdminsDesc": "No admin accounts are available yet."
+    }
+  },
+  "events": {
+    "page": {
+      "title": "Events",
+      "subtitle": "Manage your tournaments, gatherings, and special occasions.",
+      "filterByBranch": "Filter by Branch:",
+      "allBranches": "All Branches"
+    },
+    "table": {
+      "titleHeader": "Title",
+      "branchHeader": "Branch",
+      "dateHeader": "Date",
+      "priceHeader": "Price",
+      "limitHeader": "Limit",
+      "quantitySuffix": "qty",
+      "unlimited": "Unlim.",
+      "actionsHeader": "Actions",
+      "unknownBranch": "Unknown Branch",
+      "deleteTitle": "Delete Event",
+      "deleteDescription": "Are you sure you want to delete \"{title}\"?",
+      "emptyTitle": "No events found",
+      "emptyDescription": "Host tournaments or public events by creating one."
+    },
+    "form": {
+      "addButton": "Add Event",
+      "editTitle": "Edit Event",
+      "createTitle": "Add Event",
+      "editDescription": "Update tournament or special event details.",
+      "createDescription": "Create a new event, tournament, or gathering.",
+      "branchLabel": "Branch",
+      "selectBranch": "Select a branch",
+      "titleLabel": "Event Title",
+      "titlePlaceholder": "e.g. Summer Padel Tournament",
+      "startDateLabel": "Start Date",
+      "priceLabel": "Price (EGP)",
+      "priceHint": "Leave 0 for free events.",
+      "maxParticipantsLabel": "Max Participants (Optional)",
+      "maxParticipantsPlaceholder": "No limit",
+      "descriptionLabel": "Description",
+      "descriptionPlaceholder": "Event rules, rewards, etc...",
+      "cancelButton": "Cancel",
+      "savingButton": "Saving...",
+      "saveButton": "Save"
+    },
+    "toasts": {
+      "created": "Event created successfully",
+      "updated": "Event updated successfully",
+      "deleted": "Event deleted successfully"
+    }
+  },
+  "landing": {
+    "nav": {
+      "packages": "Packages",
+      "events": "Events",
+      "bookACourt": "Book a Court",
+      "signIn": "Sign In"
+    },
+    "hero": {
+      "headline1": "Book Your",
+      "headline2": "Court.",
+      "subtitle": "Check live availability, compare courts, and secure your spot instantly. No calls needed.",
+      "bookACourt": "Book a Court",
+      "browseEvents": "Browse Events",
+      "scrollToExplore": "Scroll to explore"
+    },
+    "packages": {
+      "eyebrow": "Save More",
+      "title": "Court Packages",
+      "viewAll": "View All Packages",
+      "bookNow": "Book Now",
+      "global": "Global",
+      "failedToLoad": "Failed to load packages.",
+      "tryAgain": "Try again",
+      "noPackages": "No packages available at the moment."
+    },
+    "events": {
+      "eyebrow": "Join the Community",
+      "title": "Upcoming Events",
+      "viewAll": "View All Events",
+      "free": "Free",
+      "maxParticipants": "{count} max participants",
+      "perEntry": "/ entry",
+      "viewEvent": "View Event",
+      "failedToLoad": "Failed to load events.",
+      "tryAgain": "Try again",
+      "noEvents": "No upcoming events at the moment."
+    },
+    "courts": {
+      "eyebrow": "Find a Court",
+      "title": "Available Courts",
+      "failedToLoad": "Failed to load courts.",
+      "tryAgain": "Try again",
+      "noCourts": "No courts available at the moment.",
+      "available": "Available",
+      "maintenance": "Maintenance",
+      "bookNow": "Book Now",
+      "unavailable": "Currently Unavailable",
+      "perHour": "/ hr"
+    },
+    "footer": {
+      "systemsOperational": "All systems operational",
+      "copyright": "© {year} CourtManager. All rights reserved.",
+      "builtWith": "Built on Rails 8 · Next.js · JWT Auth · JSON:API",
+      "explore": "Explore",
+      "company": "Company",
+      "packages": "Packages",
+      "events": "Events",
+      "bookACourt": "Book a Court",
+      "about": "About",
+      "contact": "Contact",
+      "privacy": "Privacy",
+      "terms": "Terms"
+    }
+  },
+  "dashboard": {
+    "welcomeBack": "Welcome back, {name}!",
+    "scopeAllBranches": "across all branches",
+    "scopeYourBranch": "at your branch",
+    "happeningRecently": "Here is what's happening {scope} recently.",
+    "cards": {
+      "totalRevenue30d": "Total Revenue (30d)",
+      "revenueDeltaVsLastMonth": "+12% from last month",
+      "confirmedBookings30d": "Confirmed Bookings (30d)",
+      "bookingsDeltaVsLastMonth": "+5% from last month",
+      "globalOccupancy": "Global Occupancy",
+      "capacityFilled": "Capacity filled",
+      "averageOrderValue": "Average Order Value",
+      "perBookingTransaction": "Per booking transaction"
+    },
+    "utilization": {
+      "title": "Court Utilization",
+      "description": "Breakdown of bookings per court location matching your filter.",
+      "bookingUnit": "bks",
+      "emptyState": "No court data available for this range."
+    },
+    "recentActivity": {
+      "title": "Recent Activity",
+      "description": "Automated system suggestions and alerts.",
+      "highDemandOnCourt": "High demand on {court}",
+      "createPremiumPackage": "Consider creating a premium package.",
+      "newAdminOnboarded": "New admin onboarded",
+      "userJoinedAgo": "{email} joined {time} ago."
+    }
+  },
+  "reviews": {
+    "page": {
+      "title": "Reviews",
+      "subtitle": "Manage and moderate customer reviews for your courts.",
+      "totalReviews": "Total Reviews",
+      "avgRating": "Avg Rating",
+      "fiveStarReviews": "5-Star Reviews",
+      "filterCourt": "Court",
+      "allCourts": "All Courts",
+      "filterRating": "Rating",
+      "allRatings": "All Ratings",
+      "noReviewsFound": "No reviews found",
+      "noReviewsDesc": "Adjust your filters or wait for customers to leave reviews.",
+      "noWrittenReview": "No written review"
+    },
+    "starsFilter": {
+      "1": "★ 1 Star",
+      "2": "★★ 2 Stars",
+      "3": "★★★ 3 Stars",
+      "4": "★★★★ 4 Stars",
+      "5": "★★★★★ 5 Stars"
+    },
+    "badge": {
+      "excellent": "Excellent",
+      "great": "Great",
+      "good": "Good",
+      "fair": "Fair",
+      "poor": "Poor"
+    },
+    "delete": {
+      "title": "Delete Review",
+      "description": "Are you sure you want to permanently delete the review by \"{name}\"? This cannot be undone."
+    },
+    "toast": {
+      "deleted": "Review deleted successfully"
+    }
+  },
+  "ratings": {
+    "page": {
+      "title": "Ratings Analytics",
+      "subtitle": "Aggregated star ratings and review distribution for all your courts.",
+      "overallAvg": "Overall Avg",
+      "totalReviews": "Total Reviews",
+      "topCourt": "Top Court",
+      "needsAttention": "Needs Attention",
+      "filterBranch": "Branch",
+      "allBranches": "All Branches",
+      "sortBy": "Sort by",
+      "highestRated": "Highest Rated",
+      "lowestRated": "Lowest Rated",
+      "mostReviewed": "Most Reviewed",
+      "noCourtsFound": "No courts found",
+      "noCourtsDesc": "Try changing the branch filter.",
+      "failedToLoad": "Failed to load ratings data."
+    },
+    "courtCount": "{count} court",
+    "courtCountPlural": "{count} courts",
+    "reviewCount": "{count} review",
+    "reviewCountPlural": "{count} reviews",
+    "positiveLabel": "{pct}% positive (4-5★)",
+    "negativeLabel": "{pct}% negative (1-2★)",
+    "label": {
+      "noRatings": "No ratings",
+      "excellent": "Excellent",
+      "great": "Great",
+      "good": "Good",
+      "fair": "Fair",
+      "poor": "Poor"
+    }
+  },
+  "reviewPrompt": {
+    "ratingLabel": {
+      "1": "Poor",
+      "2": "Fair",
+      "3": "Good",
+      "4": "Great",
+      "5": "Excellent!"
+    },
+    "errorNoRating": "Please select a star rating before submitting.",
+    "successSubmitted": "Thank you for your review!",
+    "doneTitle": "Review submitted!",
+    "doneThanks": "Thanks for sharing your experience at {courtName}.",
+    "header": "How was your experience?",
+    "subheader": "Share a quick review for {courtName}",
+    "placeholder": "Tell others about your experience (optional)…",
+    "submit": "Submit Review",
+    "submitting": "Submitting…"
+  },
+  "bookingConfirmation": {
+    "title": "Booking Confirmed!",
+    "subtitle": "Thank you, {name}. Your court is reserved.",
+    "orderLabel": "Order",
+    "courtLabel": "Court",
+    "dateLabel": "Date",
+    "timeLabel": "Time",
+    "totalLabel": "Total Amount",
+    "free": "Free",
+    "notesLabel": "Notes",
+    "promoCodeLabel": "Applied Promo Code",
+    "promoCode": "Promo Code",
+    "promoCodePlaceholder": "Enter promo code",
+    "promoCodeDescription": "Have a promo code? Enter it here to get a discount on your booking.",
+    "returnHome": "Return Home",
+    "bookAnother": "Book Another Court"
+  },
+  "login": {
+    "title": "Admin Login",
+    "subtitle": "Enter your email and password to access the dashboard.",
+    "emailLabel": "Email",
+    "emailPlaceholder": "m@example.com",
+    "passwordLabel": "Password",
+    "loggingIn": "Logging in...",
+    "loginButton": "Login",
+    "toast": {
+      "success": "Logged in successfully"
+    }
+  },
+  "promoInput": {
+    "label": "Promo Code (Optional)",
+    "placeholder": "Enter promo code",
+    "validating": "Validating...",
+    "apply": "Apply",
+    "summary": {
+      "originalAmount": "Original amount:",
+      "discount": "Discount:",
+      "finalAmount": "Final amount:"
+    },
+    "toasts": {
+      "enterPromoCode": "Please enter a promo code",
+      "selectCourtAndTime": "Please select a court and time first",
+      "applied": "Promo code applied! You saved {amount}",
+      "invalidPromoCode": "Invalid promo code",
+      "validateFailed": "Failed to validate promo code"
+    }
+  },
+  "availability": {
+    "emptyTitle": "No slots available",
+    "emptyDescription": "Please try another date or court.",
+    "to": "to {endTime}"
+  },
+  "publicBook": {
+    "title": "Book a Court",
+    "subtitle": "Select your preferred court, date, and time slot to play.",
+    "steps": {
+      "chooseBranch": "Select Branch",
+      "chooseCourt": "Choose Court",
+      "selectDate": "Select Date",
+      "availableSlots": "Available Time Slots",
+      "yourInfo": "Your Information"
+    },
+    "courtLabel": "Court",
+    "selectCourtPlaceholder": "Select a court",
+    "selectBranchPlaceholder": "Select a branch",
+    "selectBranchFirst": "Please select a branch first",
+    "loading": "Loading...",
+    "noBranchesAvailable": "No branches available",
+    "noCourtsAvailable": "No courts available for this branch",
+    "courtPerks": "Court Perks",
+    "perHour": "/hr",
+    "morePerks": "+{count} more",
+    "selectCourtAndDate": "Please select a court and date to view availability.",
+    "selectAvailableSlot": "Please select an available time slot.",
+    "fullNameLabel": "Full Name",
+    "fullNamePlaceholder": "John Doe",
+    "phoneLabel": "Phone Number",
+    "phonePlaceholder": "+1234567890",
+    "notesLabel": "Additional Notes (Optional)",
+    "notesPlaceholder": "Any special requests or information you'd like to share with the court owner...",
+    "promoCode": "Promo Code",
+    "promoCodePlaceholder": "Enter promo code",
+    "promoCodeDescription": "Have a promo code? Enter it here to get a discount on your booking.",
+    "processingBooking": "Processing Booking...",
+    "confirmBooking": "Confirm Booking",
+    "bookingSuccess": "Your court has been booked successfully!",
+    "bookingFailed": "Something went wrong. Please try again.",
+    "selectCourtFirst": "Please select a court first.",
+    "noCourts": "No courts available for this branch.",
+    "termsPrefix": "I agree to the",
+    "termsLink": "Terms & Conditions",
+    "screenshotLabel": "Payment Screenshot",
+    "screenshotOptional": "Optional",
+    "screenshotDescription": "Upload a screenshot of your payment transfer.",
+    "paymentInstructionsTitle": "How to Pay",
+    "paymentInstructionsBody": "Please send your payment to the number below, then upload a screenshot of the transfer above.",
+    "screenshotRemove": "Remove",
+    "screenshotDropzone": "Click or drag screenshot here",
+    "screenshotFormats": "JPEG, PNG, WEBP (Max 5MB)",
+    "screenshotBrowse": "Browse Files",
+    "screenshotInvalidType": "Invalid file type. Please upload an image.",
+    "screenshotTooLarge": "File is too large. Maximum size is {mb}MB.",
+    "termsAndConditions": "Terms and Conditions",
+    "acceptTerms": "I agree to the {terms}"
+  },
+  "bookingTerms": {
+    "title": "Booking Terms & Conditions",
+    "close": "Close",
+    "accept": "I agree to the terms and conditions"
+  },
+  "publicEvents": {
+    "errorLoading": "Error loading events",
+    "tryAgain": "Try again",
+    "badge": "Upcoming Tournaments",
+    "title": "Events & Tournaments",
+    "subtitle": "Join our competitive and casual events. Spots fill up fast!",
+    "emptyTitle": "No upcoming events",
+    "emptyDescription": "Check back later for new tournaments and activities.",
+    "upcoming": "Upcoming",
+    "spots": "{current} / {max} Spots",
+    "unlimitedSpots": "Unlimited Spots",
+    "free": "Free",
+    "details": "Details",
+    "soldOut": "Sold Out",
+    "signUp": "Sign Up"
+  },
+  "publicPackages": {
+    "errorLoading": "Error loading packages",
+    "tryAgain": "Try again",
+    "badge": "Our Packages",
+    "title": "Flexible Court Packages",
+    "subtitle": "Save more when you buy hours in bulk. Choose a package that fits your playing schedule.",
+    "emptyTitle": "No packages available",
+    "emptyDescription": "Check back later for new offers.",
+    "globalPackage": "Global Package",
+    "bookNow": "Book Now"
+  },
+  "eventDetail": {
+    "errorLoading": "Error loading event",
+    "backToEvents": "Back to Events",
+    "backToAll": "Back to all events",
+    "status": {
+      "upcoming": "Upcoming",
+      "past": "Past Event",
+      "freeEntry": "Free Entry"
+    },
+    "noDescription": "No description provided for this event.",
+    "guidelinesTitle": "Event Guidelines",
+    "guidelines": {
+      "arriveEarly": "Arrive 15 minutes early for check-in",
+      "bringGear": "Bring appropriate sports gear and shoes",
+      "followReferee": "Follow the referee's instructions at all times",
+      "sportsmanship": "Maintain good sportsmanship"
+    },
+    "labels": {
+      "date": "Date",
+      "time": "Time",
+      "capacity": "Capacity",
+      "participationPrice": "Participation Price"
+    },
+    "capacityMax": "{count} Participants Max",
+    "unlimitedSpots": "Unlimited Spots",
+    "spotsRemaining": "{count} Spots Remaining",
+    "free": "Free",
+    "actions": {
+      "soldOut": "Sold Out",
+      "signUpWhatsapp": "Sign Up via WhatsApp",
+      "signUpNow": "Sign Up Now",
+      "eventEnded": "Event Ended"
+    }
+  },
+  "common": {
+    "signIn": "Sign In",
+    "superAdmin": "Super Admin",
+    "toggleUserMenu": "Toggle user menu",
+    "adminUser": "Admin User",
+    "rolePrefix": "Role:",
+    "goToDashboard": "Go to Dashboard",
+    "logOut": "Log out",
+    "language": "Language",
+    "toggleMenu": "Toggle menu",
+    "switchLanguage": "Switch language",
+    "switchToEnglish": "Switch to English",
+    "switchToArabic": "Switch to Arabic",
+    "toggleTheme": "Toggle theme",
+    "toggleNavigationMenu": "Toggle navigation menu",
+    "confirm": {
+      "title": "Are you sure?",
+      "description": "This action cannot be undone. This will permanently delete the record from our servers.",
+      "cancel": "Cancel",
+      "deleting": "Deleting...",
+      "continue": "Continue"
+    }
+  },
+  "pagination": {
+    "showing": "Showing {from} to {to} of {total} entries",
+    "rowsPerPage": "Rows per page",
+    "pageOf": "Page {page} of {total}",
+    "previousPage": "Go to previous page",
+    "nextPage": "Go to next page"
+  },
+  "paginationUi": {
+    "pagination": "pagination",
+    "previousPage": "Go to previous page",
+    "nextPage": "Go to next page",
+    "previous": "Previous",
+    "next": "Next",
+    "morePages": "More pages"
+  },
+  "settings": {
+    "page": {
+      "title": "General Settings",
+      "subtitle": "Configure operating hours and communication channels.",
+      "savedSuccessfully": "Settings saved successfully."
+    },
+    "form": {
+      "branchSelector": {
+        "label": "Select Configuration Scope",
+        "placeholder": "Select branch to configure",
+        "description": "Settings are tied directly to branches. Super admins must pick a specific branch.",
+        "selectBranch": "Please select a branch to view and edit its settings."
+      },
+      "contactInfo": {
+        "title": "Contact Information",
+        "whatsappLabel": "WhatsApp Number",
+        "whatsappPlaceholder": "+201234567890",
+        "phoneLabel": "Contact Phone",
+        "phonePlaceholder": "+201234567890",
+        "emailLabel": "Contact Email",
+        "emailPlaceholder": "info@courts.com"
+      },
+      "operatingHours": {
+        "title": "Operating Hours",
+        "openingLabel": "Opening Hour",
+        "closingLabel": "Closing Hour",
+        "description": "Set the hours when your courts are available for booking."
+      },
+      "bookingTerms": {
+        "title": "Booking Terms & Conditions",
+        "label": "Terms and Conditions",
+        "placeholder": "Enter your booking terms and conditions here. You can include rules, cancellation policies, payment terms, etc.",
+        "description": "These terms will be displayed to users before they make a booking."
+      },
+      "payment": {
+        "title": "Payment Settings",
+        "numberLabel": "Payment Number",
+        "numberPlaceholder": "+201234567890",
+        "numberDescription": "The phone number users will send payments to. This number will be shown on the booking page with transfer instructions."
+      },
+      "actions": {
+        "saving": "Saving...",
+        "updateSettings": "Update Settings",
+        "saveSettings": "Save Settings"
+      }
+    }
+  },
+  "promoCodes": {
+    "title": "Promo Codes",
+    "subtitle": "Manage discount codes by branch from one page.",
+    "selectBranch": "Select branch",
+    "addPromoCode": "Add Promo Code",
+    "createPromoCode": "Create Promo Code",
+    "selectedBranchFallback": "Selected branch",
+    "emptyTitle": "No promo codes for {branch}",
+    "emptyDescription": "Create your first code to start applying discounts.",
+    "status": {
+      "active": "Active",
+      "inactive": "Inactive"
+    },
+    "discountPercent": "{value}% off",
+    "discountAmount": "{value} off",
+    "minimumAmount": "Min {value}",
+    "usage": "{used}/{limit} used",
+    "unlimited": "∞",
+    "deleteTitle": "Delete Promo Code",
+    "deleteDescription": "Are you sure you want to delete \"{code}\"?",
+    "form": {
+      "addTitle": "Add Promo Code",
+      "editTitle": "Edit Promo Code",
+      "codeLabel": "Code",
+      "codePlaceholder": "SUMMER20",
+      "descriptionLabel": "Description",
+      "descriptionPlaceholder": "Promo details...",
+      "discountTypeLabel": "Discount Type",
+      "discountTypePlaceholder": "Select type",
+      "discountTypePercentage": "Percentage",
+      "discountTypeAmount": "Fixed amount",
+      "discountPercentageLabel": "Discount Percentage",
+      "discountAmountLabel": "Discount Amount",
+      "minimumAmountLabel": "Minimum Amount",
+      "usageLimitLabel": "Usage Limit",
+      "startsAtLabel": "Starts At",
+      "expiresAtLabel": "Expires At",
+      "activeLabel": "Active",
+      "cancel": "Cancel",
+      "update": "Update",
+      "create": "Create"
+    },
+    "toasts": {
+      "loadPromoCodesError": "Failed to load promo codes",
+      "loadBranchesError": "Failed to load branches",
+      "created": "Promo code created successfully",
+      "updated": "Promo code updated successfully",
+      "deleted": "Promo code deleted successfully",
+      "saveError": "Failed to save promo code",
+      "deleteError": "Failed to delete promo code"
+    }
+  },
+  "blockedSlots": {
+    "page": {
+      "title": "Blocked Slots",
+      "subtitle": "Prevent reservations for maintenance or private events."
+    },
+    "form": {
+      "createButton": "Block Slots",
+      "editTitle": "Edit Blocked Slot",
+      "createTitle": "Block Sub-slots",
+      "editDescription": "Update blocked hours or reason.",
+      "createDescription": "Prevent booking for specific hours due to maintenance or other reasons.",
+      "branchLabel": "Branch",
+      "selectBranch": "Select a branch",
+      "courtLabel": "Court",
+      "selectCourt": "Select a court",
+      "dateLabel": "Date",
+      "startTimeLabel": "Start Time",
+      "endTimeLabel": "End Time",
+      "reasonLabel": "Reason for blocking",
+      "reasonPlaceholder": "e.g. Maintenance, Private Event",
+      "cancel": "Cancel",
+      "saving": "Saving...",
+      "save": "Save"
+    },
+    "table": {
+      "unknown": "Unknown",
+      "dateHeader": "Date",
+      "locationHeader": "Location",
+      "fromHeader": "From",
+      "toHeader": "To",
+      "reasonHeader": "Reason",
+      "actionsHeader": "Actions",
+      "deleteTitle": "Unblock Time Slot",
+      "deleteDescription": "Are you sure you want to remove this blocked time segment? It will instantly become bookable.",
+      "emptyTitle": "No blocked slots",
+      "emptyDescription": "Use blocked slots to mark courts as unavailable for maintenance or private events."
+    },
+    "toasts": {
+      "created": "Dates blocked successfully",
+      "updated": "Blocked slot updated successfully",
+      "deleted": "Dates unblocked successfully"
+    }
+  },
+  "packages": {
+    "page": {
+      "title": "Packages",
+      "subtitle": "Global or branch-specific booking packages.",
+      "filterByScope": "Filter by Scope:",
+      "allScopesPlaceholder": "All Scopes",
+      "allScopes": "All (Global & Branch)",
+      "globalOnly": "Global Packages Only"
+    },
+    "table": {
+      "titleHeader": "Title",
+      "scopeHeader": "Scope / Branch",
+      "priceHeader": "Price",
+      "descriptionHeader": "Description",
+      "actionsHeader": "Actions",
+      "global": "Global",
+      "unknown": "Unknown",
+      "deleteTitle": "Delete Package",
+      "deleteDescription": "Are you sure you want to delete \"{title}\"?",
+      "emptyTitle": "No packages found",
+      "emptyDescription": "Create custom booking packages to offer special deals."
+    },
+    "form": {
+      "addButton": "Add Package",
+      "editTitle": "Edit Package",
+      "createTitle": "Add Package",
+      "editDescription": "Update package details.",
+      "createDescription": "Create a new booking package. Can be global or branch specific.",
+      "branchLabel": "Branch (Optional)",
+      "branchPlaceholder": "Global (All Branches)",
+      "branchOption": "Global (All Branches)",
+      "branchHelp": "Leave as Global if this applies to all branches.",
+      "titleLabel": "Title",
+      "titlePlaceholder": "e.g. 10-Hour Pro Package",
+      "priceLabel": "Price (EGP)",
+      "descriptionLabel": "Description",
+      "descriptionPlaceholder": "Package details and benefits...",
+      "cancel": "Cancel",
+      "saving": "Saving...",
+      "save": "Save"
+    },
+    "toasts": {
+      "created": "Package created successfully",
+      "updated": "Package updated successfully",
+      "deleted": "Package deleted successfully"
+    }
+  },
+  "bookings": {
+    "page": {
+      "title": "Bookings",
+      "subtitle": "Monitor and manage your court reservations.",
+      "exportButton": "Export",
+      "statusFilter": "Status:",
+      "branchFilter": "Branch:",
+      "allStatuses": "All",
+      "allBranches": "All Branches"
+    },
+    "table": {
+      "userHeader": "User",
+      "locationHeader": "Location",
+      "scheduleHeader": "Schedule",
+      "priceHeader": "Price",
+      "notesHeader": "Notes",
+      "statusHeader": "Status",
+      "actionsHeader": "Actions",
+      "unknown": "Unknown",
+      "noNotes": "No notes",
+      "openMenu": "Open menu",
+      "markAsPaid": "Mark as Paid",
+      "markAsRefunded": "Mark as Refunded",
+      "cancelTitle": "Cancel Booking",
+      "cancelDescription": "Cancel booking for {userName}? This cannot be undone.",
+      "screenshotHeader": "Screenshot",
+      "noScreenshot": "No screenshot",
+      "viewScreenshot": "View Screenshot",
+      "screenshotDialogTitle": "Payment Screenshot",
+      "screenshotOpenFull": "Open Full Size",
+      "screenshotClose": "Close",
+      "emptyTitle": "No bookings found",
+      "emptyDescription": "No reservations have been made yet."
+    },
+    "status": {
+      "confirmed": "Confirmed",
+      "cancelled": "Cancelled",
+      "pending": "Pending",
+      "paid": "Paid",
+      "refunded": "Refunded"
+    },
+    "export": {
+      "currentPageExcel": "Export Current Page (Excel)",
+      "currentPageCSV": "Export Current Page (CSV)",
+      "exportAllFiltered": "Export All Filtered (Excel)"
+    },
+    "toasts": {
+      "paymentStatusUpdated": "Payment status updated to {status}",
+      "cancelled": "Booking cancelled successfully",
+      "excelExported": "Excel file exported successfully",
+      "csvExported": "CSV file exported successfully",
+      "allExported": "All bookings exported successfully",
+      "exportFailed": "Failed to export {format} file",
+      "exportAllFailed": "Failed to export all bookings"
+    }
+  },
+  "branches": {
+    "page": {
+      "title": "Branches",
+      "subtitle": "Manage your physical court locations and their settings."
+    },
+    "table": {
+      "nameHeader": "Name",
+      "addressHeader": "Address",
+      "timezoneHeader": "Timezone",
+      "statusHeader": "Status",
+      "createdAtHeader": "Created At",
+      "actionsHeader": "Actions",
+      "active": "Active",
+      "inactive": "Inactive",
+      "promoCodes": "Promo Codes",
+      "deleteTitle": "Delete Branch",
+      "deleteDescription": "Are you sure you want to delete {name}? This will affect all courts and bookings in this branch.",
+      "emptyTitle": "No branches found",
+      "emptyDescription": "Add a new branch using the button above."
+    },
+    "form": {
+      "addButton": "Add Branch",
+      "editTitle": "Edit Branch",
+      "createTitle": "Add Branch",
+      "editDescription": "Make changes to the branch profile here. Click save when you're done.",
+      "createDescription": "Add a new branch location.",
+      "nameLabel": "Name",
+      "addressLabel": "Address",
+      "timezoneLabel": "Timezone",
+      "timezoneHint": "e.g. Africa/Cairo, UTC, America/New_York",
+      "activeStatusLabel": "Active Status",
+      "activeStatusHelp": "Is this branch currently operating?",
+      "cancel": "Cancel",
+      "saving": "Saving...",
+      "save": "Save"
+    },
+    "toasts": {
+      "created": "Branch created successfully",
+      "updated": "Branch updated successfully",
+      "deleted": "Branch deleted successfully"
+    }
+  },
+  "courts": {
+    "page": {
+      "title": "Courts",
+      "subtitle": "Manage your individual courts and pricing.",
+      "filterByBranch": "Filter by Branch:",
+      "allBranches": "All Branches"
+    },
+    "table": {
+      "branchHeader": "Branch",
+      "nameHeader": "Name",
+      "priceHeader": "Price/Hour",
+      "statusHeader": "Status",
+      "perksHeader": "Perks",
+      "actionsHeader": "Actions",
+      "unknownBranch": "Unknown Branch",
+      "active": "Active",
+      "inactive": "Inactive",
+      "perksCount": "{count} perks",
+      "morePerks": "+{count} more",
+      "viewDetails": "View Details",
+      "managePerks": "Manage Perks",
+      "deleteTitle": "Delete Court",
+      "deleteButton": "Delete",
+      "deleteDescription": "Are you sure you want to delete \"{name}\"? This action cannot be undone.",
+      "emptyTitle": "No courts found",
+      "emptyDescription": "Add a court to an existing branch to get started."
+    },
+    "detail": {
+      "notFoundTitle": "Court not found",
+      "notFoundDescription": "The court you're looking for doesn't exist.",
+      "backToCourts": "Back to Courts",
+      "active": "Active",
+      "inactive": "Inactive",
+      "availableForBooking": "Available for Booking",
+      "unavailable": "Unavailable",
+      "informationTitle": "Court Information",
+      "pricePerHour": "Price per Hour",
+      "status": "Status",
+      "branch": "Branch"
+    },
+    "form": {
+      "addButton": "Add Court",
+      "editTitle": "Edit Court",
+      "createTitle": "Add Court",
+      "editDescription": "Update court details and pricing. Click save when you're done.",
+      "createDescription": "Add a new court to a branch.",
+      "branchLabel": "Branch",
+      "branchPlaceholder": "Select a branch",
+      "nameLabel": "Court Name",
+      "namePlaceholder": "e.g. Court 1",
+      "priceLabel": "Price per Hour (EGP)",
+      "activeStatusLabel": "Active Status",
+      "activeStatusHelp": "Is this court available for booking?",
+      "cancel": "Cancel",
+      "saving": "Saving...",
+      "save": "Save"
+    },
+    "hourlyRates": {
+      "title": "Hourly Price Ranges",
+      "defaultFallbackPrice": "Default fallback price: {price} per hour.",
+      "addRange": "Add Range",
+      "editTitle": "Edit Price Range",
+      "createTitle": "Add Price Range",
+      "description": "Set a custom price for a specific hourly range.",
+      "startHour": "Start Hour",
+      "endHour": "End Hour",
+      "pricePerHour": "Price Per Hour",
+      "active": "Active",
+      "cancel": "Cancel",
+      "saving": "Saving...",
+      "save": "Save",
+      "empty": "No custom ranges configured. All bookings currently use the base price.",
+      "perHour": "{price} / hour",
+      "statusActive": "Active",
+      "statusInactive": "Inactive",
+      "deleteTitle": "Delete pricing range",
+      "deleteDescription": "Delete range {start}-{end}?",
+      "toasts": {
+        "created": "Pricing range created",
+        "updated": "Pricing range updated",
+        "deleted": "Pricing range deleted",
+        "saveFailed": "Failed to save pricing range",
+        "deleteFailed": "Failed to delete pricing range"
+      }
+    },
+    "perks": {
+      "title": "Court Perks",
+      "subtitle": "Manage special amenities and features for {courtName}",
+      "addPerk": "Add Perk",
+      "editTitle": "Edit Perk",
+      "createTitle": "Add New Perk",
+      "nameLabel": "Perk Name",
+      "namePlaceholder": "e.g., Free Water, WiFi, Parking",
+      "descriptionLabel": "Description (Optional)",
+      "descriptionPlaceholder": "Additional details about this perk...",
+      "activeLabel": "Active",
+      "activeHelp": "Show this perk to customers",
+      "cancel": "Cancel",
+      "saving": "Saving...",
+      "update": "Update",
+      "create": "Create",
+      "emptyTitle": "No perks yet",
+      "emptyDescription": "Add perks to highlight special amenities and features of this court.",
+      "addFirstPerk": "Add First Perk",
+      "statusActive": "Active",
+      "statusInactive": "Inactive",
+      "deleteTitle": "Delete Perk",
+      "deleteDescription": "Are you sure you want to delete \"{name}\"?",
+      "errors": {
+        "loadFailed": "Failed to load perks:",
+        "saveFailed": "Failed to save perk:",
+        "deleteFailed": "Failed to delete perk:"
+      }
+    },
+    "toasts": {
+      "created": "Court created successfully",
+      "updated": "Court updated successfully",
+      "deleted": "Court deleted successfully",
+      "loadFailed": "Failed to load court"
+    }
+  },
+  "sidebar": {
+    "dashboard": "Dashboard",
+    "branches": "Branches",
+    "courts": "Courts",
+    "bookings": "Bookings",
+    "packages": "Packages",
+    "events": "Events",
+    "promoCodes": "Promo Codes",
+    "blockedSlots": "Blocked Slots",
+    "reviews": "Reviews",
+    "ratings": "Ratings",
+    "admins": "Admins",
+    "settings": "Settings",
+    "backToHome": "Back to Home"
+  }
+}

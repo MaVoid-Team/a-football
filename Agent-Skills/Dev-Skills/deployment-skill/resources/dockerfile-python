@@ -1,0 +1,32 @@
+# Python/Flask-Gunicorn Multi-stage Dockerfile Template
+
+FROM python:3.11-slim AS builder
+
+WORKDIR /app
+
+COPY requirements.txt .
+RUN pip install --no-cache-dir --user --no-warn-script-location -r requirements.txt
+
+# Production stage
+FROM python:3.11-slim
+
+WORKDIR /app
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    dumb-init \
+    && rm -rf /var/lib/apt/lists/*
+
+COPY --from=builder /root/.local /root/.local
+COPY . .
+
+ENV PATH=/root/.local/bin:$PATH
+
+RUN useradd -m app && chown -R app:app /app
+
+USER app
+
+EXPOSE 5000
+
+ENTRYPOINT ["dumb-init", "--"]
+
+CMD ["gunicorn", "--bind", "0.0.0.0:5000", "--workers", "4", "app:app"]

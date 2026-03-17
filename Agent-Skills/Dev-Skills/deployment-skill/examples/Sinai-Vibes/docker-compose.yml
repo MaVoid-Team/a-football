@@ -1,0 +1,82 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:18-alpine
+    container_name: sinai_vibes_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: Ismk7@wscxSpjdbI
+      POSTGRES_DB: sinai_vibes
+    volumes:
+      - sinai_vibes_postgres_data:/var/lib/postgresql/data
+      - ./backup:/backup
+    ports:
+      - "5195:5432"
+    networks:
+      - sinai_vibes_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d sinai_vibes"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # Rails Backend API
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: sinai_vibes_backend
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      RAILS_ENV: production
+      DATABASE_URL: postgresql://postgres:Ismk7%40wscxSpjdbI@postgres:5432/sinai_vibes
+      SECRET_KEY_BASE: 68f6d979ec98e02ad97ffc0f60438d30a6002d08dac4a407f09605d5e74d7328f93bf7a4c3c3c1f213445549cf8134a1fe12725304ad217d3063329c33bb33b2
+      DEVISE_JWT_SECRET_KEY: e66087cbbba212f365121c46f90dc057d1adfbbb550c42f5863eaa6ea71120c3d00c044a35bdba93d97682be08daec78e3871427b3d5ee5dbbcd95eeb78e2906
+      RESEND_API_KEY: re_8Pziu6WC_6gkNLe8gwvwUu5LJSVDbvYFH
+      RAILS_LOG_TO_STDOUT: true
+      RAILS_SERVE_STATIC_FILES: true
+      PORT: 3000
+      RAILS_MAX_THREADS: 5
+      WEB_CONCURRENCY: 1
+      FRONTEND_URL: https://sinai-vibes.com
+    volumes:
+      - sinai_vibes_backend_storage:/rails/storage
+      - sinai_vibes_backend_logs:/rails/log
+    ports:
+      - "3677:3000"
+    networks:
+      - sinai_vibes_network
+
+  # React Frontend
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        VITE_API_URL: https://sinai-vibes.com/
+    container_name: sinai_vibes_frontend
+    restart: unless-stopped
+    depends_on:
+      - backend
+    ports:
+      - "3537:80"
+    networks:
+      - sinai_vibes_network
+
+volumes:
+  sinai_vibes_postgres_data:
+    driver: local
+  sinai_vibes_backend_storage:
+    driver: local
+  sinai_vibes_backend_logs:
+    driver: local
+
+networks:
+  sinai_vibes_network:
+    driver: bridge

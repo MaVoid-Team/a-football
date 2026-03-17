@@ -1,0 +1,8 @@
+{
+  "type": "antigravity-skill",
+  "name": "SKILL",
+  "description": "Provides the single source of truth for brand guidelines, design tokens, technology choices, and voice/tone. Use this skill whenever generating UI components, styling applications, writing copy, or creating user-facing assets to ensure brand consistency.",
+  "argumentHint": "",
+  "sourceFile": "Agent-Skills/Dev-Skills/brand-identity/SKILL.copy.md",
+  "content": "# Brand Identity & Guidelines\n\n**Brand Name:** [INSERT BRAND NAME HERE]\n\nThis skill defines the core constraints for visual design and technical implementation for the brand. You must adhere to these guidelines strictly to maintain consistency.\n\n## Reference Documentation\n\nDepending on the task you are performing, consult the specific resource files below. Do not guess brand elements; always read the corresponding file.\n\n### For Visual Design & UI Styling\nIf you need exact colors, fonts, border radii, or spacing values, read:\n👉 **[`resources/design-tokens.json`](resources/design-tokens.json)**\n\n### For Coding & Component Implementation\nIf you are generating code, choosing libraries, or structuring UI components, read the technical constraints here:\n👉 **[`resources/tech-stack.md`](resources/tech-stack.md)**\n\n### For Copywriting & Content Generation\nIf you are writing marketing copy, error messages, documentation, or user-facing text, read the persona guidelines here:\n👉 **[`resources/voice-tone.md`](resources/voice-tone.md)**\n"
+}

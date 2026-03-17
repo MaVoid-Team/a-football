@@ -1,0 +1,23 @@
+# Application Environment Variables Template
+# Copy this file to .env.production and fill in your values
+# NEVER commit .env.production to version control
+
+# ─── DATABASE CONFIGURATION ───
+DB_USER=app_user
+DB_PASSWORD=generate_strong_password_here
+DB_NAME=app_database
+DATABASE_URL=postgresql://app_user:password@postgres:5432/app_database
+
+# ─── APPLICATION CONFIGURATION ───
+NODE_ENV=production
+
+# ─── AUTHENTICATION (if applicable) ───
+NEXTAUTH_SECRET=generate_random_secret_with_openssl
+NEXTAUTH_URL=https://yourdomain.com
+
+# ─── API CONFIGURATION ───
+API_BASE_URL=https://yourdomain.com
+
+# ─── OPTIONAL FEATURES ───
+# DEBUG=false
+# LOG_LEVEL=info

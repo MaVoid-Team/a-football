@@ -1,0 +1,133 @@
+"use client";
+
+import { useState, useCallback } from "react";
+import api from "@/lib/axios";
+import { Booking, BookingFormData } from "@/schemas/booking.schema";
+import { PaginationMeta } from "@/schemas/api.schema";
+import { buildQueryString } from "@/lib/build-query-string";
+
+export function useBookingsAPI() {
+    const [bookings, setBookings] = useState<Booking[]>([]);
+    const [booking, setBooking] = useState<Booking | null>(null);
+    const [pagination, setPagination] = useState<PaginationMeta | null>(null);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+
+    const flattenResource = (resource: any): Booking => ({ id: resource.id, ...resource.attributes });
+
+    const fetchBookings = useCallback(async (
+        params?: { branch_id?: number; court_id?: number; date?: string; status?: string; page?: number; per_page?: number },
+        options?: { skipStateUpdate?: boolean }
+    ) => {
+        if (!options?.skipStateUpdate) setLoading(true);
+        setError(null);
+        try {
+            const response = await api.get(`/api/admin/bookings${buildQueryString(params)}`);
+            const fetched = response.data?.data ? response.data.data.map(flattenResource) : [];
+            if (!options?.skipStateUpdate) {
+                setBookings(fetched);
+                setPagination({
+                    totalCount:  Number(response.headers["x-total-count"]  || 0),
+                    page:        Number(response.headers["x-page"]         || 1),
+                    perPage:     Number(response.headers["x-per-page"]     || 25),
+                    totalPages:  Number(response.headers["x-total-pages"]  || 1),
+                });
+            }
+            return { success: true, data: fetched };
+        } catch (err: any) {
+            setError(err.response?.data?.error || "Failed to fetch bookings");
+            return { success: false, error: err };
+        } finally {
+            if (!options?.skipStateUpdate) setLoading(false);
+        }
+    }, []);
+
+    const fetchBooking = useCallback(async (id: string) => {
+        setLoading(true);
+        setError(null);
+        try {
+            const response = await api.get(`/api/admin/bookings/${id}`);
+            if (response.data?.data) {
+                const flat = flattenResource(response.data.data);
+                setBooking(flat);
+                return { success: true, data: flat };
+            }
+            return { success: false };
+        } catch (err: any) {
+            setError(err.response?.data?.error || "Failed to fetch booking");
+            return { success: false, error: err };
+        } finally {
+            setLoading(false);
+        }
+    }, []);
+
+    const createBooking = async (data: BookingFormData, paymentScreenshot?: File | null) => {
+        setLoading(true);
+        setError(null);
+        try {
+            const { branch_id, ...bookingData } = data;
+
+            if (paymentScreenshot) {
+                const formData = new FormData();
+                formData.append("branch_id", String(branch_id));
+
+                Object.entries(bookingData).forEach(([key, value]) => {
+                    if (key === "booking_slots_attributes" && Array.isArray(value)) {
+                        value.forEach((slot: { start_time: string; end_time: string }, idx: number) => {
+                            formData.append(`booking[booking_slots_attributes][${idx}][start_time]`, slot.start_time);
+                            formData.append(`booking[booking_slots_attributes][${idx}][end_time]`, slot.end_time);
+                        });
+                    } else if (value !== undefined && value !== null && value !== "") {
+                        formData.append(`booking[${key}]`, String(value));
+                    }
+                });
+
+                formData.append("booking[payment_screenshot]", paymentScreenshot);
+
+                const response = await api.post("/api/bookings", formData, {
+                    headers: { "Content-Type": "multipart/form-data" },
+                });
+                return { success: true, data: response.data };
+            } else {
+                const response = await api.post("/api/bookings", { branch_id, booking: bookingData });
+                return { success: true, data: response.data };
+            }
+        } catch (err: any) {
+            const msg = err.response?.data?.errors?.[0] || err.response?.data?.error || "Failed to create booking";
+            setError(msg);
+            return { success: false, error: err };
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const updatePaymentStatus = async (id: string, payment_status: "pending" | "paid" | "refunded") => {
+        setLoading(true);
+        setError(null);
+        try {
+            await api.patch(`/api/admin/bookings/${id}`, { booking: { payment_status } });
+            return { success: true };
+        } catch (err: any) {
+            setError(err.response?.data?.error || "Failed to update payment status");
+            return { success: false, error: err };
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const cancelBooking = async (id: string) => {
+        setLoading(true);
+        setError(null);
+        try {
+            await api.patch(`/api/admin/bookings/${id}`, { cancel: true });
+            return { success: true };
+        } catch (err: any) {
+            setError(err.response?.data?.error || "Failed to cancel booking");
+            return { success: false, error: err };
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    return { bookings, booking, pagination, loading, error, fetchBookings, fetchBooking, createBooking, updatePaymentStatus, cancelBooking };
+}
