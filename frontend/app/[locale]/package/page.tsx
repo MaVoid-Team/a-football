@@ -2,11 +2,17 @@ import { LenisWrapper } from "@/components/landing/lenis-wrapper";
 import { LandingNavbar } from "@/components/landing/navbar";
 import { LandingFooter } from "@/components/landing/footer";
 import { PackagesView } from "@/components/packages/packages-view";
+import type { Metadata } from "next";
 
-export const metadata = {
-    title: "Packages | A Football",
-    description: "Browse our available court packages.",
-};
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
+    const { locale } = await params;
+    const isArabic = locale === "ar";
+
+    return {
+        title: isArabic ? "الباكدجات | A Football" : "Packages | A Football",
+        description: isArabic ? "تصفح باكدجات الملاعب المتاحة." : "Browse our available court packages.",
+    };
+}
 
 export default function PackagesPage() {
     return (

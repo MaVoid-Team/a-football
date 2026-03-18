@@ -64,11 +64,13 @@ export function EventsView() {
             </div>
 
             {branches.length > 1 && (
-                <div className="flex items-center justify-center gap-3 mb-10">
-                    <MapPinIcon className="h-4 w-4 text-muted-foreground" />
-                    <span className="text-sm text-muted-foreground">{t("filterByBranch")}</span>
+                <div className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-3 mb-10">
+                    <div className="flex items-center gap-2">
+                        <MapPinIcon className="h-4 w-4 text-muted-foreground" />
+                        <span className="text-sm text-muted-foreground">{t("filterByBranch")}</span>
+                    </div>
                     <Select value={selectedBranch} onValueChange={setSelectedBranch}>
-                        <SelectTrigger className="w-[200px]">
+                        <SelectTrigger className="w-full sm:w-[200px]">
                             <SelectValue placeholder={t("allBranches")} />
                         </SelectTrigger>
                         <SelectContent>

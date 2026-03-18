@@ -141,7 +141,7 @@ export function HeroSection() {
         <div className="hero-logo opacity-0 mb-10 flex items-center gap-4">
           <img
             src={currentTheme === "dark" ? "/logo-light.png" : "/logo-dark.png"}
-            alt="A Football Logo"
+            alt="A Football"
             className="w-auto h-20 object-contain"
           />
         </div>

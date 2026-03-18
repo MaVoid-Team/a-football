@@ -68,7 +68,7 @@ export function PaymentScreenshotUpload({ value, onChange }: PaymentScreenshotUp
                 <div className="relative rounded-xl overflow-hidden border border-border group">
                     <img
                         src={preview}
-                        alt="Payment screenshot"
+                        alt={t("screenshotLabel")}
                         className="w-full max-h-64 object-cover"
                     />
                     <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">

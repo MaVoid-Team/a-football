@@ -40,6 +40,22 @@
 # Ignore development files
 /.devcontainer
 
+# Ignore frontend/build artifacts not needed for backend image
+/frontend/node_modules
+/frontend/.next
+/frontend/dist
+/frontend/build
+
+# Ignore test/docs/assets and local output files for production image build context
+/spec
+/docs
+/Agent-Skills
+/Brand
+/output.txt
+
+# Ignore frontend env files from backend context
+/frontend/.env*
+
 # Ignore Docker-related files
 /.dockerignore
 /Dockerfile*

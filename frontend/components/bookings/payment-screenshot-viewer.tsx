@@ -38,7 +38,7 @@ export function PaymentScreenshotViewer({ screenshotUrl }: PaymentScreenshotView
                 <div className="relative w-10 h-10 rounded-md overflow-hidden border border-border group-hover:border-primary transition-colors">
                     <img
                         src={screenshotUrl}
-                        alt="Payment screenshot"
+                        alt={t("table.screenshotDialogTitle")}
                         className="w-full h-full object-cover"
                     />
                     <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
@@ -60,7 +60,7 @@ export function PaymentScreenshotViewer({ screenshotUrl }: PaymentScreenshotView
                         <div className="w-full overflow-hidden rounded-xl border border-border bg-muted/30">
                             <img
                                 src={screenshotUrl}
-                                alt="Payment screenshot"
+                                alt={t("table.screenshotDialogTitle")}
                                 className="w-full max-h-[70vh] object-contain"
                             />
                         </div>

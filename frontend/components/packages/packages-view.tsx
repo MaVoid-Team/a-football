@@ -1,31 +1,48 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { usePackagesAPI } from "@/hooks/api/use-packages";
+import { useBranchesAPI } from "@/hooks/api/use-branches";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { formatCurrency } from "@/lib/format-currency";
-import { ArrowRight, PackageIcon } from "lucide-react";
+import { ArrowRight, PackageIcon, MapPinIcon } from "lucide-react";
 import { Link } from "@/i18n/navigation";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
-import { getDefaultBranchId } from "@/lib/branch";
 import { useTranslations } from "next-intl";
 
 export function PackagesView() {
     const t = useTranslations("publicPackages");
     const { packages, loading, error, fetchPublicPackages } = usePackagesAPI();
+    const { branches, fetchPublicBranches } = useBranchesAPI();
+    const [selectedBranch, setSelectedBranch] = useState<string>("all");
 
     useEffect(() => {
-        fetchPublicPackages({ branch_id: getDefaultBranchId() });
-    }, [fetchPublicPackages]);
+        fetchPublicBranches();
+    }, [fetchPublicBranches]);
+
+    useEffect(() => {
+        if (selectedBranch === "all") {
+            fetchPublicPackages();
+        } else {
+            fetchPublicPackages({ branch_id: Number(selectedBranch) });
+        }
+    }, [fetchPublicPackages, selectedBranch]);
 
     if (error) {
         return (
             <div className="w-full text-center py-20">
                 <p className="text-destructive mb-4">{t("errorLoading")}</p>
                 <p className="text-muted-foreground">{error}</p>
-                <Button variant="outline" className="mt-4" onClick={() => fetchPublicPackages({ branch_id: getDefaultBranchId() })}>
+                <Button variant="outline" className="mt-4" onClick={() => {
+                    if (selectedBranch === "all") {
+                        fetchPublicPackages();
+                    } else {
+                        fetchPublicPackages({ branch_id: Number(selectedBranch) });
+                    }
+                }}>
                     {t("tryAgain")}
                 </Button>
             </div>
@@ -34,7 +51,7 @@ export function PackagesView() {
 
     return (
         <div className="w-full max-w-6xl mx-auto">
-            <div className="flex flex-col items-center text-center space-y-4 mb-16">
+            <div className="flex flex-col items-center text-center space-y-4 mb-12">
                 <Badge variant="secondary" className="px-3 py-1 font-medium bg-primary/10 text-primary-text border-primary/20">
                     <PackageIcon className="mr-2 h-4 w-4" />
                     {t("badge")}
@@ -44,6 +61,28 @@ export function PackagesView() {
                     {t("subtitle")}
                 </p>
             </div>
+
+            {branches.length > 1 && (
+                <div className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-3 mb-10">
+                    <div className="flex items-center gap-2">
+                        <MapPinIcon className="h-4 w-4 text-muted-foreground" />
+                        <span className="text-sm text-muted-foreground">{t("filterByBranch")}</span>
+                    </div>
+                    <Select value={selectedBranch} onValueChange={setSelectedBranch}>
+                        <SelectTrigger className="w-full sm:w-[200px]">
+                            <SelectValue placeholder={t("allBranches")} />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="all">{t("allBranches")}</SelectItem>
+                            {branches.filter(b => b.active).map((branch) => (
+                                <SelectItem key={branch.id} value={branch.id}>
+                                    {branch.name}
+                                </SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
+                </div>
+            )}
 
             {loading && packages.length === 0 ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">

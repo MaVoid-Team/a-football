@@ -12,6 +12,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
+import { useTranslations } from "next-intl"
 
 function Command({
   className,
@@ -30,8 +31,8 @@ function Command({
 }
 
 function CommandDialog({
-  title = "Command Palette",
-  description = "Search for a command to run...",
+  title,
+  description,
   children,
   className,
   showCloseButton = true,
@@ -42,11 +43,15 @@ function CommandDialog({
   className?: string
   showCloseButton?: boolean
 }) {
+  const tCommon = useTranslations("common.commandDialog")
+  const resolvedTitle = title ?? tCommon("title")
+  const resolvedDescription = description ?? tCommon("description")
+
   return (
     <Dialog {...props}>
       <DialogHeader className="sr-only">
-        <DialogTitle>{title}</DialogTitle>
-        <DialogDescription>{description}</DialogDescription>
+        <DialogTitle>{resolvedTitle}</DialogTitle>
+        <DialogDescription>{resolvedDescription}</DialogDescription>
       </DialogHeader>
       <DialogContent
         className={cn("overflow-hidden p-0", className)}

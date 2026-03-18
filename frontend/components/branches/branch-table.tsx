@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Trash2 } from "lucide-react";
 import { formatDate } from "@/lib/format-date";
 import { useAuthContext } from "@/contexts/auth-context";
+import { useTranslations } from "next-intl";
 import {
     Tooltip,
     TooltipContent,
@@ -24,45 +25,46 @@ interface BranchTableProps {
 }
 
 export function BranchTable({ branches, isLoading, onUpdate, onDelete }: BranchTableProps) {
+    const t = useTranslations("branches.table");
     const { admin } = useAuthContext();
     const isSuperAdmin = admin?.role === "super_admin";
 
     const columns = [
         {
-            header: "Name",
+            header: t("nameHeader"),
             accessorKey: "name" as keyof Branch,
             className: "font-medium",
         },
         {
-            header: "Address",
+            header: t("addressHeader"),
             accessorKey: "address" as keyof Branch,
         },
         {
-            header: "Timezone",
+            header: t("timezoneHeader"),
             accessorKey: "timezone" as keyof Branch,
         },
         {
-            header: "Status",
+            header: t("statusHeader"),
             cell: (b: Branch) => (
                 <Badge variant={b.active ? "default" : "secondary"}>
-                    {b.active ? "Active" : "Inactive"}
+                    {b.active ? t("active") : t("inactive")}
                 </Badge>
             ),
         },
         {
-            header: "Created At",
+            header: t("createdAtHeader"),
             cell: (b: Branch) => formatDate(b.created_at),
         },
         {
-            header: "Actions",
+            header: t("actionsHeader"),
             className: "text-right",
             cell: (b: Branch) => (
                 <div className="flex justify-end gap-2">
                     <BranchFormDialog branch={b} onSubmit={(data) => onUpdate(b.id, data)} />
                     {isSuperAdmin ? (
                         <ConfirmDialog
-                            title="Delete Branch"
-                            description={`Are you sure you want to delete ${b.name}? This will affect all courts and bookings in this branch.`}
+                            title={t("deleteTitle")}
+                            description={t("deleteDescription", { name: b.name })}
                             onConfirm={() => onDelete(b.id)}
                         />
                     ) : (
@@ -74,7 +76,7 @@ export function BranchTable({ branches, isLoading, onUpdate, onDelete }: BranchT
                                     </Button>
                                 </TooltipTrigger>
                                 <TooltipContent>
-                                    <p>Only super admins can delete branches</p>
+                                    <p>{t("onlySuperAdminsDelete")}</p>
                                 </TooltipContent>
                             </Tooltip>
                         </TooltipProvider>
@@ -89,8 +91,8 @@ export function BranchTable({ branches, isLoading, onUpdate, onDelete }: BranchT
             columns={columns}
             data={branches}
             isLoading={isLoading}
-            emptyStateTitle="No branches found"
-            emptyStateDescription="Add a new branch using the button above."
+            emptyStateTitle={t("emptyTitle")}
+            emptyStateDescription={t("emptyDescription")}
         />
     );
 }

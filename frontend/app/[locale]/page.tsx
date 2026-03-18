@@ -4,12 +4,19 @@ import { HeroSection } from "@/components/landing/hero-section";
 import { PackagesSection } from "@/components/landing/packages-section";
 import { EventsSection } from "@/components/landing/events-section";
 import { LandingFooter } from "@/components/landing/footer";
+import type { Metadata } from "next";
 
-export const metadata = {
-  title: "A Football — Book Your Court",
-  description:
-    "Check live availability, browse packages, join events, and secure your spot instantly.",
-};
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
+  const { locale } = await params;
+  const isArabic = locale === "ar";
+
+  return {
+    title: isArabic ? "A Football — احجز ملعبك" : "A Football — Book Your Court",
+    description: isArabic
+      ? "شوف المواعيد المتاحة، قارن الملاعب، واحجز مكانك فورًا."
+      : "Check live availability, browse packages, join events, and secure your spot instantly.",
+  };
+}
 
 export default function LandingPage() {
   return (

@@ -2,11 +2,17 @@ import { LenisWrapper } from "@/components/landing/lenis-wrapper";
 import { LandingNavbar } from "@/components/landing/navbar";
 import { LandingFooter } from "@/components/landing/footer";
 import { EventsView } from "@/components/events/events-view";
+import type { Metadata } from "next";
 
-export const metadata = {
-    title: "Events | A Football",
-    description: "Browse upcoming events and tournaments.",
-};
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
+    const { locale } = await params;
+    const isArabic = locale === "ar";
+
+    return {
+        title: isArabic ? "الإيفنتات | A Football" : "Events | A Football",
+        description: isArabic ? "استكشف الإيفنتات والبطولات القادمة." : "Browse upcoming events and tournaments.",
+    };
+}
 
 export default function EventsPage() {
     return (

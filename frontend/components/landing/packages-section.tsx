@@ -9,8 +9,10 @@ import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
 import { formatCurrency } from "@/lib/format-currency";
 import { ArrowRight, PackageIcon } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 export function PackagesSection() {
+    const t = useTranslations("landing.packages");
     const { packages, loading, error, fetchPublicPackages } = usePackagesAPI();
     const root = useRef<HTMLElement>(null);
     const scope = useRef<ReturnType<typeof createScope> | null>(null);
@@ -101,16 +103,16 @@ export function PackagesSection() {
                 <div className="mb-20 flex flex-col md:flex-row md:items-end justify-between gap-8">
                     <div>
                         <p className="pkg-eyebrow text-xs font-bold uppercase tracking-[0.3em] text-primary-text mb-5">
-                            Save More
+                            {t("eyebrow")}
                         </p>
                         <h2 className="pkg-headline text-[clamp(2.5rem,5vw,4.5rem)] font-black tracking-[-0.04em] leading-none text-foreground max-w-3xl">
-                            Court Packages
+                            {t("title")}
                         </h2>
                     </div>
                     {packages.length > 0 && (
                         <div className="pkg-headline">
                             <Button asChild variant="outline">
-                                <Link href="/package">View All Packages</Link>
+                                <Link href="/package">{t("viewAll")}</Link>
                             </Button>
                         </div>
                     )}
@@ -131,16 +133,16 @@ export function PackagesSection() {
                     </div>
                 ) : error ? (
                     <div className="p-8 border border-destructive/20 bg-destructive/5 rounded-2xl text-center">
-                        <p className="text-destructive font-medium mb-2">Failed to load packages.</p>
+                        <p className="text-destructive font-medium mb-2">{t("failedToLoad")}</p>
                         <Button variant="outline" onClick={() => {
                             setReady(false);
                             fetchPublicPackages({ branch_id: defaultBranchId }).then(() => setReady(true));
-                        }}>Try again</Button>
+                        }}>{t("tryAgain")}</Button>
                     </div>
                 ) : packages.length === 0 ? (
                     <div className="p-12 border border-border/50 bg-card rounded-2xl text-center">
                         <PackageIcon className="mx-auto h-10 w-10 text-muted-foreground mb-4 opacity-40" />
-                        <p className="text-muted-foreground text-lg">No packages available at the moment.</p>
+                        <p className="text-muted-foreground text-lg">{t("noPackages")}</p>
                     </div>
                 ) : (
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -154,7 +156,7 @@ export function PackagesSection() {
                                         <h3 className="text-xl font-bold tracking-tight leading-tight">{pkg.title}</h3>
                                         {!pkg.branch_id && (
                                             <Badge variant="outline" className="shrink-0 text-[10px] uppercase tracking-wider font-semibold">
-                                                Global
+                                                {t("global")}
                                             </Badge>
                                         )}
                                     </div>
@@ -168,7 +170,7 @@ export function PackagesSection() {
                                 <div className="pt-4 border-t border-border/40">
                                     <Button asChild className="w-full font-semibold group/btn">
                                         <Link href={`/book?package_id=${pkg.id}`} className="flex items-center gap-2">
-                                            Book Now
+                                            {t("bookNow")}
                                             <ArrowRight className="w-4 h-4 transition-transform duration-200 group-hover/btn:translate-x-1" />
                                         </Link>
                                     </Button>

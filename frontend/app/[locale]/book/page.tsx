@@ -2,11 +2,17 @@ import { LenisWrapper } from "@/components/landing/lenis-wrapper";
 import { LandingNavbar } from "@/components/landing/navbar";
 import { LandingFooter } from "@/components/landing/footer";
 import { BookingView } from "@/components/book/booking-view";
+import type { Metadata } from "next";
 
-export const metadata = {
-    title: "Book Now | A Football",
-    description: "Book a court easily online.",
-};
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
+    const { locale } = await params;
+    const isArabic = locale === "ar";
+
+    return {
+        title: isArabic ? "احجز الآن | A Football" : "Book Now | A Football",
+        description: isArabic ? "احجز ملعبك بسهولة أونلاين." : "Book a court easily online.",
+    };
+}
 
 export default function BookPage() {
     return (

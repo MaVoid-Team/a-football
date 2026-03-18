@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect } from "react";
 import { useTranslations } from "next-intl";
 import { Booking } from "@/schemas/booking.schema";
 import {
@@ -35,6 +36,12 @@ export function BookingConfirmation({
   court,
 }: BookingConfirmationProps) {
   const t = useTranslations("bookingConfirmation");
+  const tPromoSummary = useTranslations("promoInput.summary");
+
+  // Scroll to top when confirmation page loads
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, []);
 
   if (!booking) return null;
 
@@ -76,7 +83,7 @@ export function BookingConfirmation({
                 {t("courtLabel")}
               </p>
               <p className="text-lg font-semibold">
-                {court?.name || `Court ID: ${booking.court_id}`}
+                {court?.name || t("courtFallback", { id: booking.court_id })}
               </p>
             </div>
           </div>
@@ -148,15 +155,15 @@ export function BookingConfirmation({
                   </p>
                   <div className="space-y-2">
                     <p className="text-sm font-semibold text-green-600 dark:text-green-400">
-                      {booking.promo_code_id ? "Promo code applied" : "Discount applied"}
+                      {booking.promo_code_id ? t("promoCodeApplied") : t("discountApplied")}
                     </p>
                     <div className="text-sm text-muted-foreground">
                       <div className="flex justify-between">
-                        <span>Original amount:</span>
+                        <span>{tPromoSummary("originalAmount")}</span>
                         <span>{formatCurrency(Number(booking.original_price) || 0)}</span>
                       </div>
                       <div className="flex justify-between text-green-600 dark:text-green-400">
-                        <span>Discount:</span>
+                        <span>{tPromoSummary("discount")}</span>
                         <span>-{formatCurrency(Number(booking.discount_amount))}</span>
                       </div>
                     </div>

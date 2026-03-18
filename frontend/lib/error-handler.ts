@@ -1,14 +1,48 @@
 import { toast } from "sonner";
 import { AxiosError } from "axios";
 
+const messages = {
+    en: {
+        network: "Unable to connect to the server. Please check your internet connection.",
+        badRequest: "The request was invalid. Please check your input.",
+        unauthorized: "Your session has expired. Please log in again.",
+        forbidden: "You don't have permission to perform this action.",
+        notFound: "The requested resource was not found.",
+        conflict: "A conflict occurred. The resource may have been modified.",
+        unprocessable: "Please fix the errors in your submission.",
+        tooManyRequests: "Too many requests. Please try again later.",
+        serverError: "An unexpected server error occurred. Please try again later.",
+        unknown: "An unknown error occurred.",
+    },
+    ar: {
+        network: "مش قادرين نوصل للسيرفر. اتأكد من اتصال الإنترنت.",
+        badRequest: "الطلب فيه مشكلة. راجع البيانات اللي دخلتها.",
+        unauthorized: "انتهت الجلسة. من فضلك سجّل دخول تاني.",
+        forbidden: "مش مسموح لك تعمل الإجراء ده.",
+        notFound: "العنصر المطلوب مش موجود.",
+        conflict: "حصل تعارض. ممكن يكون المورد اتغير.",
+        unprocessable: "صلّح الأخطاء في البيانات وحاول تاني.",
+        tooManyRequests: "طلبات كتير جدًا. جرب تاني بعد شوية.",
+        serverError: "حصل خطأ في السيرفر. حاول تاني بعد شوية.",
+        unknown: "حصل خطأ غير متوقع.",
+    },
+} as const;
+
+function getLocale(): "en" | "ar" {
+    if (typeof window === "undefined") return "en";
+    return window.location.pathname.startsWith("/ar") ? "ar" : "en";
+}
+
 /**
  * Parses an AxiosError to extract a user-friendly error message,
  * based on the HTTP status code and the response payload from the Rails backend.
  */
 function getErrorMessage(error: any): string {
+    const t = messages[getLocale()];
+
     if (!error.response) {
         // Network error, request timeout, or server unreachable
-        return "Unable to connect to the server. Please check your internet connection.";
+        return t.network;
     }
 
     const { status, data } = error.response;
@@ -30,26 +64,26 @@ function getErrorMessage(error: any): string {
     // Fallback messages by HTTP status code
     switch (status) {
         case 400:
-            return "The request was invalid. Please check your input.";
+            return t.badRequest;
         case 401:
-            return "Your session has expired. Please log in again.";
+            return t.unauthorized;
         case 403:
-            return "You don't have permission to perform this action.";
+            return t.forbidden;
         case 404:
-            return "The requested resource was not found.";
+            return t.notFound;
         case 409:
-            return "A conflict occurred. The resource may have been modified.";
+            return t.conflict;
         case 422:
-            return "Please fix the errors in your submission.";
+            return t.unprocessable;
         case 429:
-            return "Too many requests. Please try again later.";
+            return t.tooManyRequests;
         case 500:
         case 502:
         case 503:
         case 504:
-            return "An unexpected server error occurred. Please try again later.";
+            return t.serverError;
         default:
-            return "An unknown error occurred.";
+            return t.unknown;
     }
 }
 
