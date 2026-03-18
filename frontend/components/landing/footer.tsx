@@ -28,7 +28,7 @@ export function LandingFooter() {
       <div className="w-full px-8 md:px-16 lg:px-24 pt-20 pb-12">
         <div className="mb-16">
           <p className="text-[clamp(4rem,12vw,14rem)] font-black tracking-[-0.05em] leading-[0.85] text-foreground/8 select-none pointer-events-none">
-            CourtManager
+            A Football
           </p>
         </div>
 
@@ -38,10 +38,10 @@ export function LandingFooter() {
           <div className="col-span-2 md:col-span-1">
             <Link href="/" className="flex items-center gap-3 mb-4 group w-fit">
               <span className="flex items-center justify-center w-9 h-9 rounded-xl bg-foreground text-background font-black text-[13px] select-none">
-                CM
+                AF
               </span>
               <span className="font-bold text-foreground tracking-tight text-base">
-                CourtManager
+                A Football
               </span>
             </Link>
           </div>

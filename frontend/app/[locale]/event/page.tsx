@@ -4,7 +4,7 @@ import { LandingFooter } from "@/components/landing/footer";
 import { EventsView } from "@/components/events/events-view";
 
 export const metadata = {
-    title: "Events | CourtManager",
+    title: "Events | A Football",
     description: "Browse upcoming events and tournaments.",
 };
 

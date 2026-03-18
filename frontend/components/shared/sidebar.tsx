@@ -50,7 +50,7 @@ export function Sidebar() {
             className="flex items-center gap-2 font-bold text-sidebar-foreground"
           >
             <Building2 className="h-6 w-6 text-primary" />
-            <span className="">CourtManager</span>
+            <span className="">A Football</span>
           </Link>
         </div>
 

@@ -4,7 +4,7 @@ import { LandingFooter } from "@/components/landing/footer";
 import { BookingView } from "@/components/book/booking-view";
 
 export const metadata = {
-    title: "Book a Court | CourtManager",
+    title: "Book Now | A Football",
     description: "Book a court easily online.",
 };
 

@@ -4,7 +4,7 @@ import { LandingFooter } from "@/components/landing/footer";
 import { PackagesView } from "@/components/packages/packages-view";
 
 export const metadata = {
-    title: "Packages | CourtManager",
+    title: "Packages | A Football",
     description: "Browse our available court packages.",
 };
 

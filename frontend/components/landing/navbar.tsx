@@ -105,10 +105,10 @@ export function LandingNavbar() {
           className="nav-logo opacity-0 flex items-center gap-3 group"
         >
           <span className="flex items-center justify-center w-9 h-9 rounded-xl bg-foreground text-background font-black text-[13px] select-none">
-            CM
+            AF
           </span>
           <span className="font-bold text-foreground tracking-tight text-base hidden sm:block">
-            CourtManager
+            A Football
           </span>
         </Link>
 

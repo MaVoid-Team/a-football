@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Court Management System",
-  description: "Multi-branch court booking and management system",
+  title: "A Football - Your Game, Your Time, Your Court",
+  description: "Book premium football courts instantly",
 };
 
 // Root layout delegates html/body rendering to [locale]/layout.tsx

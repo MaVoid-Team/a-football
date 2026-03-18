@@ -6,7 +6,7 @@ import { EventsSection } from "@/components/landing/events-section";
 import { LandingFooter } from "@/components/landing/footer";
 
 export const metadata = {
-  title: "CourtManager — Book a Court",
+  title: "A Football — Book Your Court",
   description:
     "Check live availability, browse packages, join events, and secure your spot instantly.",
 };

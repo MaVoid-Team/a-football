@@ -1,17 +1,26 @@
-# Copywriting: Voice & Tone Guidelines
+# Copywriting: Voice & Tone Guidelines - A Football
 
 When generating text, adhere to this brand persona.
 
 ## Brand Personality Keywords
-* Professional but approachable
-* Direct and efficient
-* Tech-savvy but jargon-free
-* Empathetic
+* **Energetic & Dynamic** - Reflect the excitement and passion of football
+* **Simple & Direct** - No complexity, straight to the point like the game itself
+* **Premium & Quality-focused** - Excellence in every interaction
+* **Modern & Sporty** - Contemporary design meets athletic spirit
+* **Approachable & Friendly** - Welcoming to all skill levels
+* **Confident & Bold** - Strong presence, clear identity
 
-## Grammar & Mechanics rules
+## Brand Voice Characteristics
+* **Enthusiastic but not overwhelming** - Show passion without being aggressive
+* **Clear and action-oriented** - Use active language that drives users to act
+* **Inclusive** - Welcome everyone from amateur to professional
+* **Trustworthy** - Professional in service delivery and communication
+
+## Grammar & Mechanics Rules
 * **Headings:** Use Title Case for main headings (H1, H2). Use sentence case for subheadings (H3+).
-* **Punctuation:** Avoid exclamation points (!) in standard interface copy. Use periods for complete sentences.
-* **Clarity:** Prefer active voice over passive voice. Keep sentences concise.
+* **Punctuation:** Use exclamation points sparingly - reserve for celebratory moments (bookings confirmed, goals achieved). Use periods for standard interface copy.
+* **Clarity:** Prefer active voice over passive voice. Keep sentences concise and punchy.
+* **Tone:** Energetic but professional. Think "motivated coach" not "corporate manager"
 
 ## Terminology Guide
 
@@ -19,4 +28,21 @@ When generating text, adhere to this brand persona.
 | :--- | :--- |
 | "Utilize" | "Use" |
 | "In order to..." | "To..." |
-| [Add word] | [Add replacement] |
+| "Venue" | "Court" or "Pitch" |
+| "Reserve" | "Book" |
+| "Facility" | "Court" or "Field" |
+| "Customer" | "Player" or "Team" |
+| "Purchase" | "Book Now" or "Reserve Your Spot" |
+
+## Content Examples
+
+### Good Examples
+✅ "Book Your Court in Seconds"
+✅ "Ready to Play? Reserve Your Spot"
+✅ "Your game, your time, your court"
+✅ "Join the action today"
+
+### Avoid
+❌ "Utilize our facility reservation system"
+❌ "Please proceed to finalize your booking transaction"
+❌ "Our venue accommodates your needs"

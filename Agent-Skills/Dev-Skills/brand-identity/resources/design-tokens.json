@@ -1,34 +1,53 @@
 {
   "meta": {
-    "brand_name": "[INSERT NAME]",
-    "description": "Core design tokens for UI implementation."
+    "brand_name": "A Football",
+    "description": "Core design tokens for A Football court management system UI implementation."
   },
   "colors": {
     "primary": {
-      "DEFAULT": "#000000",
-      "hover": "#333333",
-      "foreground": "#FFFFFF"
+      "DEFAULT": "#EFFD5F",
+      "hover": "#E5F34A",
+      "active": "#DBE935",
+      "foreground": "#1A1A1A"
     },
     "secondary": {
-      "DEFAULT": "#F4F4F5",
-      "foreground": "#18181B"
+      "DEFAULT": "#2D2D2D",
+      "hover": "#3D3D3D",
+      "foreground": "#FFFFFF"
     },
     "background": "#FFFFFF",
-    "foreground": "#09090B",
-    "muted": "#F4F4F5",
-    "accent": "#F4F4F5",
+    "foreground": "#1A1A1A",
+    "muted": "#F5F5F5",
+    "mutedForeground": "#737373",
+    "accent": "#EFFD5F",
+    "accentForeground": "#1A1A1A",
     "destructive": "#EF4444",
-    "success": "#10B981"
+    "destructiveForeground": "#FFFFFF",
+    "success": "#10B981",
+    "successForeground": "#FFFFFF",
+    "border": "#E5E5E5",
+    "input": "#E5E5E5",
+    "ring": "#EFFD5F"
   },
   "typography": {
-    "font_family_headings": ["Inter", "sans-serif"],
-    "font_family_body": ["Roboto", "sans-serif"],
+    "font_family_headings": ["Poppins", "Montserrat", "sans-serif"],
+    "font_family_body": ["Inter", "Roboto", "sans-serif"],
+    "font_family_display": ["Poppins", "sans-serif"],
     "font_weight_bold": "700",
-    "font_weight_normal": "400"
+    "font_weight_semibold": "600",
+    "font_weight_medium": "500",
+    "font_weight_normal": "400",
+    "letter_spacing_tight": "-0.5px",
+    "letter_spacing_normal": "0px"
   },
   "ui": {
-    "border_radius_default": "0.5rem",
-    "border_radius_small": "0.25rem",
-    "spacing_base_unit": "4px"
+    "border_radius_default": "0.75rem",
+    "border_radius_large": "1rem",
+    "border_radius_small": "0.5rem",
+    "border_radius_full": "9999px",
+    "spacing_base_unit": "4px",
+    "shadow_sm": "0 1px 2px 0 rgb(0 0 0 / 0.05)",
+    "shadow_md": "0 4px 6px -1px rgb(0 0 0 / 0.1)",
+    "shadow_lg": "0 10px 15px -3px rgb(0 0 0 / 0.1)"
   }
 }
