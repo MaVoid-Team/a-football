@@ -8,20 +8,20 @@
 
 :root {
   --background: oklch(0.99 0 0);
-  --foreground: oklch(0.35 0.02 165.48);
+  --foreground: oklch(0.25 0.02 260);
   --card: oklch(1.00 0 0);
-  --card-foreground: oklch(0.35 0.02 165.48);
+  --card-foreground: oklch(0.25 0.02 260);
   --popover: oklch(1.00 0 0);
-  --popover-foreground: oklch(0.35 0.02 165.48);
+  --popover-foreground: oklch(0.25 0.02 260);
   --primary: oklch(0.97 0.18 106.8);
-  --primary-foreground: oklch(0.20 0.01 0);
-  --primary-text: oklch(0.40 0.15 100);
+  --primary-foreground: oklch(0.25 0.02 260);
+  --primary-text: oklch(0.55 0.16 106.8);
   --secondary: oklch(0.25 0.01 0);
   --secondary-foreground: oklch(0.99 0.01 0);
   --muted: oklch(0.90 0.02 240.73);
   --muted-foreground: oklch(0.50 0.03 268.53);
   --accent: oklch(0.90 0.02 240.73);
-  --accent-foreground: oklch(0.35 0.02 165.48);
+  --accent-foreground: oklch(0.25 0.02 260);
   --destructive: oklch(0.61 0.24 20.96);
   --border: oklch(0.94 0.01 238.46);
   --input: oklch(0.85 0.02 240.75);
@@ -32,11 +32,11 @@
   --chart-4: oklch(0.80 0.10 100.65);
   --chart-5: oklch(0.60 0.15 300.14);
   --sidebar: oklch(0.98 0.01 238.45);
-  --sidebar-foreground: oklch(0.35 0.02 165.48);
+  --sidebar-foreground: oklch(0.25 0.02 260);
   --sidebar-primary: oklch(0.97 0.18 106.8);
   --sidebar-primary-foreground: oklch(0.98 0.01 238.45);
   --sidebar-accent: oklch(0.90 0.02 240.73);
-  --sidebar-accent-foreground: oklch(0.35 0.02 165.48);
+  --sidebar-accent-foreground: oklch(0.25 0.02 260);
   --sidebar-border: oklch(0.85 0.02 240.75);
   --sidebar-ring: oklch(0.97 0.18 106.8);
 
@@ -180,7 +180,20 @@
     font-family: var(--font-readex-pro), var(--font-ibm-plex-sans-arabic), var(--font-sans) !important;
     font-weight: 700;
     letter-spacing: 0;
-    line-height: 1.1;
+    line-height: 1.5 !important;
+  }
+
+  /* Fix clipping for Arabic hero headlines */
+  [dir="rtl"] h1 .overflow-hidden,
+  [dir="rtl"] h1.overflow-hidden,
+  [dir="rtl"] h1 > div {
+    overflow: visible !important;
+  }
+
+  [dir="rtl"] .hero-char,
+  [dir="rtl"] .hero-headline {
+    padding-block: 0.15em;
+    display: inline-block;
   }
 
   /* Reduced motion support */

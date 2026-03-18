@@ -399,6 +399,8 @@
     "badge": "Upcoming Tournaments",
     "title": "Events & Tournaments",
     "subtitle": "Join our competitive and casual events. Spots fill up fast!",
+    "filterByBranch": "Filter by branch:",
+    "allBranches": "All Branches",
     "emptyTitle": "No upcoming events",
     "emptyDescription": "Check back later for new tournaments and activities.",
     "upcoming": "Upcoming",
