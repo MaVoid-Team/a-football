@@ -8,7 +8,7 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
     ports:
-      - "5488:5432"
+      - "5490:5432"
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME:-a_football} -d ${DB_NAME:-a_football_production}"]
       interval: 5s
@@ -20,7 +20,7 @@ services:
     volumes:
       - redis_data:/data
     ports:
-      - "6399:6379"
+      - "6389:6379"
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 5s
@@ -32,7 +32,7 @@ services:
     environment:
       MEILI_MASTER_KEY: ${MEILI_MASTER_KEY:-}
     ports:
-      - "7700:7700"
+      - "7702:7700"
     volumes:
       - meilisearch_data:/data
     healthcheck:
@@ -104,8 +104,8 @@ services:
 
   frontend:
     build:
-      context: ./frontend
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: Dockerfile.frontend
     environment:
       NODE_ENV: production
       PORT: 3000
