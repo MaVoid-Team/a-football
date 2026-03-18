@@ -2,15 +2,15 @@ services:
   postgres:
     image: postgres:18-alpine
     environment:
-      POSTGRES_USER: ${DB_USERNAME:-court_mgmt}
+      POSTGRES_USER: ${DB_USERNAME:-a_football}
       POSTGRES_PASSWORD: ${DB_PASSWORD:-password}
-      POSTGRES_DB: ${DB_NAME:-court_management_system_production}
+      POSTGRES_DB: ${DB_NAME:-a_football_production}
     volumes:
       - postgres_data:/var/lib/postgresql/data
     ports:
       - "5488:5432"
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME:-court_mgmt} -d ${DB_NAME:-court_management_system_production}"]
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME:-a_football} -d ${DB_NAME:-a_football_production}"]
       interval: 5s
       timeout: 5s
       retries: 5
@@ -50,9 +50,9 @@ services:
     environment:
       RAILS_ENV: production
       DB_HOST: postgres
-      DB_USERNAME: ${DB_USERNAME:-court_mgmt}
+      DB_USERNAME: ${DB_USERNAME:-a_football}
       DB_PASSWORD: ${DB_PASSWORD:-password}
-      DB_NAME: ${DB_NAME:-court_management_system_production}
+      DB_NAME: ${DB_NAME:-a_football_production}
       REDIS_URL: redis://redis:6379/0
       RAILS_MASTER_KEY: ${RAILS_MASTER_KEY}
       SECRET_KEY_BASE: ${SECRET_KEY_BASE:-}
@@ -60,7 +60,7 @@ services:
       RAILS_MAX_THREADS: ${RAILS_MAX_THREADS:-5}
       WEB_CONCURRENCY: ${WEB_CONCURRENCY:-2}
       PORT: ${PORT:-3000}
-      CORS_ORIGINS: ${CORS_ORIGINS:-https://court.mavoid.com}
+      CORS_ORIGINS: ${CORS_ORIGINS:-https://a-football.mavoid.com}
       MEILISEARCH_HOST: http://meilisearch:7700
       MEILISEARCH_API_KEY: ${MEILI_MASTER_KEY:-}
     ports:
@@ -84,9 +84,9 @@ services:
     environment:
       RAILS_ENV: production
       DB_HOST: postgres
-      DB_USERNAME: ${DB_USERNAME:-court_mgmt}
+      DB_USERNAME: ${DB_USERNAME:-a_football}
       DB_PASSWORD: ${DB_PASSWORD:-password}
-      DB_NAME: ${DB_NAME:-court_management_system_production}
+      DB_NAME: ${DB_NAME:-a_football_production}
       REDIS_URL: redis://redis:6379/0
       RAILS_MASTER_KEY: ${RAILS_MASTER_KEY}
       SECRET_KEY_BASE: ${SECRET_KEY_BASE:-}
@@ -110,7 +110,7 @@ services:
       NODE_ENV: production
       PORT: 3000
     ports:
-      - "3091:3000"
+      - "3094:3000"
     depends_on:
       - app
 
