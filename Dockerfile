@@ -11,13 +11,15 @@ WORKDIR /app
 
 ENV RAILS_ENV=production \
     BUNDLE_WITHOUT="development:test" \
-    BUNDLE_DEPLOYMENT=0 \
-    BUNDLE_FROZEN=false
+    BUNDLE_DEPLOYMENT=1 \
+    BUNDLE_FROZEN=true \
+    BUNDLE_JOBS=4 \
+    BUNDLE_RETRY=3
 
 FROM base AS build
 
 COPY Gemfile Gemfile.lock ./
-RUN bundle install && \
+RUN bundle install --jobs=${BUNDLE_JOBS} --retry=${BUNDLE_RETRY} && \
     rm -rf ~/.bundle/ "${BUNDLE_PATH}"/ruby/*/cache
 
 COPY . .
