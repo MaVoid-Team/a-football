@@ -152,7 +152,7 @@
     },
     "footer": {
       "systemsOperational": "جميع الأنظمة تعمل",
-      "copyright": "© {year} CourtManager. جميع الحقوق محفوظة.",
+      "copyright": "© {year} A Football. جميع الحقوق محفوظة.",
       "builtWith": "مبني باستخدام Rails 8 · Next.js · JWT Auth · JSON:API",
       "explore": "استكشف",
       "company": "الشركة",
@@ -284,8 +284,8 @@
     "submitting": "جارٍ الإرسال…"
   },
   "bookingConfirmation": {
-    "title": "تم تأكيد الحجز!",
-    "subtitle": "شكرًا، {name}. تم حجز ملعبك.",
+    "title": "انطلق! تم تأكيد الحجز",
+    "subtitle": "شكرًا {name}! ملعبك جاهز ومُحجز.",
     "orderLabel": "طلب",
     "courtLabel": "الملعب",
     "dateLabel": "التاريخ",
@@ -368,7 +368,7 @@
     "promoCodeDescription": "هل لديك رمز ترويجي؟ أدخله هنا للحصول على خصم على حجزك.",
     "processingBooking": "جارٍ معالجة الحجز...",
     "confirmBooking": "تأكيد الحجز",
-    "bookingSuccess": "تم حجز ملعبك بنجاح!",
+    "bookingSuccess": "تمام! تم حجز الملعب بنجاح!",
     "bookingFailed": "حدث خطأ. يرجى المحاولة مرة أخرى.",
     "selectCourtFirst": "يرجى اختيار ملعب أولاً.",
     "noCourts": "لا توجد ملاعب متاحة لهذا الفرع.",

@@ -152,7 +152,7 @@
     },
     "footer": {
       "systemsOperational": "All systems operational",
-      "copyright": "© {year} CourtManager. All rights reserved.",
+      "copyright": "© {year} A Football. All rights reserved.",
       "builtWith": "Built on Rails 8 · Next.js · JWT Auth · JSON:API",
       "explore": "Explore",
       "company": "Company",
@@ -284,8 +284,8 @@
     "submitting": "Submitting…"
   },
   "bookingConfirmation": {
-    "title": "Booking Confirmed!",
-    "subtitle": "Thank you, {name}. Your court is reserved.",
+    "title": "Game On! Booking Confirmed",
+    "subtitle": "Thanks {name}! Your court is locked and loaded.",
     "orderLabel": "Order",
     "courtLabel": "Court",
     "dateLabel": "Date",
@@ -368,7 +368,7 @@
     "promoCodeDescription": "Have a promo code? Enter it here to get a discount on your booking.",
     "processingBooking": "Processing Booking...",
     "confirmBooking": "Confirm Booking",
-    "bookingSuccess": "Your court has been booked successfully!",
+    "bookingSuccess": "You're all set! Court booked successfully!",
     "bookingFailed": "Something went wrong. Please try again.",
     "selectCourtFirst": "Please select a court first.",
     "noCourts": "No courts available for this branch.",
