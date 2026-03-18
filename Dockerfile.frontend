@@ -1,6 +1,8 @@
 # Frontend Dockerfile (Next.js)
 FROM node:24-alpine AS builder
 WORKDIR /app
+ARG NEXT_PUBLIC_API_URL
+ENV NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
 
 # Install deps (context is repo root, so prefix with frontend/)
 COPY frontend/package*.json ./
@@ -15,6 +17,8 @@ FROM node:24-alpine AS runner
 WORKDIR /app
 ENV NODE_ENV=production
 ENV PORT=3000
+ARG NEXT_PUBLIC_API_URL
+ENV NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
 
 # Create non-root user for security
 RUN addgroup -g 1001 -S nodejs && \

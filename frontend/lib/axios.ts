@@ -1,9 +1,15 @@
 import axios from "axios";
 import { handleApiError } from "./error-handler";
 
+const resolvedBaseUrl = (process.env.NEXT_PUBLIC_API_URL ?? "")
+    .trim()
+    .replace(/\/+$/, "");
+
 // Create instance with base URL
 const api = axios.create({
-    baseURL: process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000",
+    // Use NEXT_PUBLIC_API_URL in production builds, otherwise fall back to same-origin.
+    // Never default to localhost in browser bundles.
+    baseURL: resolvedBaseUrl || "",
     headers: {
         "Content-Type": "application/json",
     },
