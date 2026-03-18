@@ -15,6 +15,7 @@
   --popover-foreground: oklch(0.35 0.02 165.48);
   --primary: oklch(0.97 0.18 106.8);
   --primary-foreground: oklch(0.20 0.01 0);
+  --primary-text: oklch(0.40 0.15 100);
   --secondary: oklch(0.25 0.01 0);
   --secondary-foreground: oklch(0.99 0.01 0);
   --muted: oklch(0.90 0.02 240.73);
@@ -66,6 +67,7 @@
   --popover-foreground: oklch(0.95 0.01 238.46);
   --primary: oklch(0.97 0.18 106.8);
   --primary-foreground: oklch(0.15 0.02 269.18);
+  --primary-text: oklch(0.97 0.18 106.8);
   --secondary: oklch(0.25 0.01 0);
   --secondary-foreground: oklch(0.99 0.01 0);
   --muted: oklch(0.30 0.03 271.05);
@@ -109,6 +111,7 @@
   --color-popover-foreground: var(--popover-foreground);
   --color-primary: var(--primary);
   --color-primary-foreground: var(--primary-foreground);
+  --color-primary-text: var(--primary-text);
   --color-secondary: var(--secondary);
   --color-secondary-foreground: var(--secondary-foreground);
   --color-muted: var(--muted);
@@ -164,7 +167,20 @@
 
   /* Use Arabic font when dir=rtl */
   [dir="rtl"] {
-    font-family: var(--font-noto-arabic), var(--font-sans);
+    font-family: var(--font-ibm-plex-sans-arabic), var(--font-sans);
+  }
+
+  /* Arabic display fonts - use Readex Pro for headlines */
+  [dir="rtl"] h1,
+  [dir="rtl"] h2,
+  [dir="rtl"] h1 *,
+  [dir="rtl"] h2 *,
+  [dir="rtl"] .font-black,
+  [dir="rtl"] .font-heading {
+    font-family: var(--font-readex-pro), var(--font-ibm-plex-sans-arabic), var(--font-sans) !important;
+    font-weight: 700;
+    letter-spacing: 0;
+    line-height: 1.1;
   }
 
   /* Reduced motion support */

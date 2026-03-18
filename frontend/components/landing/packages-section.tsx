@@ -96,14 +96,14 @@ export function PackagesSection() {
     }, [ready]);
 
     return (
-        <section ref={root} id="packages" className="relative w-full py-24 overflow-hidden bg-muted/10 border-t border-border/40">
-            <div className="relative z-10 w-full px-8 md:px-16 lg:px-24">
-                <div className="mb-16 flex flex-col md:flex-row md:items-end justify-between gap-8">
+        <section ref={root} id="packages" className="relative w-full py-32 overflow-hidden bg-background">
+            <div className="relative z-10 w-full px-8 md:px-16 lg:px-24 max-w-[1400px] mx-auto">
+                <div className="mb-20 flex flex-col md:flex-row md:items-end justify-between gap-8">
                     <div>
-                        <p className="pkg-eyebrow text-xs font-bold uppercase tracking-[0.25em] text-primary mb-4">
+                        <p className="pkg-eyebrow text-xs font-bold uppercase tracking-[0.3em] text-primary-text mb-5">
                             Save More
                         </p>
-                        <h2 className="pkg-headline text-[clamp(2.5rem,5vw,4.5rem)] font-black tracking-[-0.03em] leading-none text-foreground">
+                        <h2 className="pkg-headline text-[clamp(2.5rem,5vw,4.5rem)] font-black tracking-[-0.04em] leading-none text-foreground max-w-3xl">
                             Court Packages
                         </h2>
                     </div>
@@ -147,7 +147,7 @@ export function PackagesSection() {
                         {packages.slice(0, 6).map((pkg) => (
                             <div
                                 key={pkg.id}
-                                className="pkg-card group flex flex-col justify-between p-6 border border-border/50 rounded-2xl bg-card hover:bg-muted/30 hover:border-primary/40 transition-all duration-300 hover:-translate-y-0.5"
+                                className="pkg-card group flex flex-col justify-between p-8 border border-border/60 rounded-2xl bg-card hover:border-border transition-all duration-300 hover:shadow-lg hover:-translate-y-1"
                             >
                                 <div>
                                     <div className="flex items-start justify-between mb-3 gap-3">

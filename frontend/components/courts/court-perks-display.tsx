@@ -28,10 +28,10 @@ export function CourtPerksDisplay({ perks = [], className = "" }: CourtPerksDisp
             </div>
             <div className="flex flex-wrap gap-2">
                 {activePerks.map((perk) => (
-                    <Badge 
-                        key={perk.id} 
-                        variant="secondary" 
-                        className="bg-primary/10 text-primary border-primary/20 hover:bg-primary/20"
+                    <Badge
+                        key={perk.id}
+                        variant="secondary"
+                        className="bg-primary/10 text-primary-text border-primary/20 hover:bg-primary/20"
                         title={perk.description || perk.name}
                     >
                         {perk.name}

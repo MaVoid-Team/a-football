@@ -1,5 +1,7 @@
 "use client";
 
+import { useEffect, useState } from "react";
+import { useTheme } from "next-themes";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { ArrowUpRight } from "lucide-react";
@@ -7,6 +9,14 @@ import { ArrowUpRight } from "lucide-react";
 export function LandingFooter() {
   const t = useTranslations("landing.footer");
   const currentYear = new Date().getFullYear();
+  const { theme, resolvedTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const currentTheme = mounted ? (theme === "system" ? resolvedTheme : theme) : "light";
 
   const links = {
     [t("explore")]: [
@@ -37,12 +47,11 @@ export function LandingFooter() {
           {/* Brand */}
           <div className="col-span-2 md:col-span-1">
             <Link href="/" className="flex items-center gap-3 mb-4 group w-fit">
-              <span className="flex items-center justify-center w-9 h-9 rounded-xl bg-foreground text-background font-black text-[13px] select-none">
-                AF
-              </span>
-              <span className="font-bold text-foreground tracking-tight text-base">
-                A Football
-              </span>
+              <img
+                src={currentTheme === "dark" ? "/logo-light.png" : "/logo-dark.png"}
+                alt="A Football"
+                className="w-auto h-8 object-contain"
+              />
             </Link>
           </div>
 

@@ -119,7 +119,7 @@ export function PromoCodeInput({ branchId, selectedCourt, selectedSlots = [], st
     return (
         <div className="space-y-4">
             <div className="flex items-center gap-2">
-                <Percent className="h-4 w-4 text-primary" />
+                <Percent className="h-4 w-4 text-primary-text" />
                 <label className="text-sm font-medium">{t("label")}</label>
             </div>
             

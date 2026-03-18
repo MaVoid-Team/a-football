@@ -102,7 +102,7 @@ export function EventDetail({ id }: { id: string }) {
                                 t("guidelines.sportsmanship"),
                             ].map((rule, idx) => (
                                 <li key={idx} className="flex items-start text-muted-foreground">
-                                    <ShieldIcon className="w-5 h-5 text-primary mr-3 shrink-0 mt-0.5" />
+                                    <ShieldIcon className="w-5 h-5 text-primary-text mr-3 shrink-0 mt-0.5" />
                                     <span>{rule}</span>
                                 </li>
                             ))}
@@ -115,7 +115,7 @@ export function EventDetail({ id }: { id: string }) {
                         <CardContent className="p-8">
                             <div className="space-y-6">
                                 <div className="flex items-center">
-                                    <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10 text-primary shrink-0 mr-4">
+                                    <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10 text-primary-text shrink-0 mr-4">
                                         <CalendarIcon className="h-6 w-6" />
                                     </div>
                                     <div>
@@ -125,7 +125,7 @@ export function EventDetail({ id }: { id: string }) {
                                 </div>
 
                                 <div className="flex items-center">
-                                    <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10 text-primary shrink-0 mr-4">
+                                    <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10 text-primary-text shrink-0 mr-4">
                                         <ClockIcon className="h-6 w-6" />
                                     </div>
                                     <div>
@@ -135,7 +135,7 @@ export function EventDetail({ id }: { id: string }) {
                                 </div>
 
                                 <div className="flex items-center">
-                                    <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10 text-primary shrink-0 mr-4">
+                                    <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10 text-primary-text shrink-0 mr-4">
                                         <UsersIcon className="h-6 w-6" />
                                     </div>
                                     <div>

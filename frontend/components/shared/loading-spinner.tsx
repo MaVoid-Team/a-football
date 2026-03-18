@@ -12,7 +12,7 @@ export function LoadingSpinner({ className, size = 24 }: LoadingSpinnerProps) {
             className={cn("flex w-full items-center justify-center p-4", className)}
             data-testid="loading-spinner"
         >
-            <Loader2 className="animate-spin text-primary" size={size} />
+            <Loader2 className="animate-spin text-primary-text" size={size} />
         </div>
     );
 }

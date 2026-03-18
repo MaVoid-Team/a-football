@@ -35,7 +35,7 @@ export function PackagesView() {
     return (
         <div className="w-full max-w-6xl mx-auto">
             <div className="flex flex-col items-center text-center space-y-4 mb-16">
-                <Badge variant="secondary" className="px-3 py-1 font-medium bg-primary/10 text-primary border-primary/20">
+                <Badge variant="secondary" className="px-3 py-1 font-medium bg-primary/10 text-primary-text border-primary/20">
                     <PackageIcon className="mr-2 h-4 w-4" />
                     {t("badge")}
                 </Badge>

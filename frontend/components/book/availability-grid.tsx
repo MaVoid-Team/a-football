@@ -53,14 +53,14 @@ export function AvailabilityGrid({ slots, selectedSlots, onToggle, isLoading }: 
                         className={cn(
                             "relative flex flex-col items-center justify-center h-16 py-4 px-3 transition-all duration-200 group text-sm font-medium",
                             isSelected
-                                ? "border-primary bg-primary/10 text-primary shadow-sm ring-1 ring-primary"
+                                ? "border-primary bg-primary/10 text-primary-text shadow-sm ring-1 ring-primary"
                                 : "border-border/50 bg-card hover:border-primary/50 hover:bg-primary/5 hover:-translate-y-0.5"
                         )}
                     >
                         <span>{slot.start_time}</span>
                         <span className="text-xs opacity-70 mt-1 font-normal">{t("to", { endTime: slot.end_time })}</span>
                         {isSelected && (
-                            <CheckCircle2 className="w-4 h-4 text-primary absolute -top-2 -right-2 bg-background rounded-full" />
+                            <CheckCircle2 className="w-4 h-4 text-primary-text absolute -top-2 -right-2 bg-background rounded-full" />
                         )}
                     </Button>
                 );

@@ -37,9 +37,9 @@ export function CourtTable({ courts, branches, isLoading, onUpdate, onDelete }: 
         {
             header: t("table.nameHeader"),
             cell: (c: Court) => (
-                <Link 
+                <Link
                     href={`/courts/${c.id}`}
-                    className="font-medium hover:text-primary transition-colors"
+                    className="font-medium hover:text-primary-text transition-colors"
                 >
                     {c.name}
                 </Link>
@@ -64,7 +64,7 @@ export function CourtTable({ courts, branches, isLoading, onUpdate, onDelete }: 
                 const activePerks = c.perks?.filter(p => p.active) || [];
                 return (
                     <div className="flex items-center gap-2">
-                        <Badge variant="outline" className="bg-primary/10 text-primary border-primary/20">
+                        <Badge variant="outline" className="bg-primary/10 text-primary-text border-primary/20">
                             {t("table.perksCount", { count: activePerks.length })}
                         </Badge>
                         {activePerks.length > 0 && (

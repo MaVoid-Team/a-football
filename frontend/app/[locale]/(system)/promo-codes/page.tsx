@@ -254,12 +254,12 @@ export default function PromoCodesAdminPage() {
                       <div className="flex items-center gap-2">
                         {promoCode.discount_percentage ? (
                           <>
-                            <Percent className="h-4 w-4 text-primary" />
+                            <Percent className="h-4 w-4 text-primary-text" />
                             <span>{t("discountPercent", { value: promoCode.discount_percentage })}</span>
                           </>
                         ) : (
                           <>
-                            <DollarSign className="h-4 w-4 text-primary" />
+                            <DollarSign className="h-4 w-4 text-primary-text" />
                             <span>{t("discountAmount", { value: formatCurrency(Number(promoCode.discount_amount || 0)) })}</span>
                           </>
                         )}

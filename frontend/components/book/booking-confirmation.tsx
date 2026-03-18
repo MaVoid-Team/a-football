@@ -68,7 +68,7 @@ export function BookingConfirmation({
         </CardHeader>
         <CardContent className="p-8 space-y-6">
           <div className="flex items-start gap-4">
-            <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10 text-primary shrink-0">
+            <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10 text-primary-text shrink-0">
               <MapPinIcon className="h-6 w-6" />
             </div>
             <div>

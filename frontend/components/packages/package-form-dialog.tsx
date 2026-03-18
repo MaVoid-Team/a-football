@@ -114,7 +114,7 @@ export function PackageFormDialog({ packageItem, branches = [], onSubmit }: Pack
                                 <SelectValue placeholder={t("form.branchPlaceholder")} />
                             </SelectTrigger>
                             <SelectContent>
-                                <SelectItem value="global" className="font-semibold text-primary">{t("form.branchOption")}</SelectItem>
+                                <SelectItem value="global" className="font-semibold text-primary-text">{t("form.branchOption")}</SelectItem>
                                 {branches.map((b) => (
                                     <SelectItem key={b.id} value={b.id.toString()}>
                                         {b.name}

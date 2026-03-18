@@ -73,14 +73,14 @@ export function CourtsSection() {
     <section
       ref={root}
       id="courts"
-      className="relative w-full py-24 overflow-hidden bg-muted/10 border-t border-border/40"
+      className="relative w-full py-32 overflow-hidden bg-background"
     >
-      <div className="relative z-10 w-full px-8 md:px-16 lg:px-24">
-        <div className="mb-16">
-          <p className="section-eyebrow opacity-0 text-xs font-bold uppercase tracking-[0.25em] text-primary mb-4">
+      <div className="relative z-10 w-full px-8 md:px-16 lg:px-24 max-w-[1400px] mx-auto">
+        <div className="mb-20">
+          <p className="section-eyebrow opacity-0 text-xs font-bold uppercase tracking-[0.3em] text-primary-text mb-5">
             {t("eyebrow")}
           </p>
-          <h2 className="section-headline opacity-0 text-[clamp(2.5rem,5vw,4.5rem)] font-black tracking-[-0.03em] leading-none text-foreground">
+          <h2 className="section-headline opacity-0 text-[clamp(2.5rem,5vw,4.5rem)] font-black tracking-[-0.04em] leading-none text-foreground max-w-3xl">
             {t("title")}
           </h2>
         </div>
@@ -118,7 +118,7 @@ export function CourtsSection() {
             {courts.map((court) => (
               <div
                 key={court.id}
-                className="court-card opacity-0 group flex flex-col justify-between p-6 border border-border/50 rounded-2xl bg-card hover:bg-muted/30 transition-colors duration-300"
+                className="court-card opacity-0 group flex flex-col justify-between p-8 border border-border/60 rounded-2xl bg-card hover:border-border transition-all duration-300 hover:shadow-lg"
               >
                 <div>
                   <div className="flex items-start justify-between mb-4">

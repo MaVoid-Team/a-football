@@ -136,7 +136,7 @@ export default function RatingsPage() {
             </div>
 
             <div className="bg-card border border-border rounded-xl p-4 flex items-center gap-4">
-              <div className="w-10 h-10 rounded-lg bg-primary/10 text-primary flex items-center justify-center shrink-0">
+              <div className="w-10 h-10 rounded-lg bg-primary/10 text-primary-text flex items-center justify-center shrink-0">
                 <MessageSquare className="w-5 h-5" />
               </div>
               <div>

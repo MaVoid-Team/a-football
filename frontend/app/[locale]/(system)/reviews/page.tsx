@@ -137,7 +137,7 @@ export default function ReviewsPage() {
       {/* Stats strip */}
       <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
         <div className="bg-card border border-border rounded-xl p-4 flex items-center gap-4">
-          <div className="w-10 h-10 rounded-lg bg-primary/10 text-primary flex items-center justify-center shrink-0">
+          <div className="w-10 h-10 rounded-lg bg-primary/10 text-primary-text flex items-center justify-center shrink-0">
             <MessageSquare className="w-5 h-5" />
           </div>
           <div>
@@ -255,7 +255,7 @@ export default function ReviewsPage() {
               >
                 {/* Left: avatar + name */}
                 <div className="flex items-start gap-3 min-w-0 flex-1">
-                  <div className="w-10 h-10 rounded-full bg-primary/10 text-primary flex items-center justify-center shrink-0 font-bold text-sm uppercase">
+                  <div className="w-10 h-10 rounded-full bg-primary/10 text-primary-text flex items-center justify-center shrink-0 font-bold text-sm uppercase">
                     {review.reviewer_name.slice(0, 2)}
                   </div>
                   <div className="min-w-0 flex-1">

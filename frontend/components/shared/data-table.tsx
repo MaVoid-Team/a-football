@@ -41,8 +41,8 @@ export function DataTable<T extends { id: string | number }>({
     }
 
     return (
-        <div className="rounded-md border border-border overflow-hidden" dir="ltr">
-            <Table data-testid="data-table">
+        <div className="rounded-md border border-border overflow-x-auto" dir="ltr">
+            <Table data-testid="data-table" className="min-w-[600px]">
                 <TableHeader className="bg-muted">
                     <TableRow className="hover:bg-transparent">
                         {columns.map((col, index) => (

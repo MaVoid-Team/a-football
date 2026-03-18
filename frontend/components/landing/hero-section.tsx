@@ -1,26 +1,44 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
 import { animate, createScope, stagger } from "animejs";
 import { ArrowRight, ArrowDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useTheme } from "next-themes";
 
 export function HeroSection() {
   const t = useTranslations("landing.hero");
   const root = useRef<HTMLElement>(null);
   const scope = useRef<ReturnType<typeof createScope> | null>(null);
+  const { theme, resolvedTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const currentTheme = mounted ? (theme === "system" ? resolvedTheme : theme) : "light";
 
   useEffect(() => {
     scope.current = createScope({ root }).add(() => {
+      // Logo fade in first
+      animate(".hero-logo", {
+        opacity: [0, 1],
+        translateY: [20, 0],
+        duration: 700,
+        delay: 50,
+        easing: "easeOutExpo",
+      });
+
       // Chars split animation for headline
       animate(".hero-char", {
         opacity: [0, 1],
         translateY: ["110%", "0%"],
         rotateZ: [8, 0],
         duration: 900,
-        delay: stagger(28, { start: 100 }),
+        delay: stagger(28, { start: 200 }),
         easing: "easeOutExpo",
       });
 
@@ -93,11 +111,11 @@ export function HeroSection() {
     <section
       ref={root}
       id="hero"
-      className="relative min-h-[85vh] w-full flex flex-col justify-center pb-20 px-8 md:px-16 lg:px-24 overflow-hidden pt-32"
+      className="relative min-h-[100dvh] w-full flex flex-col justify-center pb-24 px-8 md:px-16 lg:px-24 overflow-hidden pt-32"
     >
       {/* Ambient glow orbs */}
-      <div className="hero-orb hero-orb-pulse absolute top-[-20%] right-[-5%] w-[70vw] h-[70vw] max-w-[900px] max-h-[900px] rounded-full bg-primary/10 blur-[140px] pointer-events-none opacity-0" />
-      <div className="hero-orb hero-orb-pulse absolute bottom-[-20%] left-[-10%] w-[60vw] h-[60vw] max-w-[800px] max-h-[800px] rounded-full bg-primary/8 blur-[120px] pointer-events-none opacity-0" />
+      <div className="hero-orb hero-orb-pulse absolute top-[-20%] right-[-5%] w-[70vw] h-[70vw] max-w-[900px] max-h-[900px] rounded-full bg-primary/5 blur-[140px] pointer-events-none opacity-0" />
+      <div className="hero-orb hero-orb-pulse absolute bottom-[-20%] left-[-10%] w-[60vw] h-[60vw] max-w-[800px] max-h-[800px] rounded-full bg-primary/3 blur-[120px] pointer-events-none opacity-0" />
 
       {/* Noise texture overlay */}
       <div
@@ -118,26 +136,36 @@ export function HeroSection() {
         }}
       />
 
-      <div className="relative z-10 max-w-4xl">
-        <h1 className="text-[clamp(3.5rem,10vw,9rem)] font-black tracking-[-0.03em] leading-[0.92] text-foreground overflow-hidden">
+      <div className="relative z-10 max-w-5xl">
+        {/* Logo branding */}
+        <div className="hero-logo opacity-0 mb-10 flex items-center gap-4">
+          <img
+            src={currentTheme === "dark" ? "/logo-light.png" : "/logo-dark.png"}
+            alt="A Football Logo"
+            className="w-auto h-20 object-contain"
+          />
+        </div>
+
+        <h1 className="text-[clamp(3.5rem,10vw,9rem)] font-black tracking-[-0.04em] leading-[0.92] text-foreground overflow-hidden">
           <div className="overflow-hidden flex flex-wrap">
             {splitWords(headline)}
           </div>
           <div className="overflow-hidden">
-            <span className="hero-char inline-block opacity-0 italic text-primary">
+            <span className="hero-char hero-headline inline-block opacity-0 italic text-primary-text">
               {headline2}
             </span>
           </div>
         </h1>
 
-        <p className="hero-sub opacity-0 mt-8 max-w-md text-base sm:text-lg text-muted-foreground leading-relaxed">
+        <p className="hero-sub opacity-0 mt-10 max-w-xl text-lg sm:text-xl text-muted-foreground leading-relaxed">
           {t("subtitle")}
         </p>
 
-        <div className="mt-10 flex flex-wrap items-center gap-4">
+        <div className="mt-12 flex flex-wrap items-center gap-4">
           <Button
             asChild
-            className="hero-btn opacity-0 group font-bold h-14 px-8 transition-all duration-200 hover:gap-4"
+            size="lg"
+            className="hero-btn opacity-0 group font-semibold h-14 px-8 rounded-xl transition-all duration-200 hover:gap-4 hover:scale-[1.02] active:scale-[0.98]"
           >
             <Link href="/book" className="flex items-center gap-3">
               {t("bookACourt")}
@@ -147,7 +175,8 @@ export function HeroSection() {
           <Button
             asChild
             variant="outline"
-            className="hero-btn opacity-0 border-border/80 font-bold h-14 px-8 transition-all duration-200 hover:bg-muted/40 hover:border-border"
+            size="lg"
+            className="hero-btn opacity-0 border-border/80 font-semibold h-14 px-8 rounded-xl transition-all duration-200 hover:bg-muted/60 hover:border-foreground/20 active:scale-[0.98]"
           >
             <Link href="/event" className="flex items-center">
               {t("browseEvents")}
@@ -157,8 +186,8 @@ export function HeroSection() {
       </div>
 
       {/* Scroll cue */}
-      <div className="scroll-cue opacity-0 absolute bottom-8 start-8 md:start-16 lg:start-24 flex items-center gap-2 text-muted-foreground/60">
-        <span className="text-[11px] tracking-[0.2em] uppercase font-medium">
+      <div className="scroll-cue opacity-0 absolute bottom-12 start-8 md:start-16 lg:start-24 flex items-center gap-3 text-muted-foreground/50">
+        <span className="text-[11px] tracking-[0.25em] uppercase font-medium">
           {t("scrollToExplore")}
         </span>
         <ArrowDown className="w-3.5 h-3.5 animate-bounce" />

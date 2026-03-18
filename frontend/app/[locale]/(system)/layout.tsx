@@ -1,9 +1,10 @@
 "use client";
 
-import { ReactNode, useEffect } from "react";
+import { ReactNode, useEffect, useState, useCallback } from "react";
 import { useRouter, usePathname } from "@/i18n/navigation";
 import { useAuthContext } from "@/contexts/auth-context";
 import { Sidebar } from "@/components/shared/sidebar";
+import { MobileSidebar } from "@/components/shared/mobile-sidebar";
 import { Topbar } from "@/components/shared/topbar";
 import { LoadingSpinner } from "@/components/shared/loading-spinner";
 
@@ -11,12 +12,21 @@ export default function SystemLayout({ children }: { children: ReactNode }) {
     const { isAuthenticated, loading } = useAuthContext();
     const router = useRouter();
     const pathname = usePathname();
+    const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
     // Public paths that authenticated users can freely visit (home + public-facing pages)
     const PUBLIC_PATHS = ["/", "/book", "/event", "/package"];
     const isPublicPath =
         PUBLIC_PATHS.some((p) => pathname === p || pathname.startsWith(p + "/")) ||
         pathname.includes("/auth/login");
+
+    const handleMenuToggle = useCallback(() => {
+        setMobileMenuOpen((prev) => !prev);
+    }, []);
+
+    const handleMenuClose = useCallback(() => {
+        setMobileMenuOpen(false);
+    }, []);
 
     useEffect(() => {
         // Only redirect to login if the user is unauthenticated AND is trying to
@@ -48,8 +58,9 @@ export default function SystemLayout({ children }: { children: ReactNode }) {
     return (
         <div className="flex h-screen overflow-hidden bg-background">
             <Sidebar />
+            <MobileSidebar open={mobileMenuOpen} onClose={handleMenuClose} />
             <div className="flex flex-1 flex-col overflow-hidden">
-                <Topbar />
+                <Topbar onMenuToggle={handleMenuToggle} />
                 <main className="flex-1 overflow-y-auto bg-muted/20 p-4 md:p-6 lg:p-8 custom-scrollbar">
                     {children}
                 </main>

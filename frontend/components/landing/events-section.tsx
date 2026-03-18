@@ -88,15 +88,15 @@ export function EventsSection() {
     <section
       ref={root}
       id="events"
-      className="relative w-full py-24 overflow-hidden bg-background border-t border-border/40"
+      className="relative w-full py-32 overflow-hidden bg-muted/20"
     >
-      <div className="relative z-10 w-full px-8 md:px-16 lg:px-24">
-        <div className="mb-16 flex flex-col md:flex-row md:items-end justify-between gap-8">
+      <div className="relative z-10 w-full px-8 md:px-16 lg:px-24 max-w-[1400px] mx-auto">
+        <div className="mb-20 flex flex-col md:flex-row md:items-end justify-between gap-8">
           <div>
-            <p className="events-eyebrow text-xs font-bold uppercase tracking-[0.25em] text-primary mb-4">
+            <p className="events-eyebrow text-xs font-bold uppercase tracking-[0.3em] text-primary-text mb-5">
               {t("eyebrow")}
             </p>
-            <h2 className="events-headline text-[clamp(2.5rem,5vw,4.5rem)] font-black tracking-[-0.03em] leading-none text-foreground">
+            <h2 className="events-headline text-[clamp(2.5rem,5vw,4.5rem)] font-black tracking-[-0.04em] leading-none text-foreground max-w-3xl">
               {t("title")}
             </h2>
           </div>
@@ -152,7 +152,7 @@ export function EventsSection() {
             {events.map((event) => (
               <div
                 key={event.id}
-                className="event-card group flex flex-col justify-between p-6 border border-border/50 rounded-2xl bg-card hover:border-primary/50 transition-colors duration-300"
+                className="event-card group flex flex-col justify-between p-8 border border-border/60 rounded-2xl bg-card hover:border-border transition-all duration-300 hover:shadow-lg"
               >
                 <div>
                   <div className="flex items-start justify-between gap-4 mb-4">
@@ -169,12 +169,12 @@ export function EventsSection() {
 
                   <div className="space-y-3 mb-6 text-muted-foreground text-sm">
                     <div className="flex items-center gap-2">
-                      <CalendarIcon className="w-4 h-4 text-primary shrink-0" />
+                      <CalendarIcon className="w-4 h-4 text-primary-text shrink-0" />
                       <span>{formatDate(event.start_date)}</span>
                     </div>
                     {event.max_participants && (
                       <div className="flex items-center gap-2">
-                        <UsersIcon className="w-4 h-4 text-primary shrink-0" />
+                        <UsersIcon className="w-4 h-4 text-primary-text shrink-0" />
                         <span>
                           {t("maxParticipants", {
                             count: event.max_participants,

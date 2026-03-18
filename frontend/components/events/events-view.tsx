@@ -36,7 +36,7 @@ export function EventsView() {
     return (
         <div className="w-full max-w-6xl mx-auto">
             <div className="flex flex-col items-center text-center space-y-4 mb-16">
-                <Badge variant="secondary" className="px-3 py-1 font-medium bg-primary/10 text-primary border-primary/20">
+                <Badge variant="secondary" className="px-3 py-1 font-medium bg-primary/10 text-primary-text border-primary/20">
                     <CalendarIcon className="mr-2 h-4 w-4" />
                     {t("badge")}
                 </Badge>
@@ -83,7 +83,7 @@ export function EventsView() {
                                             {formatDate(event.start_date)}
                                         </Badge>
                                         {isUpcoming && (
-                                            <Badge className="bg-primary/20 text-primary border-0">
+                                            <Badge className="bg-primary/20 text-primary-text border-0">
                                                 {t("upcoming")}
                                             </Badge>
                                         )}
@@ -108,7 +108,7 @@ export function EventsView() {
                                         ) : t("unlimitedSpots")}
                                     </div>
                                     <div className="flex items-center text-sm font-medium text-foreground">
-                                        <div className="flex -space-x-1 mr-3 h-5 w-5 items-center justify-center rounded-full bg-primary/20 text-primary p-1 font-bold text-[10px] leading-none">
+                                        <div className="flex -space-x-1 mr-3 h-5 w-5 items-center justify-center rounded-full bg-primary/20 text-primary-text p-1 font-bold text-[10px] leading-none">
                                             $
                                         </div>
                                         <span className="text-lg font-bold">

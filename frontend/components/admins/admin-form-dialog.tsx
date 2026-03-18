@@ -228,7 +228,7 @@ export function AdminFormDialog({
                 </SelectItem>
                 <SelectItem
                   value="super_admin"
-                  className="font-semibold text-primary"
+                  className="font-semibold text-primary-text"
                 >
                   {t("form.roleOptions.superAdmin")}
                 </SelectItem>

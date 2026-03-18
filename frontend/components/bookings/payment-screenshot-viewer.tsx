@@ -32,7 +32,7 @@ export function PaymentScreenshotViewer({ screenshotUrl }: PaymentScreenshotView
         <>
             <button
                 onClick={() => setOpen(true)}
-                className="group relative inline-flex items-center gap-1.5 text-primary hover:text-primary/80 transition-colors"
+                className="group relative inline-flex items-center gap-1.5 text-primary-text hover:text-primary-text/80 transition-colors"
                 title={t("table.viewScreenshot")}
             >
                 <div className="relative w-10 h-10 rounded-md overflow-hidden border border-border group-hover:border-primary transition-colors">

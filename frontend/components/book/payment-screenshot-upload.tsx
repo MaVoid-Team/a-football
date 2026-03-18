@@ -103,7 +103,7 @@ export function PaymentScreenshotUpload({ value, onChange }: PaymentScreenshotUp
                     `}
                 >
                     <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
-                        <Upload className={`w-6 h-6 ${isDragging ? "text-primary" : "text-muted-foreground"}`} />
+                        <Upload className={`w-6 h-6 ${isDragging ? "text-primary-text" : "text-muted-foreground"}`} />
                     </div>
                     <div className="text-center">
                         <p className="text-sm font-medium text-foreground">

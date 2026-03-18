@@ -1,4 +1,5 @@
-import { Geist, Geist_Mono, Noto_Sans_Arabic } from "next/font/google";
+import { Geist, Geist_Mono } from "next/font/google";
+import { IBM_Plex_Sans_Arabic, Readex_Pro } from "next/font/google";
 import { NextIntlClientProvider, hasLocale } from "next-intl";
 import { getMessages, setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
@@ -18,10 +19,16 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-const notoSansArabic = Noto_Sans_Arabic({
-  variable: "--font-noto-arabic",
+const ibmPlexSansArabic = IBM_Plex_Sans_Arabic({
+  variable: "--font-ibm-plex-sans-arabic",
   subsets: ["arabic"],
-  weight: ["400", "500", "600", "700"],
+  weight: ["300", "400", "500", "600", "700"],
+});
+
+const readexPro = Readex_Pro({
+  variable: "--font-readex-pro",
+  subsets: ["arabic"],
+  weight: ["700"],
 });
 
 export default async function LocaleLayout({
@@ -45,7 +52,7 @@ export default async function LocaleLayout({
   return (
     <html lang={locale} dir={dir} suppressHydrationWarning>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} ${notoSansArabic.variable} antialiased min-h-screen bg-background font-sans text-foreground selection:bg-primary/30`}
+        className={`${geistSans.variable} ${geistMono.variable} ${ibmPlexSansArabic.variable} ${readexPro.variable} antialiased min-h-screen bg-background font-sans text-foreground selection:bg-primary/30`}
       >
         <NextIntlClientProvider messages={messages}>
           <ThemeProvider>

@@ -315,7 +315,7 @@ export function BookingView() {
                                                                     {perks.length > 0 && (
                                                                         <div className="flex flex-wrap gap-1 mt-1">
                                                                             {perks.slice(0, 2).map((perk) => (
-                                                                                <span key={perk.id} className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded">
+                                                                                <span key={perk.id} className="text-xs bg-primary/10 text-primary-text px-2 py-0.5 rounded">
                                                                                     {perk.name}
                                                                                 </span>
                                                                             ))}
@@ -400,7 +400,7 @@ export function BookingView() {
                                                 <span className="font-medium">
                                                     {selectedSlots.length} {selectedSlots.length === 1 ? "slot" : "slots"} ({totalHours}h)
                                                 </span>
-                                                <span className="font-semibold text-primary">
+                                                <span className="font-semibold text-primary-text">
                                                     {formatCurrency(estimatedPrice)}
                                                 </span>
                                             </div>
@@ -521,7 +521,7 @@ export function BookingView() {
                                         <BookingTermsDialog
                                             terms={bookingTerms!}
                                             trigger={
-                                                <button type="button" className="text-primary underline underline-offset-2 hover:text-primary/80">
+                                                <button type="button" className="text-primary-text underline underline-offset-2 hover:text-primary-text/80">
                                                     {t("termsLink")}
                                                 </button>
                                             }

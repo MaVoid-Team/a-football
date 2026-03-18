@@ -7,7 +7,11 @@ import { Menu } from "lucide-react";
 import { UserActions } from "./user-actions";
 import { useTranslations } from "next-intl";
 
-export function Topbar() {
+interface TopbarProps {
+    onMenuToggle?: () => void;
+}
+
+export function Topbar({ onMenuToggle }: TopbarProps) {
     const t = useTranslations("common");
     return (
         <header className="sticky top-0 z-10 flex h-16 items-center gap-4 border-b border-border bg-background px-4 md:px-6">
@@ -15,6 +19,7 @@ export function Topbar() {
                 variant="outline"
                 size="icon"
                 className="shrink-0 md:hidden"
+                onClick={onMenuToggle}
             >
                 <Menu className="h-5 w-5" />
                 <span className="sr-only">{t("toggleNavigationMenu")}</span>

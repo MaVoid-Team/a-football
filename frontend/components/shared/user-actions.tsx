@@ -49,7 +49,7 @@ export function UserActions({ showDashboardLink = false }: UserActionsProps) {
             {admin?.role === "super_admin" && (
                 <Badge
                     variant="secondary"
-                    className="hidden md:flex text-xs bg-primary/10 text-primary border-0 font-bold uppercase tracking-wider"
+                    className="hidden md:flex text-xs bg-primary/10 text-primary-text border-0 font-bold uppercase tracking-wider"
                 >
                     {t("superAdmin")}
                 </Badge>
@@ -64,7 +64,7 @@ export function UserActions({ showDashboardLink = false }: UserActionsProps) {
                         data-testid="user-menu-trigger"
                     >
                         <Avatar className="h-8 w-8 border border-border">
-                            <AvatarFallback className="bg-primary/10 text-primary font-medium text-xs">
+                            <AvatarFallback className="bg-primary/10 text-primary-text font-medium text-xs">
                                 {getInitials(admin?.email)}
                             </AvatarFallback>
                         </Avatar>

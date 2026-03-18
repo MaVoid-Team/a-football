@@ -18,10 +18,20 @@ import {
   Users,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useTheme } from "next-themes";
+import { useEffect, useState } from "react";
 
 export function Sidebar() {
   const t = useTranslations("sidebar");
   const pathname = usePathname();
+  const { theme, resolvedTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const currentTheme = mounted ? (theme === "system" ? resolvedTheme : theme) : "light";
 
   const navigation = [
     { name: t("dashboard"), href: "/dashboard", icon: LayoutDashboard },
@@ -47,10 +57,13 @@ export function Sidebar() {
         <div className="flex h-16 items-center border-b border-border px-6">
           <Link
             href="/dashboard"
-            className="flex items-center gap-2 font-bold text-sidebar-foreground"
+            className="flex items-center gap-3 font-bold text-sidebar-foreground"
           >
-            <Building2 className="h-6 w-6 text-primary" />
-            <span className="">A Football</span>
+            <img
+              src={currentTheme === "dark" ? "/logo-light.png" : "/logo-dark.png"}
+              alt="A Football"
+              className="w-auto h-8 object-contain"
+            />
           </Link>
         </div>
 
