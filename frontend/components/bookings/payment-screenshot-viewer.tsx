@@ -15,6 +15,41 @@ interface PaymentScreenshotViewerProps {
     screenshotUrl: string | null | undefined;
 }
 
+function resolveScreenshotUrl(rawUrl: string): string {
+    const apiBase = (process.env.NEXT_PUBLIC_API_URL ?? "").trim().replace(/\/+$/, "");
+    if (!apiBase) return rawUrl;
+
+    const marker = "/rails/active_storage/";
+
+    let storagePath = "";
+    if (rawUrl.startsWith("http://") || rawUrl.startsWith("https://")) {
+        try {
+            const parsed = new URL(rawUrl);
+            const markerIndex = parsed.pathname.indexOf(marker);
+            if (markerIndex >= 0) {
+                storagePath = `${parsed.pathname.slice(markerIndex)}${parsed.search}`;
+            }
+        } catch {
+            return rawUrl;
+        }
+    } else {
+        const markerIndex = rawUrl.indexOf(marker);
+        if (markerIndex >= 0) {
+            storagePath = rawUrl.slice(markerIndex);
+        }
+    }
+
+    if (!storagePath) return rawUrl;
+
+    try {
+        const apiUrl = new URL(apiBase);
+        const apiPath = apiUrl.pathname.replace(/\/+$/, "");
+        return `${apiUrl.origin}${apiPath}${storagePath}`;
+    } catch {
+        return rawUrl;
+    }
+}
+
 export function PaymentScreenshotViewer({ screenshotUrl }: PaymentScreenshotViewerProps) {
     const t = useTranslations("bookings");
     const [open, setOpen] = useState(false);
@@ -28,6 +63,8 @@ export function PaymentScreenshotViewer({ screenshotUrl }: PaymentScreenshotView
         );
     }
 
+    const resolvedScreenshotUrl = resolveScreenshotUrl(screenshotUrl);
+
     return (
         <>
             <button
@@ -37,7 +74,7 @@ export function PaymentScreenshotViewer({ screenshotUrl }: PaymentScreenshotView
             >
                 <div className="relative w-10 h-10 rounded-md overflow-hidden border border-border group-hover:border-primary transition-colors">
                     <img
-                        src={screenshotUrl}
+                        src={resolvedScreenshotUrl}
                         alt={t("table.screenshotDialogTitle")}
                         className="w-full h-full object-cover"
                     />
@@ -59,7 +96,7 @@ export function PaymentScreenshotViewer({ screenshotUrl }: PaymentScreenshotView
                     <div className="flex flex-col items-center gap-4">
                         <div className="w-full overflow-hidden rounded-xl border border-border bg-muted/30">
                             <img
-                                src={screenshotUrl}
+                                src={resolvedScreenshotUrl}
                                 alt={t("table.screenshotDialogTitle")}
                                 className="w-full max-h-[70vh] object-contain"
                             />
@@ -68,7 +105,7 @@ export function PaymentScreenshotViewer({ screenshotUrl }: PaymentScreenshotView
                             <Button
                                 variant="outline"
                                 size="sm"
-                                onClick={() => window.open(screenshotUrl, "_blank")}
+                                onClick={() => window.open(resolvedScreenshotUrl, "_blank")}
                             >
                                 {t("table.screenshotOpenFull")}
                             </Button>
