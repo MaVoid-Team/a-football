@@ -28,7 +28,7 @@ RSpec.describe Bookings::Creator do
       expect(result.data.total_price).to eq(200.00)
     end
 
-    it "supports a 30-minute booking with prorated price" do
+    it "rejects a single 30-minute slot" do
       params = valid_params.merge(
         booking_slots_attributes: [
           { start_time: "10:00", end_time: "10:30" }
@@ -37,9 +37,38 @@ RSpec.describe Bookings::Creator do
 
       result = described_class.new(params: params, branch: branch).call
 
+      expect(result).to be_failure
+      expect(result.errors).to include("Minimum booking duration is 1 hour. Please select at least two adjacent 30-minute slots")
+    end
+
+    it "rejects non-adjacent slot selections" do
+      params = valid_params.merge(
+        booking_slots_attributes: [
+          { start_time: "10:00", end_time: "10:30" },
+          { start_time: "14:00", end_time: "14:30" }
+        ]
+      )
+
+      result = described_class.new(params: params, branch: branch).call
+
+      expect(result).to be_failure
+      expect(result.errors).to include("Selected slots must be adjacent. Please remove gaps between selected times")
+    end
+
+    it "allows extending booking by another adjacent half-hour" do
+      params = valid_params.merge(
+        booking_slots_attributes: [
+          { start_time: "10:00", end_time: "10:30" },
+          { start_time: "10:30", end_time: "11:00" },
+          { start_time: "11:00", end_time: "11:30" }
+        ]
+      )
+
+      result = described_class.new(params: params, branch: branch).call
+
       expect(result).to be_success
-      expect(result.data.hours.to_f).to eq(0.5)
-      expect(result.data.total_price).to eq(50.00)
+      expect(result.data.hours.to_f).to eq(1.5)
+      expect(result.data.total_price).to eq(150.00)
     end
 
     it "returns failure for inactive branch" do
@@ -123,13 +152,14 @@ RSpec.describe Bookings::Creator do
 
         params = valid_params.merge(
           booking_slots_attributes: [
-            { start_time: "10:30", end_time: "11:00" }
+            { start_time: "10:30", end_time: "11:00" },
+            { start_time: "11:00", end_time: "11:30" }
           ]
         )
         result = described_class.new(params: params, branch: branch).call
 
         expect(result).to be_success
-        expect(result.data.total_price).to eq(75.00)
+        expect(result.data.total_price).to eq(150.00)
       end
 
       it "falls back to base court price for uncovered hours" do

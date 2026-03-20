@@ -26,6 +26,29 @@ A modern football court booking platform. Book your court in seconds, manage eve
 This README would normally document whatever steps are necessary to get the
 application up and running.
 
+## VPS Deployment Without BuildKit
+
+If you want to avoid BuildKit/buildx cache usage on your VPS, deploy with the
+classic Docker builder:
+
+1. Disable buildx redirection on the VPS (one-time):
+	 - `docker buildx uninstall || true`
+2. Disable Docker BuildKit at daemon level (one-time):
+	 - Create/update `/etc/docker/daemon.json` with:
+		 ```json
+		 {
+			 "features": {
+				 "buildkit": false
+			 }
+		 }
+		 ```
+	 - Restart Docker: `sudo systemctl restart docker`
+3. Run `chmod +x script/deploy_no_buildkit.sh` once on the server.
+4. Deploy with `./script/deploy_no_buildkit.sh`.
+
+This script sets `DOCKER_BUILDKIT=0`, `COMPOSE_DOCKER_CLI_BUILD=0`, and
+`BUILDX_BAKE=0`, and uses `docker-compose` when available.
+
 Things you may want to cover:
 
 * Ruby version

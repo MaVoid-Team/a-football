@@ -373,6 +373,13 @@
     "confirmBooking": "Confirm Booking",
     "bookingSuccess": "You're all set! Court booked successfully!",
     "bookingFailed": "Something went wrong. Please try again.",
+    "slotRules": {
+      "helper": "Minimum booking is 1 hour: select at least 2 adjacent 30-minute slots. You can add more slots, but they must stay adjacent.",
+      "minimumHour": "Minimum booking is 1 hour. Please select at least 2 adjacent slots.",
+      "adjacentOnly": "Selected slots must be adjacent with no gaps.",
+      "exactHalfHour": "Each selected slot must be exactly 30 minutes.",
+      "unavailable": "One or more selected slots are no longer available. Please reselect from the available times."
+    },
     "selectCourtFirst": "Please select a court first.",
     "noCourts": "No courts available for this branch.",
     "termsPrefix": "I agree to the",

@@ -38,6 +38,30 @@ interface Slot {
     end_time: string;
 }
 
+const toMinutes = (time: string) => {
+    const [hours, minutes] = time.split(":").map(Number);
+    return hours * 60 + minutes;
+};
+
+const areSlotsAdjacent = (slots: Slot[]) => {
+    if (slots.length <= 1) return true;
+
+    const sorted = [...slots].sort((a, b) => toMinutes(a.start_time) - toMinutes(b.start_time));
+    return sorted.every((slot, index) => {
+        if (index === 0) return true;
+        return sorted[index - 1].end_time === slot.start_time;
+    });
+};
+
+const mapBookingError = (error: string, t: (key: string) => string) => {
+    if (error.includes("Minimum booking duration is 1 hour")) return t("slotRules.minimumHour");
+    if (error.includes("Selected slots must be adjacent")) return t("slotRules.adjacentOnly");
+    if (error.includes("Each selected slot must be exactly 30 minutes")) return t("slotRules.exactHalfHour");
+    if (error.includes("Booking range must be in 30-minute intervals")) return t("slotRules.exactHalfHour");
+    if (error.includes("Time slot is not available")) return t("slotRules.unavailable");
+    return error;
+};
+
 export function BookingView() {
     const t = useTranslations("publicBook");
 
@@ -147,15 +171,36 @@ export function BookingView() {
             const updated = exists
                 ? prev.filter(s => s.start_time !== slot.start_time)
                 : [...prev, slot].sort((a, b) => a.start_time.localeCompare(b.start_time));
+
+            if (!areSlotsAdjacent(updated)) {
+                toast.error(t("slotRules.adjacentOnly"));
+                return prev;
+            }
+
             form.setValue("booking_slots_attributes", updated);
             form.clearErrors("booking_slots_attributes");
             return updated;
         });
-    }, [form]);
+    }, [form, t]);
 
     const onSubmit = async (data: BookingFormData) => {
         setSubmitError(null);
         const slots = data.booking_slots_attributes;
+
+        if (slots.length < 2) {
+            const error = t("slotRules.minimumHour");
+            setSubmitError(error);
+            toast.error(error);
+            return;
+        }
+
+        if (!areSlotsAdjacent(slots)) {
+            const error = t("slotRules.adjacentOnly");
+            setSubmitError(error);
+            toast.error(error);
+            return;
+        }
+
         const bookingData: BookingFormData = {
             ...data,
             branch_id: Number(selectedBranch!.id),
@@ -177,8 +222,9 @@ export function BookingView() {
                 (res as any).error?.response?.data?.errors?.[0] ??
                 (res as any).error?.response?.data?.error ??
                 t("bookingFailed");
-            setSubmitError(errMsg);
-            toast.error(errMsg);
+            const mappedError = mapBookingError(String(errMsg), t);
+            setSubmitError(mappedError);
+            toast.error(mappedError);
         }
     };
 
@@ -203,7 +249,7 @@ export function BookingView() {
         !!selectedBranch &&
         !!selectedCourt &&
         !!selectedDate &&
-        selectedSlots.length > 0 &&
+        selectedSlots.length >= 2 &&
         (!hasTerms || acceptedTerms) &&
         !bookingLoading;
 
@@ -410,9 +456,13 @@ export function BookingView() {
                                         </div>
                                     )}
 
+                                    <div className="mt-3 p-3 bg-muted/30 border border-border/60 rounded-lg text-xs text-muted-foreground">
+                                        {t("slotRules.helper")}
+                                    </div>
+
                                     {form.formState.errors.booking_slots_attributes && (
                                         <p className="text-[0.8rem] font-medium text-destructive mt-3">
-                                            {t("selectAvailableSlot")}
+                                            {selectedSlots.length < 2 ? t("slotRules.minimumHour") : t("slotRules.adjacentOnly")}
                                         </p>
                                     )}
                                 </>

@@ -43,7 +43,7 @@ export const bookingFormSchema = z.object({
     booking_slots_attributes: z.array(z.object({
         start_time: z.string().regex(/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/, "Invalid time format"),
         end_time: z.string().regex(/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/, "Invalid time format"),
-    })).min(1, "At least one time slot is required"),
+    })).min(2, "Select at least two adjacent time slots (1 hour minimum)"),
     notes: z.string().optional(),
     promo_code: z.string().optional(),
 });

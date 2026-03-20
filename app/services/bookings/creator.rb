@@ -16,7 +16,8 @@ module Bookings
 
       slots = normalize_slots(@params[:booking_slots_attributes])
       if slots.empty? && @params[:start_time].present? && @params[:end_time].present?
-        slots = [{ "start_time" => @params[:start_time].to_s, "end_time" => @params[:end_time].to_s }]
+        slots = expand_range_to_half_hour_slots(@params[:start_time], @params[:end_time])
+        return ServiceResult.failure("Booking range must be in 30-minute intervals") if slots.empty?
       end
       return ServiceResult.failure("At least one slot must be provided") if slots.empty?
 
@@ -47,6 +48,9 @@ module Bookings
       slot_ranges.combination(2).each do |a, b|
         return ServiceResult.failure("Selected slots overlap with each other") if a.overlaps?(b)
       end
+
+      sequence_error = validate_slot_sequence(parsed_slots)
+      return ServiceResult.failure(sequence_error) if sequence_error
 
       original_price  = total_price
       discount_amount = 0
@@ -148,6 +152,42 @@ module Bookings
     def parse_time(time_str)
       Time.zone.parse(time_str.to_s)
     rescue ArgumentError, TypeError
+      nil
+    end
+
+    def expand_range_to_half_hour_slots(start_time, end_time)
+      start_at = parse_time(start_time)
+      end_at = parse_time(end_time)
+      return [] unless start_at && end_at && end_at > start_at
+
+      slots = []
+      current = start_at
+
+      while current < end_at
+        segment_end = current + SLOT_INTERVAL
+        return [] if segment_end > end_at
+
+        slots << {
+          "start_time" => current.strftime("%H:%M"),
+          "end_time" => segment_end.strftime("%H:%M")
+        }
+        current = segment_end
+      end
+
+      slots
+    end
+
+    def validate_slot_sequence(parsed_slots)
+      return "Minimum booking duration is 1 hour. Please select at least two adjacent 30-minute slots" if parsed_slots.length < 2
+
+      unless parsed_slots.all? { |slot| (slot[:end_time] - slot[:start_time]).to_i == SLOT_INTERVAL }
+        return "Each selected slot must be exactly 30 minutes"
+      end
+
+      parsed_slots.each_cons(2) do |prev_slot, next_slot|
+        return "Selected slots must be adjacent. Please remove gaps between selected times" unless prev_slot[:end_time] == next_slot[:start_time]
+      end
+
       nil
     end
 

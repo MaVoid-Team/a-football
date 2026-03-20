@@ -40,9 +40,11 @@ This plan is prioritized for **fast wins first**, then medium-term improvements.
 
 ### Phase 1 — Measure & cache (do next)
 
-1. **Enable BuildKit and persistent cache on VPS**
-   - Ensure Docker BuildKit is enabled.
-   - Reuse build cache across deployments (buildx cache-to/cache-from if CI is used).
+1. **Use classic Docker builder on VPS (BuildKit disabled)**
+   - Set `DOCKER_BUILDKIT=0` and `COMPOSE_DOCKER_CLI_BUILD=0` for deployment commands.
+   - Set `BUILDX_BAKE=0` for compose/buildx bake fallback paths.
+   - On VPS, disable buildx redirection (`docker buildx uninstall`) and set Docker daemon `features.buildkit=false`.
+   - Use `./script/deploy_no_buildkit.sh` to keep this behavior consistent.
 2. **Capture baseline metrics for each stage**
    - Time backend image build, frontend image build, and total `docker compose up --build`.
    - Keep historical timings in a simple deployment log.
