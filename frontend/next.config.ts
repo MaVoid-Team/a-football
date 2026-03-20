@@ -3,6 +3,11 @@ import createNextIntlPlugin from "next-intl/plugin";
 
 const withNextIntl = createNextIntlPlugin("./i18n/request.ts");
 
+const resolvedApiBase = (process.env.NEXT_PUBLIC_API_URL ?? "").trim().replace(/\/+$/, "");
+const apiPathBase = resolvedApiBase
+  ? `${resolvedApiBase}${resolvedApiBase.endsWith("/api") ? "" : "/api"}`
+  : "http://app:3000/api";
+
 const nextConfig: NextConfig = {
   output: "standalone",
   compress: true,
@@ -20,6 +25,14 @@ const nextConfig: NextConfig = {
   },
   poweredByHeader: false,
   productionBrowserSourceMaps: false,
+  async rewrites() {
+    return [
+      {
+        source: "/rails/active_storage/:path*",
+        destination: `${apiPathBase}/rails/active_storage/:path*`,
+      },
+    ];
+  },
 };
 
 export default withNextIntl(nextConfig);

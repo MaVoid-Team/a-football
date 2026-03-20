@@ -17,8 +17,6 @@ interface PaymentScreenshotViewerProps {
 
 function resolveScreenshotUrl(rawUrl: string): string {
     const apiBase = (process.env.NEXT_PUBLIC_API_URL ?? "").trim().replace(/\/+$/, "");
-    if (!apiBase) return rawUrl;
-
     const marker = "/rails/active_storage/";
 
     let storagePath = "";
@@ -41,12 +39,19 @@ function resolveScreenshotUrl(rawUrl: string): string {
 
     if (!storagePath) return rawUrl;
 
+    const normalizedStoragePath = storagePath.startsWith("/api/") ? storagePath : `/api${storagePath}`;
+
+    if (!apiBase) {
+        return normalizedStoragePath;
+    }
+
     try {
         const apiUrl = new URL(apiBase);
         const apiPath = apiUrl.pathname.replace(/\/+$/, "");
-        return `${apiUrl.origin}${apiPath}${storagePath}`;
+        const effectiveApiPath = apiPath.endsWith("/api") ? apiPath : `${apiPath}/api`;
+        return `${apiUrl.origin}${effectiveApiPath}${storagePath}`;
     } catch {
-        return rawUrl;
+        return normalizedStoragePath;
     }
 }
 
