@@ -57,7 +57,8 @@ module Api
         {
           host: request.host,
           port: request.port,
-          protocol: request.protocol.chomp("://")
+          protocol: request.protocol.chomp("://"),
+          script_name: "/api"
         }
       end
     end

@@ -31,8 +31,10 @@ class BookingSerializer
 
   attribute :payment_screenshot_url do |booking, params|
     if booking.payment_screenshot.attached?
-      url_options = params[:url_options]
-      if url_options
+      url_options = (params[:url_options] || {}).dup
+      url_options[:script_name] ||= "/api"
+
+      if url_options[:host].present?
         Rails.application.routes.url_helpers.rails_blob_url(
           booking.payment_screenshot,
           **url_options
@@ -40,7 +42,8 @@ class BookingSerializer
       else
         Rails.application.routes.url_helpers.rails_blob_path(
           booking.payment_screenshot,
-          only_path: true
+          only_path: true,
+          script_name: url_options[:script_name]
         )
       end
     else
