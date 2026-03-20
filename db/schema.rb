@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_02_24_000013) do
+ActiveRecord::Schema[8.1].define(version: 2026_03_20_000001) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gist"
   enable_extension "pg_catalog.plpgsql"
@@ -47,7 +47,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_24_000013) do
     t.datetime "created_at", null: false
     t.date "date", null: false
     t.time "end_time", null: false
-    t.integer "hours", null: false
+    t.decimal "hours", precision: 5, scale: 2, null: false
     t.integer "lock_version", default: 0, null: false
     t.integer "payment_status", default: 0, null: false
     t.time "start_time", null: false

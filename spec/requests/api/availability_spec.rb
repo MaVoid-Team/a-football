@@ -15,7 +15,7 @@ RSpec.describe "Api::Availability", type: :request do
       expect(response).to have_http_status(:ok)
       json = JSON.parse(response.body)
       expect(json["available_slots"]).to be_an(Array)
-      expect(json["available_slots"].length).to eq(15)
+      expect(json["available_slots"].length).to eq(30)
     end
 
     it "excludes booked slots" do
@@ -31,6 +31,7 @@ RSpec.describe "Api::Availability", type: :request do
       json = JSON.parse(response.body)
       times = json["available_slots"].map { |s| s["start_time"] }
       expect(times).not_to include("10:00")
+      expect(times).not_to include("10:30")
     end
   end
 end

@@ -28,6 +28,28 @@ RSpec.describe "Api::Bookings", type: :request do
       expect(data["attributes"]["total_price"]).to eq("300.0")
     end
 
+    it "creates a 30-minute booking with prorated total" do
+      params = {
+        branch_id: branch.id,
+        booking: {
+          court_id: court.id,
+          user_name: "Test User",
+          user_phone: "+201001234567",
+          date: Date.tomorrow.to_s,
+          booking_slots_attributes: [
+            { start_time: "10:00", end_time: "10:30" }
+          ]
+        }
+      }
+
+      post "/api/bookings", params: params
+
+      expect(response).to have_http_status(:created)
+      data = JSON.parse(response.body)["data"]
+      expect(data["attributes"]["hours"]).to eq(0.5)
+      expect(data["attributes"]["total_price"]).to eq("75.0")
+    end
+
     it "returns errors for overlapping booking" do
       create(:booking, court: court, date: Date.tomorrow,
              start_time: "10:00", end_time: "12:00")

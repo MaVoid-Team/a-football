@@ -2,6 +2,7 @@ module Availability
   class Calculator
     DEFAULT_OPENING_HOUR = 8
     DEFAULT_CLOSING_HOUR = 23
+    SLOT_INTERVAL = 30.minutes
     CACHE_TTL = 5.minutes.to_i
 
     def initialize(branch_id:, court_id:, date:)
@@ -26,7 +27,7 @@ module Availability
     end
 
     def compute_available_slots
-      all_slots = generate_hourly_slots
+      all_slots = generate_time_slots
       booked = booked_slots
       blocked = blocked_slots
 
@@ -36,15 +37,24 @@ module Availability
       end
     end
 
-    def generate_hourly_slots
+    def generate_time_slots
       opening, closing = operating_hours
 
-      (opening...closing).map do |hour|
-        {
-          "start_time" => format("%02d:00", hour),
-          "end_time" => format("%02d:00", hour + 1)
+      current = Time.zone.parse(format("2000-01-01 %02d:00", opening))
+      closing_time = Time.zone.parse(format("2000-01-01 %02d:00", closing))
+
+      slots = []
+
+      while current < closing_time
+        slot_end = [current + SLOT_INTERVAL, closing_time].min
+        slots << {
+          "start_time" => current.strftime("%H:%M"),
+          "end_time" => slot_end.strftime("%H:%M")
         }
+        current = slot_end
       end
+
+      slots
     end
 
     def operating_hours

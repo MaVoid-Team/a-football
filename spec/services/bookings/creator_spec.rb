@@ -24,8 +24,22 @@ RSpec.describe Bookings::Creator do
       expect(result).to be_success
       expect(result.data).to be_a(Booking)
       expect(result.data.status).to eq("confirmed")
-      expect(result.data.hours).to eq(2)
+      expect(result.data.hours.to_f).to eq(2.0)
       expect(result.data.total_price).to eq(200.00)
+    end
+
+    it "supports a 30-minute booking with prorated price" do
+      params = valid_params.merge(
+        booking_slots_attributes: [
+          { start_time: "10:00", end_time: "10:30" }
+        ]
+      )
+
+      result = described_class.new(params: params, branch: branch).call
+
+      expect(result).to be_success
+      expect(result.data.hours.to_f).to eq(0.5)
+      expect(result.data.total_price).to eq(50.00)
     end
 
     it "returns failure for inactive branch" do
@@ -102,6 +116,20 @@ RSpec.describe Bookings::Creator do
 
         expect(result).to be_success
         expect(result.data.total_price).to eq(300.00)
+      end
+
+      it "prorates range price for 30-minute bookings" do
+        create(:court_hourly_rate, court: court, start_hour: 10, end_hour: 12, price_per_hour: 150.00)
+
+        params = valid_params.merge(
+          booking_slots_attributes: [
+            { start_time: "10:30", end_time: "11:00" }
+          ]
+        )
+        result = described_class.new(params: params, branch: branch).call
+
+        expect(result).to be_success
+        expect(result.data.total_price).to eq(75.00)
       end
 
       it "falls back to base court price for uncovered hours" do

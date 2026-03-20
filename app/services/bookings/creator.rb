@@ -1,5 +1,7 @@
 module Bookings
   class Creator
+    SLOT_INTERVAL = 30.minutes
+
     def initialize(params:, branch:)
       @params = params
       @branch = branch
@@ -23,8 +25,8 @@ module Bookings
       return ServiceResult.failure("Cannot book in the past") if date < Date.current
 
       parsed_slots = []
-      total_hours   = 0
-      total_price   = 0
+      total_hours   = BigDecimal("0")
+      total_price   = BigDecimal("0")
       slot_ranges   = []
 
       hourly_rates = court.hourly_rates.active.ordered.to_a
@@ -36,9 +38,11 @@ module Bookings
         return ServiceResult.failure("Slot end time must be after start time") if e_time <= s_time
         slot_ranges  << (s_time...e_time)
         parsed_slots << { start_time: s_time, end_time: e_time }
-        total_hours  += ((e_time - s_time) / 1.hour).ceil
+        total_hours  += BigDecimal(((e_time - s_time) / 1.hour.to_f).to_s)
         total_price  += calculate_slot_price(s_time, e_time, court, hourly_rates)
       end
+
+      parsed_slots.sort_by! { |slot| slot[:start_time] }
 
       slot_ranges.combination(2).each do |a, b|
         return ServiceResult.failure("Selected slots overlap with each other") if a.overlaps?(b)
@@ -148,15 +152,20 @@ module Bookings
     end
 
     def calculate_slot_price(start_time, end_time, court, hourly_rates)
-      total   = 0
+      total   = BigDecimal("0")
       current = start_time
+
       while current < end_time
-        hour  = current.hour
-        rate  = hourly_rates.find { |r| r.start_hour <= hour && r.end_hour > hour }
-        total += rate ? rate.price_per_hour : court.price_per_hour
-        current += 1.hour
+        segment_end = [current + SLOT_INTERVAL, end_time].min
+        hour = current.hour
+        rate = hourly_rates.find { |r| r.start_hour <= hour && r.end_hour > hour }
+        hourly_price = BigDecimal((rate ? rate.price_per_hour : court.price_per_hour).to_s)
+        hours_fraction = BigDecimal(((segment_end - current) / 1.hour.to_f).to_s)
+        total += hourly_price * hours_fraction
+        current = segment_end
       end
-      total
+
+      total.round(2)
     end
   end
 end

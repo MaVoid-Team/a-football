@@ -8,10 +8,11 @@ RSpec.describe Availability::Calculator do
   subject { described_class.new(branch_id: branch.id, court_id: court.id, date: date) }
 
   describe "#call" do
-    it "returns all hourly slots when no bookings or blocks" do
+    it "returns all 30-minute slots when no bookings or blocks" do
       slots = subject.call
-      expect(slots.length).to eq(15) # 8:00-23:00
+      expect(slots.length).to eq(30) # 8:00-23:00 in 30-minute intervals
       expect(slots.first["start_time"]).to eq("08:00")
+      expect(slots.first["end_time"]).to eq("08:30")
       expect(slots.last["end_time"]).to eq("23:00")
     end
 
@@ -22,7 +23,8 @@ RSpec.describe Availability::Calculator do
       slots = subject.call
       start_times = slots.map { |s| s["start_time"] }
       expect(start_times).not_to include("10:00")
-      expect(slots.length).to eq(14)
+      expect(start_times).not_to include("10:30")
+      expect(slots.length).to eq(28)
     end
 
     it "removes blocked slots" do
@@ -47,7 +49,7 @@ RSpec.describe Availability::Calculator do
              start_time: "09:00", end_time: "10:00", status: :confirmed)
 
       cached_slots = subject.call
-      expect(cached_slots.length).to eq(15) # still cached
+      expect(cached_slots.length).to eq(30) # still cached
     end
   end
 end

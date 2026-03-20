@@ -16,6 +16,10 @@ class BookingSerializer
     booking.end_time&.strftime("%H:%M")
   end
 
+  attribute :hours do |booking|
+    booking.hours&.to_f
+  end
+
   attribute :booking_slots do |booking|
     booking.booking_slots.map do |slot|
       {
