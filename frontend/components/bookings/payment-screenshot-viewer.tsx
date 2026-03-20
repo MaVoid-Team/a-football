@@ -39,7 +39,7 @@ function resolveScreenshotUrl(rawUrl: string): string {
 
     if (!storagePath) return rawUrl;
 
-    const normalizedStoragePath = storagePath.startsWith("/api/") ? storagePath : `/api${storagePath}`;
+    const normalizedStoragePath = storagePath.startsWith("/") ? storagePath : `/${storagePath}`;
 
     if (!apiBase) {
         return normalizedStoragePath;
@@ -48,8 +48,7 @@ function resolveScreenshotUrl(rawUrl: string): string {
     try {
         const apiUrl = new URL(apiBase);
         const apiPath = apiUrl.pathname.replace(/\/+$/, "");
-        const effectiveApiPath = apiPath.endsWith("/api") ? apiPath : `${apiPath}/api`;
-        return `${apiUrl.origin}${effectiveApiPath}${storagePath}`;
+        return `${apiUrl.origin}${apiPath}${normalizedStoragePath}`;
     } catch {
         return normalizedStoragePath;
     }
