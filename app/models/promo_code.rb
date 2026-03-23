@@ -45,6 +45,10 @@ class PromoCode < ApplicationRecord
     increment!(:used_count)
   end
 
+  def valid_now?
+    starts_at.present? && starts_at <= Time.current && (expires_at.nil? || expires_at > Time.current)
+  end
+
   def expired?
     expires_at.present? && expires_at < Time.current
   end
