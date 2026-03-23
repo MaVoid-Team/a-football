@@ -21,7 +21,8 @@ api.interceptors.request.use(
         // Only access localStorage if we are in the browser
         if (typeof window !== "undefined") {
             const token = localStorage.getItem("auth_token");
-            if (token && config.headers) {
+            // Respect explicit Authorization headers (for player-authenticated public calls)
+            if (token && config.headers && !config.headers.Authorization) {
                 config.headers.Authorization = `Bearer ${token}`;
             }
         }

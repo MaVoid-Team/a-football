@@ -42,6 +42,7 @@ export function BookingConfirmation({
   const explicitDiscount = Number(booking.discount_amount ?? 0);
   const calculatedDiscount = Math.max(originalAmount - finalAmount, 0);
   const discountAmount = explicitDiscount > 0 ? explicitDiscount : calculatedDiscount;
+  const hasAppliedPromo = Boolean(booking.promo_code_id || booking.promo_code_code);
 
   // Scroll to top when confirmation page loads
   useEffect(() => {
@@ -148,7 +149,7 @@ export function BookingConfirmation({
             </div>
           </div>
 
-          {(originalAmount > 0 || finalAmount > 0) && (
+          {hasAppliedPromo && (originalAmount > 0 || finalAmount > 0) && (
             <div className="pt-6 border-t border-border/50">
               <div className="flex items-start gap-4">
                 <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-green-500/10 text-green-600 dark:bg-green-900/30 dark:text-green-400 shrink-0">
@@ -160,9 +161,7 @@ export function BookingConfirmation({
                   </p>
                   <div className="space-y-2">
                     <p className="text-sm font-semibold text-green-600 dark:text-green-400">
-                      {discountAmount > 0
-                        ? (booking.promo_code_id ? t("promoCodeApplied") : t("discountApplied"))
-                        : t("discountApplied")}
+                      {discountAmount > 0 ? t("promoCodeApplied") : t("discountApplied")}
                     </p>
                     <div className="text-sm text-muted-foreground">
                       <div className="flex justify-between">

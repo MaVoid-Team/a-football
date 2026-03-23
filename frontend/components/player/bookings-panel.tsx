@@ -7,9 +7,10 @@ import { AccountShell } from "@/components/player/account-shell";
 import { Link } from "@/i18n/navigation";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { formatCurrency } from "@/lib/format-currency";
 
 export function BookingsPanel() {
-    const { fetchBookings } = usePlayerAccountAPI();
+    const { fetchBookings, error } = usePlayerAccountAPI();
     const [bookings, setBookings] = useState<Booking[]>([]);
 
     useEffect(() => {
@@ -24,7 +25,10 @@ export function BookingsPanel() {
             backLabel="Back to Booking"
         >
             <div className="space-y-4">
-                {bookings.length === 0 ? (
+                {error && (
+                    <Card><CardContent className="py-6 text-center text-destructive">{error}</CardContent></Card>
+                )}
+                {!error && bookings.length === 0 ? (
                     <Card><CardContent className="py-12 text-center text-muted-foreground">No bookings yet.</CardContent></Card>
                 ) : bookings.map((booking) => (
                     <Card key={booking.id}>
@@ -40,7 +44,7 @@ export function BookingsPanel() {
                         </CardHeader>
                         <CardContent className="space-y-2 text-sm">
                             <div>Time: {booking.start_time} - {booking.end_time}</div>
-                            <div>Total: {booking.total_price || "-"}</div>
+                            <div>Total: {booking.total_price ? formatCurrency(Number(booking.total_price)) : "-"}</div>
                             <Link href="/book" className="text-primary-text underline">
                                 Book Another Court
                             </Link>

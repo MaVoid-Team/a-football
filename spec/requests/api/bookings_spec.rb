@@ -4,6 +4,7 @@ RSpec.describe "Api::Bookings", type: :request do
   describe "POST /api/bookings" do
     let(:branch) { create(:branch, active: true) }
     let(:court) { create(:court, branch: branch, price_per_hour: 150.00) }
+    let(:user) { create(:user, name: "Player User", phone: "+201001111111") }
 
     let(:valid_params) do
       {
@@ -26,6 +27,20 @@ RSpec.describe "Api::Bookings", type: :request do
       data = JSON.parse(response.body)["data"]
       expect(data["attributes"]["status"]).to eq("confirmed")
       expect(data["attributes"]["total_price"]).to eq("300.0")
+    end
+
+    it "links booking to authenticated player account" do
+      params = valid_params.deep_dup
+      params[:booking].delete(:user_name)
+      params[:booking].delete(:user_phone)
+
+      post "/api/bookings", params: params, headers: user_auth_headers(user)
+
+      expect(response).to have_http_status(:created)
+      booking = Booking.order(:id).last
+      expect(booking.user_id).to eq(user.id)
+      expect(booking.user_name).to eq(user.name)
+      expect(booking.user_phone).to eq(user.phone)
     end
 
     it "rejects booking with a single 30-minute slot" do
@@ -144,6 +159,42 @@ RSpec.describe "Api::Bookings", type: :request do
       error_codes = JSON.parse(response.body)["error_codes"]
       expect(errors).to include("Deposit payment is not available for this branch")
       expect(error_codes).to include("deposit_unavailable_for_branch")
+    end
+  end
+
+  describe "GET /api/me/bookings" do
+    let(:branch) { create(:branch, active: true) }
+    let(:court) { create(:court, branch: branch) }
+    let(:user) { create(:user) }
+    let(:other_user) { create(:user) }
+
+    let!(:own_booking) do
+      create(
+        :booking,
+        branch: branch,
+        court: court,
+        user: user,
+        date: Date.tomorrow
+      )
+    end
+
+    let!(:other_booking) do
+      create(
+        :booking,
+        branch: branch,
+        court: court,
+        user: other_user,
+        date: Date.tomorrow
+      )
+    end
+
+    it "returns only bookings linked to current player" do
+      get "/api/me/bookings", headers: user_auth_headers(user)
+
+      expect(response).to have_http_status(:ok)
+      ids = JSON.parse(response.body).fetch("data", []).map { |item| item["id"].to_i }
+      expect(ids).to include(own_booking.id)
+      expect(ids).not_to include(other_booking.id)
     end
   end
 end

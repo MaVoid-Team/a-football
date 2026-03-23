@@ -2,6 +2,7 @@
 
 import { useState, useCallback } from "react";
 import api from "@/lib/axios";
+import playerApi from "@/lib/player-api";
 import { Booking, BookingFormData, BookingUpdateData } from "@/schemas/booking.schema";
 import { PaginationMeta } from "@/schemas/api.schema";
 import { buildQueryString } from "@/lib/build-query-string";
@@ -68,6 +69,7 @@ export function useBookingsAPI() {
             const { branch_id, ...bookingData } = data;
             const playerToken =
                 typeof window !== "undefined" ? localStorage.getItem("player_auth_token") : null;
+            const client = playerToken ? playerApi : api;
 
             if (paymentScreenshot) {
                 const formData = new FormData();
@@ -86,7 +88,7 @@ export function useBookingsAPI() {
 
                 formData.append("booking[payment_screenshot]", paymentScreenshot);
 
-                const response = await api.post("/api/bookings", formData, {
+                const response = await client.post("/api/bookings", formData, {
                     headers: {
                         "Content-Type": "multipart/form-data",
                         ...(playerToken ? { Authorization: `Bearer ${playerToken}` } : {}),
@@ -94,7 +96,7 @@ export function useBookingsAPI() {
                 });
                 return { success: true, data: response.data };
             } else {
-                const response = await api.post(
+                const response = await client.post(
                     "/api/bookings",
                     { branch_id, booking: bookingData },
                     playerToken ? { headers: { Authorization: `Bearer ${playerToken}` } } : undefined
