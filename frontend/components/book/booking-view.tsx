@@ -77,6 +77,7 @@ export function BookingView() {
     const [selectedCourt, setSelectedCourt] = useState<Court | null>(null);
     const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
     const [selectedSlots, setSelectedSlots] = useState<Slot[]>([]);
+    const [appliedPromoCode, setAppliedPromoCode] = useState("");
     const [bookingResult, setBookingResult] = useState<Booking | null>(null);
     const [acceptedTerms, setAcceptedTerms] = useState(false);
     const [submitError, setSubmitError] = useState<string | null>(null);
@@ -130,9 +131,11 @@ export function BookingView() {
 
     const clearSlots = useCallback(() => {
         setSelectedSlots([]);
+        setAppliedPromoCode("");
         form.setValue("start_time", "");
         form.setValue("end_time", "");
         form.setValue("booking_slots_attributes", []);
+        form.setValue("promo_code", "");
     }, [form]);
 
     // ── Handlers ──
@@ -209,6 +212,7 @@ export function BookingView() {
             court_id: Number(selectedCourt!.id),
             start_time: slots[0]?.start_time,
             end_time: slots[slots.length - 1]?.end_time,
+            promo_code: appliedPromoCode || data.promo_code || "",
         };
 
         const res = await createBooking(bookingData, paymentScreenshot);
@@ -535,6 +539,7 @@ export function BookingView() {
                                 branchId={selectedBranch ? String(selectedBranch.id) : undefined}
                                 selectedCourt={selectedCourt ?? undefined}
                                 selectedSlots={selectedSlots}
+                                onAppliedPromoCodeChange={setAppliedPromoCode}
                             />
 
                             {paymentNumber && (
