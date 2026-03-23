@@ -32,6 +32,8 @@ module Tournaments
         }
       )
 
+      log_match_played_activity
+
       ServiceResult.success(@match)
     rescue ActiveRecord::RecordInvalid => e
       ServiceResult.failure(e.record.errors.full_messages, error_codes: ["score_update_invalid"])
@@ -197,6 +199,29 @@ module Tournaments
 
     def failure(code, message)
       ServiceResult.failure(message, error_codes: [code])
+    end
+
+    def log_match_played_activity
+      team_ids = [@match.team1_id, @match.team2_id].compact
+      return if team_ids.empty?
+
+      TournamentTeam.where(id: team_ids).includes(:player1, :player2).find_each do |team|
+        [team.player1, team.player2].compact.each do |player|
+          Crm::ActivityLogger.new(
+            player: player,
+            activity_type: "match_played",
+            reference: @match,
+            branch_id: @match.tournament.branch_id,
+            metadata: {
+              tournament_id: @match.tournament_id,
+              match_id: @match.id,
+              team_id: team.id,
+              winner_id: @winner_id,
+              score: @score
+            }
+          ).call
+        end
+      end
     end
 
     def scoreable_status?

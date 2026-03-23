@@ -18,6 +18,23 @@ class TournamentPlayer < ApplicationRecord
             allow_blank: true
 
   scope :for_user, ->(user_id) { where(user_id: user_id) }
+  scope :guests_only, -> { where(user_id: nil) }
+  scope :active_recently, -> { where("last_activity_date >= ?", 7.days.ago) }
+  scope :inactive_since, -> { where("last_activity_date <= ? OR last_activity_date IS NULL", 30.days.ago) }
+
+  def add_tag!(tag)
+    normalized = tag.to_s.strip.downcase
+    return if normalized.blank?
+
+    update!(tags: (tags + [normalized]).uniq)
+  end
+
+  def remove_tag!(tag)
+    normalized = tag.to_s.strip.downcase
+    return if normalized.blank?
+
+    update!(tags: tags - [normalized])
+  end
 
   def self.for_account(user)
     return none if user.blank?

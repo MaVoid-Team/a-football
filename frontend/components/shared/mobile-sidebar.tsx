@@ -69,6 +69,7 @@ export function MobileSidebar({ open, onClose }: MobileSidebarProps) {
         { name: t("packageRequests"), href: "/package-requests", icon: PackageOpen },
         { name: t("events"), href: "/events", icon: CalendarRange },
         { name: t("tournaments"), href: "/tournaments", icon: Trophy },
+        { name: t("crm"), href: "/crm", icon: Users },
         { name: t("promoCodes"), href: "/promo-codes", icon: Percent },
         { name: t("blockedSlots"), href: "/blocked-slots", icon: Lock },
         { name: t("reviews"), href: "/reviews", icon: MessageSquare },

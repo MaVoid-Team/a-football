@@ -42,7 +42,8 @@ export default function BookingsPage() {
         loading: bookingsLoading,
         fetchBookings,
         updatePaymentStatus,
-        cancelBooking
+        cancelBooking,
+        markNoShow,
     } = useBookingsAPI();
 
     const { branches, fetchBranches } = useBranchesAPI();
@@ -96,6 +97,16 @@ export default function BookingsPage() {
         if (res.success) {
             toast.success(t("toasts.cancelled"));
             loadData();
+        }
+    };
+
+    const handleMarkNoShow = async (id: string) => {
+        const res = await markNoShow(id);
+        if (res.success) {
+            toast.success(t("toasts.markedNoShow"));
+            loadData();
+        } else {
+            toast.error(t("toasts.markNoShowFailed"));
         }
     };
 
@@ -272,6 +283,7 @@ export default function BookingsPage() {
                     isLoading={bookingsLoading}
                     onUpdatePayment={handleUpdatePayment}
                     onCancel={handleCancel}
+                    onMarkNoShow={handleMarkNoShow}
                 />
 
                 {meta && (

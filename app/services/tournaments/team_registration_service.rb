@@ -62,6 +62,22 @@ module Tournaments
       return transaction_error if transaction_error
       return failure("already_registered", "One of the players is already registered") if registrations.blank?
 
+      registrations.each do |registration|
+        Crm::ActivityLogger.new(
+          player: registration.player,
+          activity_type: "tournament_join",
+          reference: registration,
+          branch_id: @tournament.branch_id,
+          metadata: {
+            tournament_id: @tournament.id,
+            registration_id: registration.id,
+            team_id: registration.team_id,
+            player_name: registration.player.name,
+            player_phone: registration.player.phone
+          }
+        ).call
+      end
+
       source_team.save! if @team_params[:user_team_id].blank? && ActiveModel::Type::Boolean.new.cast(@team_params[:save_team])
 
       ServiceResult.success(registrations.first)

@@ -77,13 +77,33 @@ Rails.application.routes.draw do
           patch :score, controller: "tournament_matches"
         end
       end
-      resources :bookings, only: %i[index show update]
+      resources :bookings, only: %i[index show update] do
+        member do
+          patch :mark_no_show
+        end
+      end
       resources :blocked_slots, only: %i[index show create update destroy]
       resource :settings, only: %i[show create update]
       resources :admins, only: %i[index create update destroy]
       get "statistics", to: "statistics#index"
       get "ratings",    to: "ratings#index"
       resources :reviews, only: %i[index destroy]
+
+      namespace :crm do
+        get "dashboard", to: "dashboard#index"
+        resources :players, only: %i[index show] do
+          member do
+            patch :tags, to: "players#update_tags"
+          end
+        end
+        resources :segments, only: %i[index] do
+          member do
+            get :players
+          end
+        end
+        resources :message_templates, only: %i[index create update]
+        resources :whatsapp_links, only: %i[create]
+      end
     end
   end
 

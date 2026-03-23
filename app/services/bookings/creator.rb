@@ -140,6 +140,20 @@ module Bookings
 
       BookingConfirmationJob.perform_later(booking.id)
 
+      Crm::ActivityLogger.new(
+        player: booking.user,
+        activity_type: "booking",
+        reference: booking,
+        branch_id: booking.branch_id,
+        metadata: {
+          booking_id: booking.id,
+          user_name: booking.user_name,
+          user_phone: booking.user_phone,
+          court_id: booking.court_id,
+          date: booking.date
+        }
+      ).call
+
       ServiceResult.success(booking)
     rescue ActiveRecord::RecordInvalid => e
       ServiceResult.failure(e.record.errors.full_messages, error_codes: ["booking_validation_failed"])

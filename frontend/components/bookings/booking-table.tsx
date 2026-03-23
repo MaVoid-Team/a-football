@@ -28,9 +28,10 @@ interface BookingTableProps {
     isLoading: boolean;
     onUpdatePayment: (id: string, status: "pending" | "paid" | "failed" | "refunded") => Promise<{ success: boolean; error?: any }>;
     onCancel: (id: string) => Promise<void>;
+    onMarkNoShow: (id: string) => Promise<void>;
 }
 
-export function BookingTable({ bookings, branches, courts, isLoading, onUpdatePayment, onCancel }: BookingTableProps) {
+export function BookingTable({ bookings, branches, courts, isLoading, onUpdatePayment, onCancel, onMarkNoShow }: BookingTableProps) {
     const t = useTranslations("bookings");
 
     const getBranchName = (branchId: number) => {
@@ -155,6 +156,9 @@ export function BookingTable({ bookings, branches, courts, isLoading, onUpdatePa
                             </DropdownMenuItem>
                             <DropdownMenuItem onClick={() => onUpdatePayment(b.id, "refunded")} disabled={b.payment_status === "refunded"}>
                                 <Banknote className="mr-2 h-4 w-4 text-destructive" /> {t("table.markAsRefunded")}
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => onMarkNoShow(b.id)}>
+                                <AlertTriangle className="mr-2 h-4 w-4 text-amber-500" /> {t("table.markAsNoShow")}
                             </DropdownMenuItem>
                         </DropdownMenuContent>
                     </DropdownMenu>

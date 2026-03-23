@@ -145,5 +145,32 @@ export function useBookingsAPI() {
         }
     };
 
-    return { bookings, booking, pagination, loading, error, fetchBookings, fetchBooking, createBooking, updateBooking, updatePaymentStatus, cancelBooking };
+    const markNoShow = async (id: string, reason?: string) => {
+        setLoading(true);
+        setError(null);
+        try {
+            await api.patch(`/api/admin/bookings/${id}/mark_no_show`, reason ? { reason } : {});
+            return { success: true };
+        } catch (err: any) {
+            setError(err.response?.data?.error || "Failed to mark no-show");
+            return { success: false, error: err };
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    return {
+        bookings,
+        booking,
+        pagination,
+        loading,
+        error,
+        fetchBookings,
+        fetchBooking,
+        createBooking,
+        updateBooking,
+        updatePaymentStatus,
+        cancelBooking,
+        markNoShow,
+    };
 }

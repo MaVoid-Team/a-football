@@ -38,6 +38,29 @@ module Api
         end
       end
 
+      def mark_no_show
+        booking = Booking.find(params[:id])
+        authorize booking, :update?
+
+        Crm::ActivityLogger.new(
+          player: booking.user,
+          activity_type: "no_show",
+          reference: booking,
+          branch_id: booking.branch_id,
+          actor_admin: current_admin,
+          add_tags: ["no_show"],
+          metadata: {
+            booking_id: booking.id,
+            user_name: booking.user_name,
+            user_phone: booking.user_phone,
+            date: booking.date,
+            reason: params[:reason]
+          }
+        ).call
+
+        render json: BookingSerializer.new(booking, params: { url_options: default_url_options }).serializable_hash, status: :ok
+      end
+
       private
 
       def booking_update_params

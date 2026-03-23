@@ -43,6 +43,19 @@ module Tournaments
 
       return transaction_error if transaction_error
 
+      Crm::ActivityLogger.new(
+        player: registration.player,
+        activity_type: "tournament_join",
+        reference: registration,
+        branch_id: @tournament.branch_id,
+        metadata: {
+          tournament_id: @tournament.id,
+          registration_id: registration.id,
+          player_name: registration.player.name,
+          player_phone: registration.player.phone
+        }
+      ).call
+
       ServiceResult.success(registration)
     rescue ActiveRecord::RecordNotUnique
       failure("already_registered", "Already registered")
