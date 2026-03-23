@@ -56,11 +56,11 @@ module Tournaments
       params = normalized_params
       if params[:user_id].present?
         @tournament.tournament_players.find_or_initialize_by(user_id: params[:user_id]).tap do |player|
-          player.assign_attributes(params.slice(:name, :phone, :skill_level))
+          player.assign_attributes(params.slice(:name, :phone, :email, :skill_level))
         end
       else
         @tournament.tournament_players.find_or_initialize_by(phone: params[:phone]).tap do |player|
-          player.assign_attributes(params.slice(:name, :skill_level))
+          player.assign_attributes(params.slice(:name, :email, :skill_level))
         end
       end
     end

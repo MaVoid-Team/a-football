@@ -11,6 +11,9 @@ class Setting < ApplicationRecord
             numericality: { only_integer: true, greater_than_or_equal_to: 0, less_than: 24 }
   validates :closing_hour, presence: true,
             numericality: { only_integer: true, greater_than: 0, less_than_or_equal_to: 24 }
+  validates :tournament_registration_admin_email,
+            format: { with: URI::MailTo::EMAIL_REGEXP, message: "is invalid" },
+            allow_blank: true
   validate :closing_after_opening
   validate :deposit_percentage_when_enabled
 

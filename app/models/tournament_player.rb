@@ -11,6 +11,9 @@ class TournamentPlayer < ApplicationRecord
 
   validates :name, :phone, presence: true
   validates :phone, uniqueness: { scope: :tournament_id }
+  validates :email,
+            format: { with: URI::MailTo::EMAIL_REGEXP, message: "is invalid" },
+            allow_blank: true
 
   scope :for_user, ->(user_id) { where(user_id: user_id) }
 end

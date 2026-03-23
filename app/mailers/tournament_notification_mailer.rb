@@ -13,6 +13,8 @@ class TournamentNotificationMailer < ApplicationMailer
     base = "Tournament Update: #{@tournament.name}"
 
     case @event
+    when "tournament_registration_created"
+      "#{base} - New Registration Received"
     when "match_scored"
       "#{base} - Match Result Recorded"
     when "registration_status_changed"

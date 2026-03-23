@@ -6,6 +6,15 @@ A tournament match result has been recorded.
 
 Match ID: <%= @payload[:match_id] %>
 Winner Team ID: <%= @payload[:winner_id] %>
+<% elsif @event == "tournament_registration_created" %>
+A new tournament registration has been submitted.
+
+Registration ID: <%= @payload[:registration_id] %>
+Player ID: <%= @payload[:player_id] %>
+Player Name: <%= @payload[:player_name] %>
+Player Phone: <%= @payload[:player_phone] %>
+Player Email: <%= @payload[:player_email].presence || "N/A" %>
+Status: <%= @payload[:status] %>
 <% elsif @event == "registration_status_changed" %>
 A tournament registration status has changed.
 
