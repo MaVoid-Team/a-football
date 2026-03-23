@@ -1,5 +1,7 @@
 module Api
   class CourtsController < BaseController
+    skip_before_action :authenticate_user!, only: %i[index show]
+
     def index
       courts = Court.includes(:perks, :hourly_rates).active
       

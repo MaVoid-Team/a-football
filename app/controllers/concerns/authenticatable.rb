@@ -15,9 +15,9 @@ module Authenticatable
     decoded = ::Auth::JsonWebToken.decode(token)
     @current_admin = Admin.find(decoded[:admin_id])
   rescue ActiveRecord::RecordNotFound
-    render json: { error: "Admin not found" }, status: :unauthorized
-  rescue ::Auth::AuthenticationError => e
-    render json: { error: e.message }, status: :unauthorized
+    render json: { error: "Authentication failed" }, status: :unauthorized
+  rescue ::Auth::AuthenticationError
+    render json: { error: "Authentication failed" }, status: :unauthorized
   end
 
   def current_admin

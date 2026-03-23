@@ -1,5 +1,7 @@
 module Api
   class EventsController < BaseController
+    skip_before_action :authenticate_user!, only: %i[index show]
+
     def index
       events = Event.includes(branch: :setting)
 

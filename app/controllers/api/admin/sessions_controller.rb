@@ -1,6 +1,8 @@
 module Api
   module Admin
     class SessionsController < Api::BaseController
+      skip_before_action :authenticate_user!, only: %i[create destroy]
+
       def create
         admin = ::Admin.find_by(email: params[:email])
 

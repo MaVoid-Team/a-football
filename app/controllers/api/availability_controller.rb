@@ -1,5 +1,7 @@
 module Api
   class AvailabilityController < BaseController
+    skip_before_action :authenticate_user!, only: %i[index]
+
     def index
       branch = Branch.active.find(params[:branch_id])
       court = branch.courts.active.find(params[:court_id])

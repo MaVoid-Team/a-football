@@ -3,12 +3,24 @@ module Api
     include Paginatable
     include Filterable
 
+    before_action :authenticate_user!, if: :authentication_required?
+
     rescue_from ActiveRecord::RecordNotFound, with: :not_found
     rescue_from ActiveRecord::RecordInvalid, with: :unprocessable_entity
     rescue_from ActionController::ParameterMissing, with: :bad_request
     rescue_from Pundit::NotAuthorizedError, with: :forbidden
 
     private
+
+    def authentication_required?
+      request.path.start_with?("/api") && !request.path.start_with?("/api/admin")
+    end
+
+    def authenticate_user!
+      return if current_user.present?
+
+      render json: { error: "User authentication required" }, status: :unauthorized
+    end
 
     def current_user
       return @current_user if defined?(@current_user)
@@ -34,7 +46,7 @@ module Api
     end
 
     def not_found(exception)
-      render json: { error: exception.message }, status: :not_found
+      render json: { error: "Resource not found" }, status: :not_found
     end
 
     def unprocessable_entity(exception)
@@ -42,7 +54,7 @@ module Api
     end
 
     def bad_request(exception)
-      render json: { error: exception.message }, status: :bad_request
+      render json: { error: "Invalid request parameters" }, status: :bad_request
     end
 
     def forbidden(_exception)

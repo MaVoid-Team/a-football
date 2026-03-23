@@ -1,5 +1,7 @@
 module Api
   class PromoCodesController < BaseController
+    skip_before_action :authenticate_user!, only: %i[validate]
+
     def validate
       branch = Branch.find(params[:branch_id])
       code = params[:code].to_s

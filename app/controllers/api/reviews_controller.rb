@@ -1,6 +1,7 @@
 module Api
   class ReviewsController < BaseController
     skip_before_action :verify_authenticity_token, raise: false
+    skip_before_action :authenticate_user!, only: %i[index]
 
     def index
       unless params[:court_id].present?
@@ -16,18 +17,14 @@ module Api
     end
 
     def create
-      booking = Booking.find_by(id: review_params[:booking_id])
+      booking = current_user&.bookings&.find_by(id: review_params[:booking_id])
 
       unless booking
-        return render json: { error: "Booking not found" }, status: :not_found
+        return render json: { error: "Booking not found for current user" }, status: :not_found
       end
 
       unless booking.confirmed?
         return render json: { error: "Only confirmed bookings can be reviewed" }, status: :unprocessable_entity
-      end
-
-      unless booking.user_phone.to_s.gsub(/\D/, "") == review_params[:user_phone].to_s.gsub(/\D/, "")
-        return render json: { error: "Phone number does not match the booking" }, status: :unprocessable_entity
       end
 
       if Review.exists?(booking_id: booking.id)
@@ -53,7 +50,7 @@ module Api
     private
 
     def review_params
-      params.require(:review).permit(:booking_id, :user_phone, :rating, :body)
+      params.require(:review).permit(:booking_id, :rating, :body)
     end
   end
 end

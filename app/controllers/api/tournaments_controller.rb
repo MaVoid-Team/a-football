@@ -1,5 +1,7 @@
 module Api
   class TournamentsController < BaseController
+    skip_before_action :authenticate_user!, only: %i[index show matches bracket participants]
+
     def index
       tournaments = Tournament.visible_publicly.includes(:branch, :tournament_registrations)
       tournaments = tournaments.where(branch_id: params[:branch_id]) if params[:branch_id].present?

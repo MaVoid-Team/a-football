@@ -1,4 +1,4 @@
-import * as XLSX from 'xlsx';
+import ExcelJS from "exceljs";
 import { Booking } from '@/schemas/booking.schema';
 import { Branch } from '@/schemas/branch.schema';
 import { Court } from '@/schemas/court.schema';
@@ -9,107 +9,113 @@ interface ExportBookingsData {
     courts: Court[];
 }
 
-export const exportBookingsToExcel = ({ bookings, branches, courts }: ExportBookingsData) => {
-    // Create workbook
-    const workbook = XLSX.utils.book_new();
+const BOOKING_HEADERS = [
+    'Booking ID',
+    'Customer Name',
+    'Customer Phone',
+    'Branch',
+    'Court',
+    'Date',
+    'Start Time',
+    'End Time',
+    'Total Price',
+    'Payment Type',
+    'Amount Due Now',
+    'Amount Remaining',
+    'Status',
+    'Payment Status',
+    'Notes',
+    'Created At',
+] as const;
 
-    // Prepare data for export
-    const exportData = bookings.map(booking => {
-        const branch = branches.find(b => Number(b.id) === booking.branch_id);
-        const court = courts.find(c => Number(c.id) === booking.court_id);
-        
+const COL_WIDTHS = [12, 20, 15, 20, 20, 12, 10, 10, 12, 14, 14, 16, 12, 15, 30, 20];
+
+const buildExportData = ({ bookings, branches, courts }: ExportBookingsData) => {
+    return bookings.map((booking) => {
+        const branch = branches.find((b) => Number(b.id) === booking.branch_id);
+        const court = courts.find((c) => Number(c.id) === booking.court_id);
+
         return {
             'Booking ID': String(booking.id).padStart(5, '0'),
             'Customer Name': booking.user_name,
             'Customer Phone': booking.user_phone,
-            'Branch': branch?.name || 'Unknown',
-            'Court': court?.name || `Court #${booking.court_id}`,
-            'Date': booking.date,
+            Branch: branch?.name || 'Unknown',
+            Court: court?.name || `Court #${booking.court_id}`,
+            Date: booking.date,
             'Start Time': booking.start_time,
             'End Time': booking.end_time,
             'Total Price': booking.total_price || 0,
             'Payment Type': booking.payment_option || 'full',
             'Amount Due Now': booking.amount_due_now || booking.total_price || 0,
             'Amount Remaining': booking.amount_remaining || 0,
-            'Status': booking.status,
+            Status: booking.status,
             'Payment Status': booking.payment_status || 'pending',
-            'Notes': booking.notes || '',
+            Notes: booking.notes || '',
             'Created At': booking.created_at,
         };
     });
+};
 
-    // Create worksheet
-    const worksheet = XLSX.utils.json_to_sheet(exportData);
+const toCsvValue = (value: unknown): string => {
+    const raw = String(value ?? '');
+    if (/[",\n]/.test(raw)) {
+        return `"${raw.replace(/"/g, '""')}"`;
+    }
+    return raw;
+};
 
-    // Set column widths
-    const colWidths = [
-        { wch: 12 }, // Booking ID
-        { wch: 20 }, // Customer Name
-        { wch: 15 }, // Customer Phone
-        { wch: 20 }, // Branch
-        { wch: 20 }, // Court
-        { wch: 12 }, // Date
-        { wch: 10 }, // Start Time
-        { wch: 10 }, // End Time
-        { wch: 12 }, // Total Price
-        { wch: 14 }, // Payment Type
-        { wch: 14 }, // Amount Due Now
-        { wch: 16 }, // Amount Remaining
-        { wch: 12 }, // Status
-        { wch: 15 }, // Payment Status
-        { wch: 30 }, // Notes
-        { wch: 20 }, // Created At
-    ];
-    worksheet['!cols'] = colWidths;
+const downloadBlob = (blob: Blob, filename: string) => {
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+};
 
-    // Add worksheet to workbook
-    XLSX.utils.book_append_sheet(workbook, worksheet, 'Bookings');
+export const exportBookingsToExcel = ({ bookings, branches, courts }: ExportBookingsData) => {
+    const workbook = new ExcelJS.Workbook();
+    const worksheet = workbook.addWorksheet('Bookings');
+    const exportData = buildExportData({ bookings, branches, courts });
 
-    // Generate filename with timestamp
+    worksheet.columns = BOOKING_HEADERS.map((header, index) => ({
+        header,
+        key: header,
+        width: COL_WIDTHS[index],
+    }));
+
+    exportData.forEach((row) => {
+        worksheet.addRow(row);
+    });
+
     const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
     const filename = `bookings-export-${timestamp}.xlsx`;
 
-    // Export the file
-    XLSX.writeFile(workbook, filename);
+    workbook.xlsx.writeBuffer()
+        .then((buffer) => {
+            downloadBlob(
+                new Blob([buffer], {
+                    type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                }),
+                filename,
+            );
+        })
+        .catch((error) => {
+            console.error('Failed to export bookings to Excel', error);
+        });
 };
 
 export const exportBookingsToCSV = ({ bookings, branches, courts }: ExportBookingsData) => {
-    // Prepare data for export
-    const exportData = bookings.map(booking => {
-        const branch = branches.find(b => Number(b.id) === booking.branch_id);
-        const court = courts.find(c => Number(c.id) === booking.court_id);
-        
-        return {
-            'Booking ID': String(booking.id).padStart(5, '0'),
-            'Customer Name': booking.user_name,
-            'Customer Phone': booking.user_phone,
-            'Branch': branch?.name || 'Unknown',
-            'Court': court?.name || `Court #${booking.court_id}`,
-            'Date': booking.date,
-            'Start Time': booking.start_time,
-            'End Time': booking.end_time,
-            'Total Price': booking.total_price || 0,
-            'Payment Type': booking.payment_option || 'full',
-            'Amount Due Now': booking.amount_due_now || booking.total_price || 0,
-            'Amount Remaining': booking.amount_remaining || 0,
-            'Status': booking.status,
-            'Payment Status': booking.payment_status || 'pending',
-            'Notes': booking.notes || '',
-            'Created At': booking.created_at,
-        };
-    });
+    const exportData = buildExportData({ bookings, branches, courts });
+    const lines = [
+        BOOKING_HEADERS.map((header) => toCsvValue(header)).join(','),
+        ...exportData.map((row) => BOOKING_HEADERS.map((header) => toCsvValue(row[header])).join(',')),
+    ];
 
-    // Create worksheet
-    const worksheet = XLSX.utils.json_to_sheet(exportData);
-
-    // Create CSV workbook
-    const csvWorkbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(csvWorkbook, worksheet, 'Bookings');
-
-    // Generate filename with timestamp
     const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
     const filename = `bookings-export-${timestamp}.csv`;
 
-    // Export the file
-    XLSX.writeFile(csvWorkbook, filename, { bookType: 'csv' });
+    downloadBlob(new Blob([lines.join('\n')], { type: 'text/csv;charset=utf-8;' }), filename);
 };

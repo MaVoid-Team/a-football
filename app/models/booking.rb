@@ -36,6 +36,7 @@ class Booking < ApplicationRecord
               greater_than_or_equal_to: 0,
               less_than_or_equal_to: 100
             }
+  validate :payment_screenshot_constraints
 
   scope :for_branch, ->(branch_id) { where(branch_id: branch_id) }
   scope :for_court, ->(court_id) { where(court_id: court_id) }
@@ -51,5 +52,22 @@ class Booking < ApplicationRecord
   def self.overlapping(court_id, date, start_time, end_time)
     where(court_id: court_id, date: date, status: :confirmed)
       .where("start_time < ? AND end_time > ?", end_time, start_time)
+  end
+
+  private
+
+  def payment_screenshot_constraints
+    return unless payment_screenshot.attached?
+
+    allowed_types = %w[image/jpeg image/png image/webp]
+    max_size = 5.megabytes
+
+    unless allowed_types.include?(payment_screenshot.blob.content_type)
+      errors.add(:payment_screenshot, "must be a JPEG, PNG, or WebP image")
+    end
+
+    if payment_screenshot.blob.byte_size > max_size
+      errors.add(:payment_screenshot, "must be 5MB or smaller")
+    end
   end
 end

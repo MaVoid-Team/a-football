@@ -1,5 +1,7 @@
 module Api
   class PackagesController < BaseController
+    skip_before_action :authenticate_user!, only: %i[index show]
+
     def index
       packages = if params[:branch_id].present?
         Package.for_branch(params[:branch_id])

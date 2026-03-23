@@ -6,6 +6,14 @@ Rack::Attack.throttle("login", limit: 5, period: 60.seconds) do |req|
   req.ip if req.path == "/api/admin/login" && req.post?
 end
 
+Rack::Attack.throttle("user/login", limit: 5, period: 60.seconds) do |req|
+  req.ip if req.path == "/api/auth/login" && req.post?
+end
+
+Rack::Attack.throttle("user/register", limit: 5, period: 60.seconds) do |req|
+  req.ip if req.path == "/api/auth/register" && req.post?
+end
+
 Rack::Attack.throttle("bookings/create", limit: 10, period: 60.seconds) do |req|
   req.ip if req.path == "/api/bookings" && req.post?
 end
