@@ -7,8 +7,9 @@ module Api
         bookings = bookings.where(court_id: params[:court_id]) if params[:court_id].present?
         bookings = bookings.where(date: params[:date]) if params[:date].present?
         bookings = bookings.where(status: params[:status]) if params[:status].present?
+        bookings = bookings.where(payment_status: params[:payment_status]) if params[:payment_status].present?
         bookings = bookings.in_date_range(params[:from_date], params[:to_date])
-        bookings = apply_sort(bookings, { "date" => :date, "created_at" => :created_at }, { date: :desc })
+        bookings = apply_sort(bookings, { "date" => :date, "created_at" => :created_at }, { created_at: :desc })
 
         result = search_with_pagination(Booking, bookings, build_booking_filter)
         render json: BookingSerializer.new(result, params: { url_options: default_url_options }).serializable_hash, status: :ok
@@ -47,7 +48,14 @@ module Api
         parts = []
         parts << "branch_id = #{params[:branch_id].to_i}" if params[:branch_id].present?
         parts << "court_id = #{params[:court_id].to_i}" if params[:court_id].present?
-        parts << "status = #{params[:status].to_i}" if params[:status].present?
+        if params[:status].present?
+          status_value = Booking.statuses[params[:status].to_s]
+          parts << "status = #{status_value}" unless status_value.nil?
+        end
+        if params[:payment_status].present?
+          payment_status_value = Booking.payment_statuses[params[:payment_status].to_s]
+          parts << "payment_status = #{payment_status_value}" unless payment_status_value.nil?
+        end
         parts << "date >= #{params[:from_date]}" if params[:from_date].present?
         parts << "date <= #{params[:to_date]}" if params[:to_date].present?
         build_meilisearch_filter(parts)

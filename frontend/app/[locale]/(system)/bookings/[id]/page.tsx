@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { useParams } from "next/navigation";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { ArrowLeft, Loader2, Save, User, CalendarDays, MapPin, Wallet, FileText, BadgeDollarSign } from "lucide-react";
 
@@ -22,6 +22,8 @@ import { toast } from "sonner";
 
 export default function BookingDetailsPage() {
   const t = useTranslations("bookings");
+  const locale = useLocale();
+  const isRtl = locale === "ar";
   const params = useParams<{ id: string }>();
   const bookingId = String(params?.id ?? "");
 
@@ -112,14 +114,14 @@ export default function BookingDetailsPage() {
 
   return (
     <div className="space-y-6 animate-in fade-in-50 duration-300">
-      <div className="flex items-center justify-between gap-3 flex-wrap">
+      <div className={`flex items-center justify-between gap-3 flex-wrap ${isRtl ? "sm:flex-row-reverse" : ""}`}>
         <Button asChild variant="ghost" size="sm" className="gap-2">
           <Link href="/bookings">
             <ArrowLeft className="h-4 w-4" />
             {t("detail.backToBookings")}
           </Link>
         </Button>
-        <div className="flex items-center gap-2">
+        <div className={`flex items-center gap-2 ${isRtl ? "flex-row-reverse" : ""}`}>
           <Badge variant={booking.status === "confirmed" ? "outline" : "destructive"}>
             {booking.status === "confirmed" ? t("status.confirmed") : t("status.cancelled")}
           </Badge>
@@ -130,7 +132,7 @@ export default function BookingDetailsPage() {
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-4">
         <Card className="xl:col-span-2">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
+            <CardTitle className={`flex items-center gap-2 ${isRtl ? "flex-row-reverse text-right" : ""}`}>
               <Wallet className="h-5 w-5" />
               {t("detail.financialTitle")}
             </CardTitle>
@@ -149,7 +151,7 @@ export default function BookingDetailsPage() {
 
         <Card>
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
+            <CardTitle className={`flex items-center gap-2 ${isRtl ? "flex-row-reverse text-right" : ""}`}>
               <BadgeDollarSign className="h-5 w-5" />
               {t("detail.paymentStatusTitle")}
             </CardTitle>
@@ -171,7 +173,7 @@ export default function BookingDetailsPage() {
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
         <Card>
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
+            <CardTitle className={`flex items-center gap-2 ${isRtl ? "flex-row-reverse text-right" : ""}`}>
               <User className="h-5 w-5" />
               {t("detail.customerTitle")}
             </CardTitle>
@@ -185,7 +187,7 @@ export default function BookingDetailsPage() {
 
         <Card>
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
+            <CardTitle className={`flex items-center gap-2 ${isRtl ? "flex-row-reverse text-right" : ""}`}>
               <MapPin className="h-5 w-5" />
               {t("detail.bookingInfoTitle")}
             </CardTitle>
@@ -204,7 +206,7 @@ export default function BookingDetailsPage() {
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
         <Card>
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
+            <CardTitle className={`flex items-center gap-2 ${isRtl ? "flex-row-reverse text-right" : ""}`}>
               <CalendarDays className="h-5 w-5" />
               {t("detail.screenshotTitle")}
             </CardTitle>
@@ -216,7 +218,7 @@ export default function BookingDetailsPage() {
 
         <Card>
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
+            <CardTitle className={`flex items-center gap-2 ${isRtl ? "flex-row-reverse text-right" : ""}`}>
               <FileText className="h-5 w-5" />
               {t("detail.adminNotesTitle")}
             </CardTitle>
@@ -228,6 +230,7 @@ export default function BookingDetailsPage() {
               value={adminNotes}
               onChange={(e) => setAdminNotes(e.target.value)}
               rows={8}
+              className="text-start"
               placeholder={t("detail.adminNotesPlaceholder")}
             />
             <Button onClick={handleSaveNotes} disabled={savingNotes} className="gap-2">
@@ -243,9 +246,9 @@ export default function BookingDetailsPage() {
 
 function Row({ label, value, valueClassName }: { label: string; value: string; valueClassName?: string }) {
   return (
-    <div className="flex items-center justify-between gap-2 border-b border-border/50 pb-2">
-      <span className="text-muted-foreground">{label}</span>
-      <span className={valueClassName}>{value}</span>
+    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 sm:gap-2 border-b border-border/50 pb-2">
+      <span className="text-muted-foreground text-xs sm:text-sm text-start">{label}</span>
+      <span className={`w-full sm:w-auto text-start sm:text-end break-words ${valueClassName ?? ""}`.trim()}>{value}</span>
     </div>
   );
 }

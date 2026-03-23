@@ -8,25 +8,25 @@ module Bookings
     end
 
     def call
-      return ServiceResult.failure("Branch is not active") unless @branch.active?
+      return failure_with("branch_inactive", "Branch is not active") unless @branch.active?
 
       court = Court.find_by(id: @params[:court_id], branch_id: @branch.id)
-      return ServiceResult.failure("Court not found or does not belong to this branch") unless court
-      return ServiceResult.failure("Court is not active") unless court.active?
+      return failure_with("court_not_found", "Court not found or does not belong to this branch") unless court
+      return failure_with("court_inactive", "Court is not active") unless court.active?
 
       slots = normalize_slots(@params[:booking_slots_attributes])
       if slots.empty? && @params[:start_time].present? && @params[:end_time].present?
         slots = expand_range_to_half_hour_slots(@params[:start_time], @params[:end_time])
-        return ServiceResult.failure("Booking range must be in 30-minute intervals") if slots.empty?
+        return failure_with("booking_range_invalid_interval", "Booking range must be in 30-minute intervals") if slots.empty?
       end
-      return ServiceResult.failure("At least one slot must be provided") if slots.empty?
+      return failure_with("booking_slots_required", "At least one slot must be provided") if slots.empty?
 
       date = parse_date(@params[:date])
-      return ServiceResult.failure("Invalid date format") unless date
-      return ServiceResult.failure("Cannot book in the past") if date < Date.current
+      return failure_with("invalid_date_format", "Invalid date format") unless date
+      return failure_with("booking_in_past", "Cannot book in the past") if date < Date.current
 
       pricing_result = Bookings::PriceCalculator.new(court: court, slots: slots).call
-      return ServiceResult.failure(pricing_result.errors) if pricing_result.failure?
+      return ServiceResult.failure(pricing_result.errors, error_codes: pricing_result.error_codes) if pricing_result.failure?
 
       parsed_slots = pricing_result.data[:parsed_slots]
       total_hours = pricing_result.data[:total_hours]
@@ -45,6 +45,7 @@ module Bookings
 
       booking = nil
       failure_message = nil
+      failure_code = nil
 
       ActiveRecord::Base.transaction do
         Court.lock("FOR UPDATE").find(court.id)
@@ -53,11 +54,13 @@ module Bookings
           promo_code = @branch.promo_codes.lock("FOR UPDATE").valid_now.by_code(promo_code_input).first
           unless promo_code
             failure_message = "Invalid promo code"
+            failure_code = "promo_code_invalid"
             raise ActiveRecord::Rollback
           end
 
           unless promo_code.applicable?(original_price)
             failure_message = "Promo code is not applicable"
+            failure_code = "promo_code_not_applicable"
             raise ActiveRecord::Rollback
           end
 
@@ -68,6 +71,7 @@ module Bookings
         if pay_deposit
           unless setting&.deposit_enabled?
             failure_message = "Deposit payment is not available for this branch"
+            failure_code = "deposit_unavailable_for_branch"
             raise ActiveRecord::Rollback
           end
 
@@ -85,10 +89,12 @@ module Bookings
         parsed_slots.each do |slot|
           if Booking.overlapping(court.id, date, slot[:start_time], slot[:end_time]).exists?
             failure_message = "Time slot is not available"
+            failure_code = "slot_unavailable"
             raise ActiveRecord::Rollback
           end
           if BlockedSlot.overlapping(court.id, date, slot[:start_time], slot[:end_time]).exists?
             failure_message = "Time slot is not available"
+            failure_code = "slot_unavailable"
             raise ActiveRecord::Rollback
           end
         end
@@ -121,8 +127,8 @@ module Bookings
         promo_code&.increment_usage!
       end
 
-      return ServiceResult.failure(failure_message) if failure_message
-      return ServiceResult.failure("Time slot is not available") unless booking
+      return ServiceResult.failure(failure_message, error_codes: [failure_code].compact) if failure_message
+      return failure_with("slot_unavailable", "Time slot is not available") unless booking
 
       Availability::CacheInvalidator.new(
         branch_id: @branch.id,
@@ -134,7 +140,7 @@ module Bookings
 
       ServiceResult.success(booking)
     rescue ActiveRecord::RecordInvalid => e
-      ServiceResult.failure(e.record.errors.full_messages)
+      ServiceResult.failure(e.record.errors.full_messages, error_codes: ["booking_validation_failed"])
     end
 
     private
@@ -195,6 +201,10 @@ module Bookings
       end
 
       slots
+    end
+
+    def failure_with(code, message)
+      ServiceResult.failure(message, error_codes: [code])
     end
 
   end

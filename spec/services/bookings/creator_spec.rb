@@ -39,6 +39,7 @@ RSpec.describe Bookings::Creator do
 
       expect(result).to be_failure
       expect(result.errors).to include("Minimum booking duration is 1 hour. Please select at least two adjacent 30-minute slots")
+      expect(result.error_codes).to include("minimum_booking_duration")
     end
 
     it "rejects non-adjacent slot selections" do
@@ -53,6 +54,7 @@ RSpec.describe Bookings::Creator do
 
       expect(result).to be_failure
       expect(result.errors).to include("Selected slots must be adjacent. Please remove gaps between selected times")
+      expect(result.error_codes).to include("slots_not_adjacent")
     end
 
     it "allows extending booking by another adjacent half-hour" do
@@ -195,6 +197,7 @@ RSpec.describe Bookings::Creator do
 
         expect(result).to be_failure
         expect(result.errors).to include("Invalid promo code")
+        expect(result.error_codes).to include("promo_code_invalid")
       end
 
       it "fails when promo code is not applicable" do
@@ -205,6 +208,7 @@ RSpec.describe Bookings::Creator do
 
         expect(result).to be_failure
         expect(result.errors).to include("Promo code is not applicable")
+        expect(result.error_codes).to include("promo_code_not_applicable")
       end
     end
 
@@ -253,6 +257,7 @@ RSpec.describe Bookings::Creator do
 
         expect(result).to be_failure
         expect(result.errors).to include("Deposit payment is not available for this branch")
+        expect(result.error_codes).to include("deposit_unavailable_for_branch")
       end
     end
   end

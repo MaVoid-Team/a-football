@@ -9,10 +9,12 @@ module Bookings
 
     def call
       parsed_slots = parse_slots
-      return ServiceResult.failure(@error) if @error
+      return ServiceResult.failure(@error, error_codes: [@error_code]) if @error
 
-      sequence_error = validate_slot_sequence(parsed_slots)
-      return ServiceResult.failure(sequence_error) if sequence_error
+      sequence_result = validate_slot_sequence(parsed_slots)
+      if sequence_result
+        return ServiceResult.failure(sequence_result[:message], error_codes: [sequence_result[:code]])
+      end
 
       total_hours = BigDecimal("0")
       total_price = BigDecimal("0")
@@ -41,11 +43,13 @@ module Bookings
 
         if start_time.nil? || end_time.nil?
           @error = "Invalid slot time format"
+          @error_code = "invalid_slot_time_format"
           return []
         end
 
         if end_time <= start_time
           @error = "Slot end time must be after start time"
+          @error_code = "slot_end_before_start"
           return []
         end
 
@@ -62,15 +66,26 @@ module Bookings
     end
 
     def validate_slot_sequence(parsed_slots)
-      return "Minimum booking duration is 1 hour. Please select at least two adjacent 30-minute slots" if parsed_slots.length < 2
+      if parsed_slots.length < 2
+        return {
+          code: "minimum_booking_duration",
+          message: "Minimum booking duration is 1 hour. Please select at least two adjacent 30-minute slots"
+        }
+      end
 
       unless parsed_slots.all? { |slot| (slot[:end_time] - slot[:start_time]).to_i == SLOT_INTERVAL }
-        return "Each selected slot must be exactly 30 minutes"
+        return {
+          code: "slot_duration_not_half_hour",
+          message: "Each selected slot must be exactly 30 minutes"
+        }
       end
 
       parsed_slots.each_cons(2) do |prev_slot, next_slot|
         unless prev_slot[:end_time] == next_slot[:start_time]
-          return "Selected slots must be adjacent. Please remove gaps between selected times"
+          return {
+            code: "slots_not_adjacent",
+            message: "Selected slots must be adjacent. Please remove gaps between selected times"
+          }
         end
       end
 

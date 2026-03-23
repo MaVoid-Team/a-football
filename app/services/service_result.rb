@@ -1,10 +1,11 @@
 class ServiceResult
-  attr_reader :data, :errors
+  attr_reader :data, :errors, :error_codes
 
-  def initialize(success:, data: nil, errors: [])
+  def initialize(success:, data: nil, errors: [], error_codes: [])
     @success = success
     @data = data
     @errors = Array(errors)
+    @error_codes = Array(error_codes)
   end
 
   def success?
@@ -19,7 +20,7 @@ class ServiceResult
     new(success: true, data: data)
   end
 
-  def self.failure(errors)
-    new(success: false, errors: errors)
+  def self.failure(errors, error_codes: [])
+    new(success: false, errors: errors, error_codes: error_codes)
   end
 end

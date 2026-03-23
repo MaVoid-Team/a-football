@@ -59,7 +59,29 @@ const areSlotsAdjacent = (slots: Slot[]) => {
     });
 };
 
-const mapBookingError = (error: string, t: (key: string) => string) => {
+const mapBookingErrorByCode = (errorCode: string, t: (key: string) => string) => {
+    switch (errorCode) {
+        case "minimum_booking_duration":
+            return t("slotRules.minimumHour");
+        case "slots_not_adjacent":
+            return t("slotRules.adjacentOnly");
+        case "slot_duration_not_half_hour":
+        case "booking_range_invalid_interval":
+            return t("slotRules.exactHalfHour");
+        case "promo_code_invalid":
+            return t("promoErrors.invalid");
+        case "promo_code_not_applicable":
+            return t("promoErrors.notApplicable");
+        case "slot_unavailable":
+            return t("slotRules.unavailable");
+        case "deposit_unavailable_for_branch":
+            return t("deposit.unavailable");
+        default:
+            return "";
+    }
+};
+
+const mapBookingErrorFromMessage = (error: string, t: (key: string) => string) => {
     if (error.includes("Minimum booking duration is 1 hour")) return t("slotRules.minimumHour");
     if (error.includes("Selected slots must be adjacent")) return t("slotRules.adjacentOnly");
     if (error.includes("Each selected slot must be exactly 30 minutes")) return t("slotRules.exactHalfHour");
@@ -240,11 +262,15 @@ export function BookingView() {
                 toast.success(t("bookingSuccess"));
             }
         } else {
+            const errCode = (res as any).errorCodes?.[0] ?? "";
             const errMsg =
+                (res as any).errorMessage ??
                 (res as any).error?.response?.data?.errors?.[0] ??
                 (res as any).error?.response?.data?.error ??
                 t("bookingFailed");
-            const mappedError = mapBookingError(String(errMsg), t);
+            const mappedError =
+                mapBookingErrorByCode(String(errCode), t) ||
+                mapBookingErrorFromMessage(String(errMsg), t);
             setSubmitError(mappedError);
             toast.error(mappedError);
         }

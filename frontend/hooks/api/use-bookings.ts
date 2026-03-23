@@ -16,7 +16,7 @@ export function useBookingsAPI() {
     const flattenResource = (resource: any): Booking => ({ id: resource.id, ...resource.attributes });
 
     const fetchBookings = useCallback(async (
-        params?: { branch_id?: number; court_id?: number; date?: string; status?: string; page?: number; per_page?: number },
+        params?: { branch_id?: number; court_id?: number; date?: string; status?: string; payment_status?: string; page?: number; per_page?: number },
         options?: { skipStateUpdate?: boolean }
     ) => {
         if (!options?.skipStateUpdate) setLoading(true);
@@ -94,8 +94,9 @@ export function useBookingsAPI() {
             }
         } catch (err: any) {
             const msg = err.response?.data?.errors?.[0] || err.response?.data?.error || "Failed to create booking";
+            const errorCodes = err.response?.data?.error_codes || [];
             setError(msg);
-            return { success: false, error: err };
+            return { success: false, error: err, errorCodes, errorMessage: msg };
         } finally {
             setLoading(false);
         }

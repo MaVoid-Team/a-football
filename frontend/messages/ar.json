@@ -732,8 +732,14 @@
       "exportButton": "صدّر",
       "statusFilter": "الحالة:",
       "branchFilter": "الفرع:",
+      "courtFilter": "الملعب:",
+      "paymentStatusFilter": "الدفع:",
+      "dateFilter": "التاريخ:",
+      "clearFilters": "مسح الفلاتر",
       "allStatuses": "الكل",
-      "allBranches": "كل الفروع"
+      "allBranches": "كل الفروع",
+      "allCourts": "كل الملاعب",
+      "allPaymentStatuses": "كل حالات الدفع"
     },
     "table": {
       "userHeader": "العميل",
@@ -741,6 +747,7 @@
       "scheduleHeader": "الميعاد",
       "hoursSuffix": "س",
       "priceHeader": "السعر",
+      "totalAmount": "الإجمالي",
       "paymentTypeHeader": "نوع الدفع",
       "paymentTypeFull": "كامل",
       "paymentTypeDeposit": "عربون",

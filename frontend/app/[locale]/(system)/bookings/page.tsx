@@ -19,7 +19,8 @@ import {
 } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { Download, FileSpreadsheet } from "lucide-react";
+import { Download, FileSpreadsheet, FilterX } from "lucide-react";
+import { Input } from "@/components/ui/input";
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -30,7 +31,10 @@ import {
 export default function BookingsPage() {
     const t = useTranslations("bookings");
     const [filterBranchId, setFilterBranchId] = useState<string>("all");
+    const [filterCourtId, setFilterCourtId] = useState<string>("all");
     const [filterStatus, setFilterStatus] = useState<string>("all");
+    const [filterPaymentStatus, setFilterPaymentStatus] = useState<string>("all");
+    const [filterDate, setFilterDate] = useState<string>("");
 
     const {
         bookings,
@@ -48,7 +52,10 @@ export default function BookingsPage() {
     const loadData = () => {
         const params: any = { page, per_page: perPage };
         if (filterBranchId !== "all") params.branch_id = Number(filterBranchId);
+        if (filterCourtId !== "all") params.court_id = Number(filterCourtId);
         if (filterStatus !== "all") params.status = filterStatus;
+        if (filterPaymentStatus !== "all") params.payment_status = filterPaymentStatus;
+        if (filterDate) params.date = filterDate;
         fetchBookings(params);
     };
 
@@ -60,7 +67,20 @@ export default function BookingsPage() {
     useEffect(() => {
         loadData();
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [page, perPage, filterBranchId, filterStatus]);
+    }, [page, perPage, filterBranchId, filterCourtId, filterStatus, filterPaymentStatus, filterDate]);
+
+    const filteredCourts = filterBranchId === "all"
+        ? courts
+        : courts.filter((court) => Number(court.branch_id) === Number(filterBranchId));
+
+    const clearFilters = () => {
+        setFilterBranchId("all");
+        setFilterCourtId("all");
+        setFilterStatus("all");
+        setFilterPaymentStatus("all");
+        setFilterDate("");
+        goToPage(1);
+    };
 
     const handleUpdatePayment = async (id: string, status: "pending" | "paid" | "refunded") => {
         const res = await updatePaymentStatus(id, status);
@@ -104,7 +124,10 @@ export default function BookingsPage() {
             // Fetch all bookings without pagination
             const params: any = { per_page: 10000 };
             if (filterBranchId !== "all") params.branch_id = Number(filterBranchId);
+            if (filterCourtId !== "all") params.court_id = Number(filterCourtId);
             if (filterStatus !== "all") params.status = filterStatus;
+            if (filterPaymentStatus !== "all") params.payment_status = filterPaymentStatus;
+            if (filterDate) params.date = filterDate;
             
             const response = await fetchBookings(params, { skipStateUpdate: true });
             if (response?.success && response?.data) {
@@ -127,10 +150,10 @@ export default function BookingsPage() {
                     </p>
                 </div>
 
-                <div className="flex flex-col sm:flex-row items-end sm:items-center gap-4">
+                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full sm:w-auto">
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                            <Button variant="outline" className="gap-2">
+                            <Button variant="outline" className="gap-2 w-full sm:w-auto">
                                 <Download className="h-4 w-4" />
                                 {t("page.exportButton")}
                             </Button>
@@ -151,10 +174,10 @@ export default function BookingsPage() {
                         </DropdownMenuContent>
                     </DropdownMenu>
 
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2 w-full sm:w-auto">
                         <Label className="text-sm text-muted-foreground whitespace-nowrap">{t("page.statusFilter")}</Label>
                         <Select value={filterStatus} onValueChange={(v) => { setFilterStatus(v); goToPage(1); }}>
-                            <SelectTrigger className="w-[140px]" data-testid="status-filter">
+                            <SelectTrigger className="w-full sm:w-[140px]" data-testid="status-filter">
                                 <SelectValue placeholder={t("page.allStatuses")} />
                             </SelectTrigger>
                             <SelectContent>
@@ -164,10 +187,14 @@ export default function BookingsPage() {
                             </SelectContent>
                         </Select>
                     </div>
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2 w-full sm:w-auto">
                         <Label className="text-sm text-muted-foreground whitespace-nowrap">{t("page.branchFilter")}</Label>
-                        <Select value={filterBranchId} onValueChange={(v) => { setFilterBranchId(v); goToPage(1); }}>
-                            <SelectTrigger className="w-[160px]" data-testid="branch-filter">
+                        <Select value={filterBranchId} onValueChange={(v) => {
+                            setFilterBranchId(v);
+                            setFilterCourtId("all");
+                            goToPage(1);
+                        }}>
+                            <SelectTrigger className="w-full sm:w-[160px]" data-testid="branch-filter">
                                 <SelectValue placeholder={t("page.allBranches")} />
                             </SelectTrigger>
                             <SelectContent>
@@ -178,6 +205,57 @@ export default function BookingsPage() {
                             </SelectContent>
                         </Select>
                     </div>
+
+                    <div className="flex items-center gap-2 w-full sm:w-auto">
+                        <Label className="text-sm text-muted-foreground whitespace-nowrap">{t("page.courtFilter")}</Label>
+                        <Select value={filterCourtId} onValueChange={(v) => { setFilterCourtId(v); goToPage(1); }}>
+                            <SelectTrigger className="w-full sm:w-[160px]" data-testid="court-filter">
+                                <SelectValue placeholder={t("page.allCourts")} />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="all">{t("page.allCourts")}</SelectItem>
+                                {filteredCourts.map((court) => (
+                                    <SelectItem key={court.id} value={court.id.toString()}>{court.name}</SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                    </div>
+
+                    <div className="flex items-center gap-2 w-full sm:w-auto">
+                        <Label className="text-sm text-muted-foreground whitespace-nowrap">{t("page.paymentStatusFilter")}</Label>
+                        <Select value={filterPaymentStatus} onValueChange={(v) => { setFilterPaymentStatus(v); goToPage(1); }}>
+                            <SelectTrigger className="w-full sm:w-[170px]" data-testid="payment-status-filter">
+                                <SelectValue placeholder={t("page.allPaymentStatuses")} />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="all">{t("page.allPaymentStatuses")}</SelectItem>
+                                <SelectItem value="pending">{t("status.pending")}</SelectItem>
+                                <SelectItem value="paid">{t("status.paid")}</SelectItem>
+                                <SelectItem value="failed">{t("status.failed")}</SelectItem>
+                                <SelectItem value="refunded">{t("status.refunded")}</SelectItem>
+                            </SelectContent>
+                        </Select>
+                    </div>
+
+                    <div className="flex items-center gap-2 w-full sm:w-auto">
+                        <Label htmlFor="date-filter" className="text-sm text-muted-foreground whitespace-nowrap">{t("page.dateFilter")}</Label>
+                        <Input
+                            id="date-filter"
+                            type="date"
+                            className="w-full sm:w-[165px]"
+                            value={filterDate}
+                            onChange={(e) => {
+                                setFilterDate(e.target.value);
+                                goToPage(1);
+                            }}
+                            data-testid="date-filter"
+                        />
+                    </div>
+
+                    <Button type="button" variant="ghost" className="w-full sm:w-auto" onClick={clearFilters}>
+                        <FilterX className="h-4 w-4 mr-2" />
+                        {t("page.clearFilters")}
+                    </Button>
                 </div>
             </div>
 

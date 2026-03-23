@@ -54,18 +54,18 @@ export function BookingTable({ bookings, branches, courts, isLoading, onUpdatePa
         {
             header: t("table.userHeader"),
             cell: (b: Booking) => (
-                <div className="flex flex-col">
-                    <span className="font-medium text-sm">{b.user_name}</span>
-                    <span className="text-xs text-muted-foreground">{b.user_phone}</span>
+                <div className="flex flex-col max-w-[170px]">
+                    <span className="font-medium text-sm truncate" title={b.user_name}>{b.user_name}</span>
+                    <span className="text-xs text-muted-foreground truncate" title={b.user_phone}>{b.user_phone}</span>
                 </div>
             ),
         },
         {
             header: t("table.locationHeader"),
             cell: (b: Booking) => (
-                <div className="flex flex-col">
-                    <span className="text-sm font-medium">{getCourtName(b.court_id)}</span>
-                    <span className="text-xs text-muted-foreground">{getBranchName(b.branch_id)}</span>
+                <div className="flex flex-col max-w-[180px]">
+                    <span className="text-sm font-medium truncate" title={getCourtName(b.court_id)}>{getCourtName(b.court_id)}</span>
+                    <span className="text-xs text-muted-foreground truncate" title={getBranchName(b.branch_id)}>{getBranchName(b.branch_id)}</span>
                 </div>
             ),
         },
@@ -82,16 +82,25 @@ export function BookingTable({ bookings, branches, courts, isLoading, onUpdatePa
         },
         {
             header: t("table.priceHeader"),
-            cell: (b: Booking) => (
+            cell: (b: Booking) => {
+                const paidNow = Number(b.amount_due_now ?? b.total_price ?? 0);
+                const total = Number(b.total_price ?? 0);
+                return (
                 <div className="flex flex-col">
-                    <span className="font-semibold">{formatCurrency(b.total_price)}</span>
+                    <span className="font-semibold">{formatCurrency(paidNow)}</span>
+                    {paidNow < total && (
+                        <span className="text-xs text-muted-foreground">
+                            {t("table.totalAmount")}: {formatCurrency(total)}
+                        </span>
+                    )}
                     {Number(b.discount_amount ?? 0) > 0 && (
                         <span className="text-xs text-green-600 dark:text-green-400">
                             -{formatCurrency(b.discount_amount)}
                         </span>
                     )}
                 </div>
-            ),
+                );
+            },
         },
         {
             header: t("table.statusHeader"),
@@ -110,7 +119,7 @@ export function BookingTable({ bookings, branches, courts, isLoading, onUpdatePa
             header: t("table.actionsHeader"),
             className: "text-right",
             cell: (b: Booking) => (
-                <div className="flex justify-end pr-2 gap-1">
+                <div className="flex justify-end pr-1 gap-1">
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                             <Button variant="ghost" className="h-8 w-8 p-0" data-testid={`booking-actions-${b.id}`}>

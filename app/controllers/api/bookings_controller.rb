@@ -10,7 +10,10 @@ module Api
         booking.payment_screenshot.attach(screenshot) if screenshot.present?
         render json: BookingSerializer.new(booking.reload).serializable_hash, status: :created
       else
-        render json: { errors: Array(result.errors) }, status: :unprocessable_entity
+        render json: {
+          errors: Array(result.errors),
+          error_codes: Array(result.error_codes)
+        }, status: :unprocessable_entity
       end
     end
 

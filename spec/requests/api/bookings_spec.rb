@@ -46,7 +46,9 @@ RSpec.describe "Api::Bookings", type: :request do
 
       expect(response).to have_http_status(:unprocessable_entity)
       errors = JSON.parse(response.body)["errors"]
+      error_codes = JSON.parse(response.body)["error_codes"]
       expect(errors).to include("Minimum booking duration is 1 hour. Please select at least two adjacent 30-minute slots")
+      expect(error_codes).to include("minimum_booking_duration")
     end
 
     it "rejects non-adjacent half-hour selections" do
@@ -68,7 +70,9 @@ RSpec.describe "Api::Bookings", type: :request do
 
       expect(response).to have_http_status(:unprocessable_entity)
       errors = JSON.parse(response.body)["errors"]
+      error_codes = JSON.parse(response.body)["error_codes"]
       expect(errors).to include("Selected slots must be adjacent. Please remove gaps between selected times")
+      expect(error_codes).to include("slots_not_adjacent")
     end
 
     it "returns errors for overlapping booking" do
@@ -108,7 +112,9 @@ RSpec.describe "Api::Bookings", type: :request do
 
       expect(response).to have_http_status(:unprocessable_entity)
       errors = JSON.parse(response.body)["errors"]
+      error_codes = JSON.parse(response.body)["error_codes"]
       expect(errors).to include("Invalid promo code")
+      expect(error_codes).to include("promo_code_invalid")
     end
 
     it "creates a deposit booking when branch deposit is enabled" do
@@ -135,7 +141,9 @@ RSpec.describe "Api::Bookings", type: :request do
 
       expect(response).to have_http_status(:unprocessable_entity)
       errors = JSON.parse(response.body)["errors"]
+      error_codes = JSON.parse(response.body)["error_codes"]
       expect(errors).to include("Deposit payment is not available for this branch")
+      expect(error_codes).to include("deposit_unavailable_for_branch")
     end
   end
 end

@@ -732,8 +732,14 @@
       "exportButton": "Export",
       "statusFilter": "Status:",
       "branchFilter": "Branch:",
+      "courtFilter": "Court:",
+      "paymentStatusFilter": "Payment:",
+      "dateFilter": "Date:",
+      "clearFilters": "Clear Filters",
       "allStatuses": "All",
-      "allBranches": "All Branches"
+      "allBranches": "All Branches",
+      "allCourts": "All Courts",
+      "allPaymentStatuses": "All Payments"
     },
     "table": {
       "userHeader": "User",
@@ -741,6 +747,7 @@
       "scheduleHeader": "Schedule",
       "hoursSuffix": "h",
       "priceHeader": "Price",
+      "totalAmount": "Total",
       "paymentTypeHeader": "Payment Type",
       "paymentTypeFull": "Full",
       "paymentTypeDeposit": "Deposit",

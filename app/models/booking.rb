@@ -4,7 +4,7 @@ class Booking < ApplicationRecord
   meilisearch enqueue: true, raise_on_failure: false do
     attribute :user_name, :user_phone, :branch_id, :court_id, :date, :status, :notes, :admin_notes
     searchable_attributes [:user_name, :user_phone, :notes, :admin_notes]
-    filterable_attributes [:branch_id, :court_id, :date, :status]
+    filterable_attributes [:branch_id, :court_id, :date, :status, :payment_status]
   end
 
   belongs_to :branch
