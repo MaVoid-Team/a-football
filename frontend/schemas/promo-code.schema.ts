@@ -46,6 +46,13 @@ export type PromoCodeFormData = z.infer<typeof promoCodeFormSchema>;
 export const promoCodeValidationSchema = z.object({
     code: z.string(),
     total_amount: z.number().min(0),
+    court_id: z.number().int().positive().optional(),
+    booking_slots_attributes: z.array(
+        z.object({
+            start_time: z.string(),
+            end_time: z.string(),
+        })
+    ).optional(),
 });
 
 export type PromoCodeValidationData = z.infer<typeof promoCodeValidationSchema>;
@@ -53,6 +60,7 @@ export type PromoCodeValidationData = z.infer<typeof promoCodeValidationSchema>;
 export const promoCodeValidationResponseSchema = z.object({
     valid: z.boolean(),
     promo_code: promoCodeSchema.optional(),
+    validated_total_amount: z.number().optional(),
     discount_amount: z.number().optional(),
     final_amount: z.number().optional(),
     error: z.string().optional(),

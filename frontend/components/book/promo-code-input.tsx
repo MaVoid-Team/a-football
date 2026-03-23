@@ -19,7 +19,7 @@ interface Slot {
 
 interface PromoCodeInputProps {
     branchId?: string;
-    selectedCourt?: { price_per_hour: string; [key: string]: unknown };
+    selectedCourt?: { id?: number | string; price_per_hour: string; [key: string]: unknown };
     selectedSlots?: Slot[];
     startTime?: string;
     endTime?: string;
@@ -59,6 +59,8 @@ export function PromoCodeInput({ branchId, selectedCourt, selectedSlots = [], st
     };
 
     const currentTotal = calculateCurrentTotal();
+    const slotSignature = selectedSlots.map((slot) => `${slot.start_time}-${slot.end_time}`).join("|");
+    const displayedTotal = validationResult?.validated_total_amount ?? currentTotal;
 
     useEffect(() => {
         if (validationResult?.valid) {
@@ -68,6 +70,14 @@ export function PromoCodeInput({ branchId, selectedCourt, selectedSlots = [], st
         }
     }, [validationResult]);
 
+    useEffect(() => {
+        if (!validationResult?.valid) return;
+
+        setValidationResult(null);
+        setDiscountAmount(0);
+        form.setValue("promo_code", "");
+    }, [currentTotal, selectedCourt?.id, slotSignature, validationResult?.valid, form]);
+
     const handleValidatePromoCode = async () => {
         if (!promoCode.trim()) {
             toast.error(t("toasts.enterPromoCode"));
@@ -75,6 +85,11 @@ export function PromoCodeInput({ branchId, selectedCourt, selectedSlots = [], st
         }
 
         if (currentTotal <= 0) {
+            toast.error(t("toasts.selectCourtAndTime"));
+            return;
+        }
+
+        if (selectedSlots.length === 1) {
             toast.error(t("toasts.selectCourtAndTime"));
             return;
         }
@@ -89,6 +104,8 @@ export function PromoCodeInput({ branchId, selectedCourt, selectedSlots = [], st
             const result = await validatePromoCode(branchId, {
                 code: promoCode.toUpperCase(),
                 total_amount: currentTotal,
+                court_id: selectedCourt?.id ? Number(selectedCourt.id) : undefined,
+                booking_slots_attributes: selectedSlots,
             });
 
             if (result.valid) {
@@ -179,7 +196,7 @@ export function PromoCodeInput({ branchId, selectedCourt, selectedSlots = [], st
                 <div className="text-sm text-muted-foreground">
                     <div className="flex justify-between">
                         <span>{t("summary.originalAmount")}</span>
-                        <span>{formatCurrency(currentTotal)}</span>
+                        <span>{formatCurrency(displayedTotal)}</span>
                     </div>
                     <div className="flex justify-between text-green-600 dark:text-green-400">
                         <span>{t("summary.discount")}</span>
@@ -187,7 +204,7 @@ export function PromoCodeInput({ branchId, selectedCourt, selectedSlots = [], st
                     </div>
                     <div className="flex justify-between font-medium">
                         <span>{t("summary.finalAmount")}</span>
-                        <span>{formatCurrency(currentTotal - discountAmount)}</span>
+                        <span>{formatCurrency(displayedTotal - discountAmount)}</span>
                     </div>
                 </div>
             )}

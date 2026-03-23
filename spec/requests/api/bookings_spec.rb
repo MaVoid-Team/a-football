@@ -85,5 +85,30 @@ RSpec.describe "Api::Bookings", type: :request do
       post "/api/bookings", params: valid_params
       expect(response).to have_http_status(:unprocessable_entity)
     end
+
+    it "applies promo discounts to booking total" do
+      create(:promo_code, branch: branch, code: "SAVE10", discount_percentage: 10)
+      params = valid_params.deep_dup
+      params[:booking][:promo_code] = "SAVE10"
+
+      post "/api/bookings", params: params
+
+      expect(response).to have_http_status(:created)
+      data = JSON.parse(response.body)["data"]["attributes"]
+      expect(data["original_price"]).to eq("300.0")
+      expect(data["discount_amount"]).to eq("30.0")
+      expect(data["total_price"]).to eq("270.0")
+    end
+
+    it "returns an explicit error for invalid promo code" do
+      params = valid_params.deep_dup
+      params[:booking][:promo_code] = "NOTREAL"
+
+      post "/api/bookings", params: params
+
+      expect(response).to have_http_status(:unprocessable_entity)
+      errors = JSON.parse(response.body)["errors"]
+      expect(errors).to include("Invalid promo code")
+    end
   end
 end

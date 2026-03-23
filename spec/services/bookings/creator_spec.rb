@@ -172,5 +172,40 @@ RSpec.describe Bookings::Creator do
         expect(result.data.total_price).to eq(250.00)
       end
     end
+
+    context "with promo codes" do
+      let!(:promo_code) { create(:promo_code, branch: branch, code: "SAVE10", discount_percentage: 10) }
+
+      it "applies a valid promo code" do
+        params = valid_params.merge(promo_code: "SAVE10")
+
+        result = described_class.new(params: params, branch: branch).call
+
+        expect(result).to be_success
+        expect(result.data.original_price.to_f).to eq(200.0)
+        expect(result.data.discount_amount.to_f).to eq(20.0)
+        expect(result.data.total_price.to_f).to eq(180.0)
+        expect(result.data.promo_code).to eq(promo_code)
+      end
+
+      it "fails when promo code does not exist" do
+        params = valid_params.merge(promo_code: "MISSING")
+
+        result = described_class.new(params: params, branch: branch).call
+
+        expect(result).to be_failure
+        expect(result.errors).to include("Invalid promo code")
+      end
+
+      it "fails when promo code is not applicable" do
+        promo_code.update!(minimum_amount: 500.0)
+        params = valid_params.merge(promo_code: "SAVE10")
+
+        result = described_class.new(params: params, branch: branch).call
+
+        expect(result).to be_failure
+        expect(result.errors).to include("Promo code is not applicable")
+      end
+    end
   end
 end

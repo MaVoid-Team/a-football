@@ -380,6 +380,10 @@
       "exactHalfHour": "Each selected slot must be exactly 30 minutes.",
       "unavailable": "One or more selected slots are no longer available. Please reselect from the available times."
     },
+    "promoErrors": {
+      "invalid": "The promo code is invalid.",
+      "notApplicable": "This promo code does not apply to the selected booking."
+    },
     "selectCourtFirst": "Please select a court first.",
     "noCourts": "No courts available for this branch.",
     "termsPrefix": "I agree to the",

@@ -58,6 +58,8 @@ const mapBookingError = (error: string, t: (key: string) => string) => {
     if (error.includes("Selected slots must be adjacent")) return t("slotRules.adjacentOnly");
     if (error.includes("Each selected slot must be exactly 30 minutes")) return t("slotRules.exactHalfHour");
     if (error.includes("Booking range must be in 30-minute intervals")) return t("slotRules.exactHalfHour");
+    if (error.includes("Invalid promo code")) return t("promoErrors.invalid");
+    if (error.includes("Promo code is not applicable")) return t("promoErrors.notApplicable");
     if (error.includes("Time slot is not available")) return t("slotRules.unavailable");
     return error;
 };

@@ -25,56 +25,48 @@ module Bookings
       return ServiceResult.failure("Invalid date format") unless date
       return ServiceResult.failure("Cannot book in the past") if date < Date.current
 
-      parsed_slots = []
-      total_hours   = BigDecimal("0")
-      total_price   = BigDecimal("0")
-      slot_ranges   = []
+      pricing_result = Bookings::PriceCalculator.new(court: court, slots: slots).call
+      return ServiceResult.failure(pricing_result.errors) if pricing_result.failure?
 
-      hourly_rates = court.hourly_rates.active.ordered.to_a
+      parsed_slots = pricing_result.data[:parsed_slots]
+      total_hours = pricing_result.data[:total_hours]
+      original_price = pricing_result.data[:total_price]
 
-      slots.each do |slot|
-        s_time = parse_time(slot["start_time"])
-        e_time = parse_time(slot["end_time"])
-        return ServiceResult.failure("Invalid slot time format") unless s_time && e_time
-        return ServiceResult.failure("Slot end time must be after start time") if e_time <= s_time
-        slot_ranges  << (s_time...e_time)
-        parsed_slots << { start_time: s_time, end_time: e_time }
-        total_hours  += BigDecimal(((e_time - s_time) / 1.hour.to_f).to_s)
-        total_price  += calculate_slot_price(s_time, e_time, court, hourly_rates)
-      end
-
-      parsed_slots.sort_by! { |slot| slot[:start_time] }
-
-      slot_ranges.combination(2).each do |a, b|
-        return ServiceResult.failure("Selected slots overlap with each other") if a.overlaps?(b)
-      end
-
-      sequence_error = validate_slot_sequence(parsed_slots)
-      return ServiceResult.failure(sequence_error) if sequence_error
-
-      original_price  = total_price
-      discount_amount = 0
-      promo_code      = nil
-
-      if @params[:promo_code].present?
-        promo_code = @branch.promo_codes.valid_now.by_code(@params[:promo_code]).first
-        if promo_code&.applicable?(total_price)
-          discount_amount = promo_code.calculate_discount(total_price)
-          total_price     = [total_price - discount_amount, 0].max
-        end
-      end
+      promo_code_input = @params[:promo_code].to_s.strip
+      total_price = original_price
+      discount_amount = BigDecimal("0")
+      promo_code = nil
 
       booking = nil
+      failure_message = nil
 
       ActiveRecord::Base.transaction do
         Court.lock("FOR UPDATE").find(court.id)
 
+        if promo_code_input.present?
+          promo_code = @branch.promo_codes.lock("FOR UPDATE").valid_now.by_code(promo_code_input).first
+          unless promo_code
+            failure_message = "Invalid promo code"
+            raise ActiveRecord::Rollback
+          end
+
+          unless promo_code.applicable?(original_price)
+            failure_message = "Promo code is not applicable"
+            raise ActiveRecord::Rollback
+          end
+
+          discount_amount = promo_code.calculate_discount(original_price)
+          total_price = [original_price - discount_amount, 0].max
+        end
+
         parsed_slots.each do |slot|
           if Booking.overlapping(court.id, date, slot[:start_time], slot[:end_time]).exists?
-            raise ActiveRecord::Rollback, "overlap"
+            failure_message = "Time slot is not available"
+            raise ActiveRecord::Rollback
           end
           if BlockedSlot.overlapping(court.id, date, slot[:start_time], slot[:end_time]).exists?
-            raise ActiveRecord::Rollback, "blocked"
+            failure_message = "Time slot is not available"
+            raise ActiveRecord::Rollback
           end
         end
 
@@ -102,6 +94,7 @@ module Bookings
         promo_code&.increment_usage!
       end
 
+      return ServiceResult.failure(failure_message) if failure_message
       return ServiceResult.failure("Time slot is not available") unless booking
 
       Availability::CacheInvalidator.new(
@@ -177,35 +170,5 @@ module Bookings
       slots
     end
 
-    def validate_slot_sequence(parsed_slots)
-      return "Minimum booking duration is 1 hour. Please select at least two adjacent 30-minute slots" if parsed_slots.length < 2
-
-      unless parsed_slots.all? { |slot| (slot[:end_time] - slot[:start_time]).to_i == SLOT_INTERVAL }
-        return "Each selected slot must be exactly 30 minutes"
-      end
-
-      parsed_slots.each_cons(2) do |prev_slot, next_slot|
-        return "Selected slots must be adjacent. Please remove gaps between selected times" unless prev_slot[:end_time] == next_slot[:start_time]
-      end
-
-      nil
-    end
-
-    def calculate_slot_price(start_time, end_time, court, hourly_rates)
-      total   = BigDecimal("0")
-      current = start_time
-
-      while current < end_time
-        segment_end = [current + SLOT_INTERVAL, end_time].min
-        hour = current.hour
-        rate = hourly_rates.find { |r| r.start_hour <= hour && r.end_hour > hour }
-        hourly_price = BigDecimal((rate ? rate.price_per_hour : court.price_per_hour).to_s)
-        hours_fraction = BigDecimal(((segment_end - current) / 1.hour.to_f).to_s)
-        total += hourly_price * hours_fraction
-        current = segment_end
-      end
-
-      total.round(2)
-    end
   end
 end
