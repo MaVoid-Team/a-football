@@ -463,7 +463,66 @@
     "emptyTitle": "No packages available",
     "emptyDescription": "Check back later for new offers.",
     "globalPackage": "Global Package",
-    "bookNow": "Book Now"
+    "bookNow": "Book Now",
+    "viewDetails": "View Details"
+  },
+  "packageDetail": {
+    "backToPackages": "Back to Packages",
+    "notFound": "Package not found",
+    "globalPackage": "Global Package",
+    "description": "Description",
+    "noDescription": "No description available for this package.",
+    "contactTitle": "Contact Us About This Package",
+    "contactDescription": "Fill out the form below to send us your special needs and we'll get back to you shortly.",
+    "form": {
+      "name": "Your Name",
+      "namePlaceholder": "e.g. Ahmed Mohamed",
+      "email": "Email Address",
+      "emailPlaceholder": "your.email@example.com",
+      "phone": "Phone Number",
+      "phonePlaceholder": "+20 1xx xxx xxxx",
+      "specialNeeds": "Tell us about your needs",
+      "specialNeedsPlaceholder": "Describe your requirements, preferences, group size, dates, or any special requests...",
+      "specialNeedsHint": "Please provide detailed information about what you're looking for.",
+      "submit": "Send Request",
+      "submitting": "Sending...",
+      "success": "Request sent successfully!",
+      "successMessage": "Your request has been sent",
+      "successDescription": "We'll review your message and contact you soon.",
+      "error": "Failed to send request"
+    }
+  },
+  "packageRequests": {
+    "page": {
+      "title": "Package Requests",
+      "subtitle": "Manage customer inquiries and requests about packages.",
+      "branchFilter": "Branch",
+      "allBranches": "All Branches",
+      "statusFilter": "Status",
+      "allStatuses": "All Statuses",
+      "clearFilters": "Clear Filters"
+    },
+    "status": {
+      "pending": "Pending",
+      "reviewed": "Reviewed",
+      "contacted": "Contacted",
+      "completed": "Completed",
+      "archived": "Archived"
+    },
+    "table": {
+      "customer": "Customer",
+      "contact": "Contact Info",
+      "request": "Request Details",
+      "status": "Status",
+      "actions": "Actions",
+      "openMenu": "Open menu"
+    },
+    "markReviewed": "Mark as Reviewed",
+    "markContacted": "Mark as Contacted",
+    "markArchived": "Archive",
+    "statusUpdated": "Status updated successfully",
+    "updateFailed": "Failed to update status",
+    "emptyMessage": "No package requests yet"
   },
   "eventDetail": {
     "errorLoading": "Error loading event",
@@ -1016,6 +1075,7 @@
     "courts": "Courts",
     "bookings": "Bookings",
     "packages": "Packages",
+    "packageRequests": "Package Requests",
     "events": "Events",
     "promoCodes": "Promo Codes",
     "blockedSlots": "Blocked Slots",

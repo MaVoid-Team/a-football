@@ -11,6 +11,7 @@ Rails.application.routes.draw do
     get "courts", to: "courts#index"
     get "availability", to: "availability#index"
     post "bookings", to: "bookings#create"
+    post "package_requests", to: "package_requests#create"
     get  "reviews",  to: "reviews#index"
     post "reviews",  to: "reviews#create"
     get "settings", to: "settings#show"
@@ -32,6 +33,7 @@ Rails.application.routes.draw do
         resources :hourly_rates, only: [:index, :create, :update, :destroy]
       end
       resources :packages
+      resources :package_requests, only: %i[index show update]
       resources :events
       resources :bookings, only: %i[index show update]
       resources :blocked_slots, only: %i[index show create update destroy]

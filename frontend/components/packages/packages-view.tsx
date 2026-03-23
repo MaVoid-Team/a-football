@@ -133,8 +133,8 @@ export function PackagesView() {
                             </CardContent>
                             <CardFooter>
                                 <Button asChild size="lg" className="w-full group">
-                                    <Link href={`/book?package_id=${pkg.id}`}>
-                                        {t("bookNow")}
+                                    <Link href={`/package/${pkg.id}`}>
+                                        {t("viewDetails")}
                                         <ArrowRight className="w-4 h-4 ml-2 transition-transform duration-200 group-hover:translate-x-1" />
                                     </Link>
                                 </Button>

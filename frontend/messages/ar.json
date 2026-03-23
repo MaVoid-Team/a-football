@@ -1016,6 +1016,7 @@
     "courts": "الملاعب",
     "bookings": "الحجوزات",
     "packages": "الباكدجات",
+    "packageRequests": "طلبات الباكدجات",
     "events": "الإيفنتات",
     "promoCodes": "الأكواد",
     "blockedSlots": "أوقات محجوبة",
@@ -1024,5 +1025,63 @@
     "admins": "الأدمنز",
     "settings": "الإعدادات",
     "backToHome": "ارجع للرئيسيه"
+  },
+  "packageDetail": {
+    "backToPackages": "ارجع للباكدجات",
+    "notFound": "الباكدج مش موجود",
+    "globalPackage": "باكدج عام",
+    "description": "الوصف",
+    "noDescription": "مفيش وصف للباكدج ده.",
+    "contactTitle": "كلمنا عن الباكدج ده",
+    "contactDescription": "املأ الفورم بتاعتك وقول لنا احتياجاتك وهنرد عليك قريب.",
+    "form": {
+      "name": "اسمك",
+      "namePlaceholder": "مثلاً أحمد محمد",
+      "email": "الإيميل بتاعك",
+      "emailPlaceholder": "your.email@example.com",
+      "phone": "رقم الموبايل",
+      "phonePlaceholder": "+20 1xx xxx xxxx",
+      "specialNeeds": "قول لنا احتياجاتك",
+      "specialNeedsPlaceholder": "اكتب احتياجاتك بالتفصيل والتفاصيل اللي مهمة عندك...",
+      "specialNeedsHint": "من فضلك اكتب معلومات تفصيلية عن اللي انت محتاجك.",
+      "submit": "ابعت الطلب",
+      "submitting": "بنبعت...",
+      "success": "تمام! الطلب اتبعت",
+      "successMessage": "الطلب بتاعك بعت بنجاح",
+      "successDescription": "هنراجع الرسالة بتاعتك وهنكلمك قريب.",
+      "error": "حصلت مشكلة في بعت الطلب"
+    }
+  },
+  "packageRequests": {
+    "page": {
+      "title": "طلبات الباكدجات",
+      "subtitle": "إدارة استفسارات وطلبات العملاء عن الباكدجات.",
+      "branchFilter": "الفرع",
+      "allBranches": "كل الفروع",
+      "statusFilter": "الحالة",
+      "allStatuses": "كل الحالات",
+      "clearFilters": "امسح الفلاتر"
+    },
+    "status": {
+      "pending": "قيد الانتظار",
+      "reviewed": "تمت المراجعة",
+      "contacted": "تمت التواصل",
+      "completed": "مكتملة",
+      "archived": "محفوظة"
+    },
+    "table": {
+      "customer": "العميل",
+      "contact": "بيانات التواصل",
+      "request": "تفاصيل الطلب",
+      "status": "الحالة",
+      "actions": "الإجراءات",
+      "openMenu": "فتح القائمة"
+    },
+    "markReviewed": "وضع علامة كمراجع",
+    "markContacted": "وضع علامة كمتصل",
+    "markArchived": "حفظ",
+    "statusUpdated": "تمام! اتحدثت الحالة",
+    "updateFailed": "فشل تحديث الحالة",
+    "emptyMessage": "مفيش طلبات للباكدجات دلوقتي"
   }
 }
