@@ -18,22 +18,22 @@ export default function CrmDashboardPage() {
 
   return (
     <div className="space-y-6 animate-in fade-in-50 duration-500">
-      <div className="flex items-start justify-between gap-4">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div>
           <h1 className="text-2xl font-bold tracking-tight text-foreground">{t("dashboard.title")}</h1>
           <p className="text-sm text-muted-foreground mt-1">{t("dashboard.subtitle")}</p>
         </div>
-        <div className="flex gap-2">
-          <Button asChild variant="outline">
+        <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+          <Button asChild variant="outline" className="w-full">
             <Link href="/crm/players">{t("actions.openPlayers")}</Link>
           </Button>
-          <Button asChild>
+          <Button asChild className="w-full">
             <Link href="/crm/templates">{t("actions.openTemplates")}</Link>
           </Button>
         </div>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-3">
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         <Card>
           <CardHeader className="pb-2">
             <CardTitle className="text-sm">{t("dashboard.totalPlayers")}</CardTitle>
@@ -74,7 +74,9 @@ export default function CrmDashboardPage() {
                 dashboard.top_players.slice(0, 8).map((player) => (
                   <div key={player.key} className="flex items-center justify-between border-b border-border pb-2">
                     <div>
-                      <p className="font-medium">{player.name}</p>
+                      <Link href={`/crm/players/${player.key}`} className="font-medium hover:underline">
+                        {player.name}
+                      </Link>
                       <p className="text-xs text-muted-foreground">{player.phone}</p>
                     </div>
                     <div className="text-right text-sm">
@@ -84,7 +86,12 @@ export default function CrmDashboardPage() {
                   </div>
                 ))
               ) : (
-                <p className="text-sm text-muted-foreground">{t("dashboard.noData")}</p>
+                <div className="rounded-lg border border-dashed p-4">
+                  <p className="text-sm text-muted-foreground">{t("dashboard.noData")}</p>
+                  <Button asChild size="sm" variant="outline" className="mt-3">
+                    <Link href="/crm/players">{t("dashboard.openPlayersCta")}</Link>
+                  </Button>
+                </div>
               )}
             </div>
           </CardContent>
@@ -107,7 +114,12 @@ export default function CrmDashboardPage() {
                   </div>
                 ))
               ) : (
-                <p className="text-sm text-muted-foreground">{t("dashboard.noActivity")}</p>
+                <div className="rounded-lg border border-dashed p-4">
+                  <p className="text-sm text-muted-foreground">{t("dashboard.noActivity")}</p>
+                  <Button asChild size="sm" variant="outline" className="mt-3">
+                    <Link href="/crm/templates">{t("dashboard.openTemplatesCta")}</Link>
+                  </Button>
+                </div>
               )}
             </div>
           </CardContent>

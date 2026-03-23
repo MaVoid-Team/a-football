@@ -71,11 +71,33 @@ export function useCrmAPI() {
     }
   }, []);
 
-  const fetchPlayer = useCallback(async (id: string) => {
+  const fetchSegmentPlayers = useCallback(async (segmentId: number, params?: Omit<PlayerListParams, "segment_id">) => {
     setLoading(true);
     setError(null);
     try {
-      const response = await api.get<{ data: CrmPlayerProfile }>(`/api/admin/crm/players/${id}`);
+      const query = buildQueryString(params as Record<string, string | number | boolean | null | undefined>);
+      const response = await api.get<{ data: CrmPlayerSummary[] }>(`/api/admin/crm/segments/${segmentId}/players${query}`);
+      setPlayers(response.data.data || []);
+      setPagination(parsePagination(response.headers));
+      return { success: true, data: response.data.data || [] };
+    } catch (err: any) {
+      setError(err.response?.data?.error || "Failed to fetch segment players");
+      return { success: false, error: err };
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  const fetchPlayer = useCallback(async (id: string, activityType?: string, activityPage = 1, activityPerPage = 20) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const query = buildQueryString({
+        activity_type: activityType || undefined,
+        activity_page: activityPage,
+        activity_per_page: activityPerPage,
+      });
+      const response = await api.get<{ data: CrmPlayerProfile }>(`/api/admin/crm/players/${id}${query}`);
       setPlayer(response.data.data);
       return { success: true, data: response.data.data };
     } catch (err: any) {
@@ -189,6 +211,7 @@ export function useCrmAPI() {
     pagination,
     fetchDashboard,
     fetchPlayers,
+    fetchSegmentPlayers,
     fetchPlayer,
     updatePlayerTag,
     fetchSegments,

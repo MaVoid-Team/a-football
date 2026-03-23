@@ -27,24 +27,24 @@ export function PaginationControls({
     const { page, totalPages, totalCount, perPage } = pagination;
 
     return (
-        <div className="flex items-center justify-between px-2 py-4 border-t border-border mt-4">
-            <div className="flex-1 text-sm text-muted-foreground">
+        <div className="mt-4 flex flex-col gap-3 border-t border-border px-2 py-4 sm:flex-row sm:items-center sm:justify-between">
+            <div className="text-sm text-muted-foreground sm:flex-1">
                 {t("showing", {
                     from: Math.min((page - 1) * perPage + 1, totalCount),
                     to: Math.min(page * perPage, totalCount),
                     total: totalCount,
                 })}
             </div>
-            <div className="flex items-center space-x-6 lg:space-x-8">
+            <div className="flex flex-wrap items-center gap-3 sm:justify-end lg:gap-6">
                 {onPerPageChange && (
-                    <div className="flex items-center space-x-2">
+                    <div className="flex items-center gap-2">
                         <p className="text-sm font-medium text-foreground">{t("rowsPerPage")}</p>
                         <Select
                             value={`${perPage}`}
                             onValueChange={(value) => onPerPageChange(Number(value))}
                         >
                             <SelectTrigger
-                                className="h-8 w-[70px]"
+                                className="h-10 w-[78px]"
                                 id="per-page-select"
                                 data-testid="per-page-select"
                             >
@@ -60,13 +60,13 @@ export function PaginationControls({
                         </Select>
                     </div>
                 )}
-                <div className="flex flex-col min-w-[100px] items-center justify-center text-sm font-medium text-foreground">
+                <div className="min-w-[100px] text-sm font-medium text-foreground">
                     {t("pageOf", { page, total: totalPages || 1 })}
                 </div>
-                <div className="flex items-center space-x-2">
+                <div className="flex items-center gap-2">
                     <Button
                         variant="outline"
-                        className="h-8 w-8 p-0"
+                        className="h-10 w-10 p-0"
                         onClick={() => onPageChange(page - 1)}
                         disabled={page <= 1}
                         id="prev-page"
@@ -77,7 +77,7 @@ export function PaginationControls({
                     </Button>
                     <Button
                         variant="outline"
-                        className="h-8 w-8 p-0"
+                        className="h-10 w-10 p-0"
                         onClick={() => onPageChange(page + 1)}
                         disabled={page >= totalPages}
                         id="next-page"

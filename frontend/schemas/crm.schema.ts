@@ -21,10 +21,18 @@ export interface CrmActivityItem {
   reference_type?: string | null;
   reference_id?: number | null;
   metadata: Record<string, unknown>;
+  actor_admin_name?: string | null;
   created_at: string;
 }
 
 export interface CrmPlayerProfile extends CrmPlayerSummary {
+  activities_meta?: {
+    page: number;
+    per_page: number;
+    total_count: number;
+    total_pages: number;
+    has_more: boolean;
+  };
   activities: CrmActivityItem[];
 }
 

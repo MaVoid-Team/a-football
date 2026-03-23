@@ -13,6 +13,8 @@ import { PaginationControls } from "@/components/shared/pagination-controls";
 import { formatDate } from "@/lib/format-date";
 import { toast } from "sonner";
 
+type PlayerStatusFilter = "all" | "active" | "warm" | "inactive";
+
 export default function CrmPlayersPage() {
   const t = useTranslations("crm");
   const {
@@ -22,30 +24,71 @@ export default function CrmPlayersPage() {
     pagination,
     loading,
     fetchPlayers,
+    fetchSegmentPlayers,
     fetchSegments,
     fetchTemplates,
     generateWhatsappLink,
   } = useCrmAPI();
 
-  const [search, setSearch] = useState("");
-  const [status, setStatus] = useState("all");
-  const [segmentId, setSegmentId] = useState("all");
+  const [searchInput, setSearchInput] = useState("");
+  const [tagsInput, setTagsInput] = useState("");
+  const [statusInput, setStatusInput] = useState<PlayerStatusFilter>("all");
+  const [segmentIdInput, setSegmentIdInput] = useState("all");
   const [page, setPage] = useState(1);
   const [perPage, setPerPage] = useState(25);
   const [templateId, setTemplateId] = useState("all");
+  const [isApplying, setIsApplying] = useState(false);
+  const [messagingPlayerKey, setMessagingPlayerKey] = useState<string | null>(null);
+  const [filters, setFilters] = useState<{
+    search?: string;
+    tags?: string;
+    status?: string;
+    segment_id?: number;
+  }>({});
 
   const activeTemplateId = useMemo(() => {
     if (templateId !== "all") return Number(templateId);
-    return templates[0]?.id;
+    return templates.find((template) => template.active)?.id;
   }, [templateId, templates]);
 
-  const load = () => {
-    fetchPlayers({
+  const messagingTemplates = useMemo(() => templates.filter((template) => template.active), [templates]);
+  const selectedSegment = useMemo(
+    () => segments.find((segment) => segment.id.toString() === segmentIdInput),
+    [segments, segmentIdInput],
+  );
+
+  const summarizeSegmentRules = (conditions: Record<string, unknown> | undefined) => {
+    const rules = Array.isArray(conditions?.rules) ? conditions.rules : [];
+    if (!rules.length) return t("players.segmentNoRules");
+
+    return rules
+      .map((rule) => {
+        const ruleRecord = rule as Record<string, unknown>;
+        const field = String(ruleRecord.field || "");
+        const op = String(ruleRecord.op || "");
+        const value = String(ruleRecord.value || "");
+        return `${field} ${op} ${value}`;
+      })
+      .join(" • ");
+  };
+
+  const load = async () => {
+    if (filters.segment_id) {
+      return fetchSegmentPlayers(filters.segment_id, {
+        page,
+        per_page: perPage,
+        search: filters.search,
+        status: filters.status,
+        tags: filters.tags,
+      });
+    }
+
+    return fetchPlayers({
       page,
       per_page: perPage,
-      search: search || undefined,
-      status: status === "all" ? undefined : status,
-      segment_id: segmentId === "all" ? undefined : Number(segmentId),
+      search: filters.search,
+      status: filters.status,
+      tags: filters.tags,
     });
   };
 
@@ -57,11 +100,48 @@ export default function CrmPlayersPage() {
   useEffect(() => {
     load();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [page, perPage, status, segmentId]);
+  }, [page, perPage, filters]);
 
-  const onSearch = () => {
+  const onApply = async () => {
+    setIsApplying(true);
+    const nextFilters = {
+      search: searchInput.trim() || undefined,
+      tags: tagsInput.trim() || undefined,
+      status: statusInput === "all" ? undefined : statusInput,
+      segment_id: segmentIdInput === "all" ? undefined : Number(segmentIdInput),
+    };
+
+    setFilters(nextFilters);
     setPage(1);
-    load();
+    const result = await (nextFilters.segment_id
+      ? fetchSegmentPlayers(nextFilters.segment_id, {
+        page: 1,
+        per_page: perPage,
+        search: nextFilters.search,
+        status: nextFilters.status,
+        tags: nextFilters.tags,
+      })
+      : fetchPlayers({
+        page: 1,
+        per_page: perPage,
+        search: nextFilters.search,
+        status: nextFilters.status,
+        tags: nextFilters.tags,
+      }));
+    if (!result.success) {
+      toast.error(t("players.loadFailed"));
+    }
+    setIsApplying(false);
+  };
+
+  const onReset = async () => {
+    setSearchInput("");
+    setTagsInput("");
+    setStatusInput("all");
+    setSegmentIdInput("all");
+    setFilters({});
+    setPage(1);
+    await fetchPlayers({ page: 1, per_page: perPage });
   };
 
   const onQuickMessage = async (playerKey: string) => {
@@ -70,13 +150,17 @@ export default function CrmPlayersPage() {
       return;
     }
 
+    setMessagingPlayerKey(playerKey);
     const result = await generateWhatsappLink(activeTemplateId, playerKey);
     if (!result.success || !result.data?.whatsapp_link) {
       toast.error(t("players.whatsappFailed"));
+      setMessagingPlayerKey(null);
       return;
     }
 
     window.open(result.data.whatsapp_link, "_blank", "noopener,noreferrer");
+    toast.success(t("players.whatsappOpened"));
+    setMessagingPlayerKey(null);
   };
 
   return (
@@ -90,25 +174,32 @@ export default function CrmPlayersPage() {
         <CardHeader>
           <CardTitle>{t("players.filters")}</CardTitle>
         </CardHeader>
-        <CardContent className="grid gap-3 md:grid-cols-5">
+        <CardContent className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-6">
           <Input
             placeholder={t("players.searchPlaceholder")}
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
+            value={searchInput}
+            onChange={(e) => setSearchInput(e.target.value)}
           />
 
-          <Select value={status} onValueChange={setStatus}>
+          <Input
+            placeholder={t("players.tagsPlaceholder")}
+            value={tagsInput}
+            onChange={(e) => setTagsInput(e.target.value)}
+          />
+
+          <Select value={statusInput} onValueChange={(value) => setStatusInput(value as PlayerStatusFilter)}>
             <SelectTrigger>
               <SelectValue placeholder={t("players.status")} />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">{t("players.all")}</SelectItem>
               <SelectItem value="active">{t("players.active")}</SelectItem>
+              <SelectItem value="warm">{t("players.warm")}</SelectItem>
               <SelectItem value="inactive">{t("players.inactive")}</SelectItem>
             </SelectContent>
           </Select>
 
-          <Select value={segmentId} onValueChange={setSegmentId}>
+          <Select value={segmentIdInput} onValueChange={setSegmentIdInput}>
             <SelectTrigger>
               <SelectValue placeholder={t("players.segment")} />
             </SelectTrigger>
@@ -126,49 +217,98 @@ export default function CrmPlayersPage() {
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">{t("players.defaultTemplate")}</SelectItem>
-              {templates.map((template) => (
+              {messagingTemplates.map((template) => (
                 <SelectItem key={template.id} value={template.id.toString()}>{template.name}</SelectItem>
               ))}
             </SelectContent>
           </Select>
 
-          <Button onClick={onSearch}>{t("players.apply")}</Button>
+          <div className="flex gap-2 sm:col-span-2 lg:col-span-1">
+            <Button className="flex-1" onClick={onApply} disabled={loading || isApplying}>
+              {loading || isApplying ? t("players.applying") : t("players.apply")}
+            </Button>
+            <Button className="flex-1" variant="outline" onClick={onReset} disabled={loading || isApplying}>
+              {t("players.reset")}
+            </Button>
+          </div>
         </CardContent>
       </Card>
+
+      {selectedSegment && (
+        <Card>
+          <CardHeader className="pb-3">
+            <CardTitle className="text-base">{t("players.segmentDetails")}</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-2">
+            <div className="flex flex-wrap items-center gap-2">
+              <Badge>{selectedSegment.name}</Badge>
+              <Badge variant="outline">
+                {selectedSegment.active ? t("players.segmentActive") : t("players.segmentInactive")}
+              </Badge>
+            </div>
+            <p className="text-sm text-muted-foreground">{summarizeSegmentRules(selectedSegment.conditions as Record<string, unknown>)}</p>
+          </CardContent>
+        </Card>
+      )}
 
       <Card>
         <CardContent className="pt-6">
           <div className="space-y-3">
             {players.map((player) => (
-              <div key={player.key} className="grid gap-3 border border-border rounded-lg p-3 md:grid-cols-[2fr_1fr_1fr_auto_auto] items-center">
-                <div>
+              <div key={player.key} className="grid gap-3 rounded-lg border border-border p-3 md:grid-cols-[2fr_1fr_1fr_auto_auto] md:items-center">
+                <div className="space-y-1">
                   <p className="font-medium">{player.name}</p>
                   <p className="text-xs text-muted-foreground">{player.phone} {player.email ? `• ${player.email}` : ""}</p>
                   <p className="text-xs text-muted-foreground">{t("players.lastActivity")}: {formatDate(player.last_activity_date, "PP")}</p>
+                  <div className="flex flex-wrap gap-1">
+                    <Badge variant="outline">{player.player_type}</Badge>
+                    {player.skill_level && <Badge variant="outline">{player.skill_level}</Badge>}
+                  </div>
                 </div>
 
                 <div className="text-sm">
                   <p>{t("players.bookings")}: {player.total_bookings}</p>
                   <p>{t("players.matches")}: {player.total_matches}</p>
+                  <p>{t("players.tournaments")}: {player.total_tournaments}</p>
                 </div>
 
-                <div className="flex gap-1 flex-wrap">
-                  {(player.tags || []).map((tag) => (
+                <div className="flex max-w-full flex-wrap gap-1">
+                  {(player.tags || []).slice(0, 3).map((tag) => (
                     <Badge key={tag} variant="secondary">{tag}</Badge>
                   ))}
+                  {(player.tags || []).length > 3 && (
+                    <Badge variant="secondary">+{(player.tags || []).length - 3}</Badge>
+                  )}
                 </div>
 
-                <Button variant="outline" asChild>
-                  <Link href={`/crm/players/${player.key}`}>{t("players.viewProfile")}</Link>
-                </Button>
+                <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 md:contents">
+                  <Button variant="outline" asChild className="w-full md:w-auto">
+                    <Link href={`/crm/players/${player.key}`}>{t("players.viewProfile")}</Link>
+                  </Button>
 
-                <Button disabled={loading} onClick={() => onQuickMessage(player.key)}>
-                  {t("players.messageWhatsapp")}
-                </Button>
+                  <Button
+                    className="w-full md:w-auto"
+                    disabled={loading || messagingPlayerKey === player.key}
+                    onClick={() => onQuickMessage(player.key)}
+                  >
+                    {messagingPlayerKey === player.key ? t("players.sending") : t("players.messageWhatsapp")}
+                  </Button>
+                </div>
               </div>
             ))}
 
-            {!players.length && <p className="text-sm text-muted-foreground">{t("players.empty")}</p>}
+            {!players.length && (
+              <div className="rounded-lg border border-dashed p-4">
+                <p className="text-sm text-muted-foreground">{t("players.empty")}</p>
+                <p className="mt-1 text-xs text-muted-foreground">{t("players.emptyHint")}</p>
+                <div className="mt-3 flex flex-wrap gap-2">
+                  <Button variant="outline" size="sm" onClick={onReset}>{t("players.reset")}</Button>
+                  <Button variant="outline" size="sm" asChild>
+                    <Link href="/crm/templates">{t("players.openTemplates")}</Link>
+                  </Button>
+                </div>
+              </div>
+            )}
           </div>
 
           {pagination && (
