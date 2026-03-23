@@ -20,10 +20,25 @@ module Api
         private
 
         def find_setting
+          branch_id = resolve_branch_id
+
+          CrmScoringSetting.find_or_create_by!(branch_id: branch_id)
+        end
+
+        def resolve_branch_id
+          requested_branch_id = params[:branch_id].presence || params.dig(:scoring_setting, :branch_id).presence
+
+          if current_admin.super_admin?
+            branch_id = requested_branch_id || Branch.order(:id).pick(:id)
+            raise ActiveRecord::RecordNotFound, "Branch ID is required" if branch_id.blank?
+
+            return branch_id
+          end
+
           branch_id = current_admin.branch_id
           raise ActiveRecord::RecordNotFound, "Branch admin required" if branch_id.blank?
 
-          CrmScoringSetting.find_or_create_by!(branch_id: branch_id)
+          branch_id
         end
 
         def setting_params

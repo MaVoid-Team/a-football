@@ -1581,6 +1581,34 @@
       "conditionField": "Condition field",
       "conditionOp": "Operator",
       "conditionValue": "Value",
+      "triggerTypes": {
+        "inactivity": "Inactivity",
+        "booking_created": "Booking created",
+        "match_completed": "Match completed",
+        "tournament_joined": "Tournament joined",
+        "no_show_detected": "No-show detected"
+      },
+      "conditionFields": {
+        "last_activity_days": "Last activity (days)",
+        "total_bookings": "Total bookings",
+        "total_matches": "Total matches",
+        "total_tournaments": "Total tournaments",
+        "no_show_count": "No-show count",
+        "cancellation_count": "Cancellation count",
+        "tags": "Tags"
+      },
+      "operators": {
+        "gte": "is at least (>=)",
+        "lte": "is at most (<=)",
+        "gt": "is greater than (>)",
+        "lt": "is less than (<)",
+        "eq": "equals (=)",
+        "includes": "includes",
+        "excludes": "excludes"
+      },
+      "matchAllShort": "AND",
+      "matchAnyShort": "OR",
+      "actionSuggestWhatsapp": "Suggest WhatsApp",
       "conditions": "Conditions",
       "matchAll": "Match all",
       "matchAny": "Match any",

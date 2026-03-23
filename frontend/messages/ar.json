@@ -1523,6 +1523,34 @@
       "conditionField": "حقل الشرط",
       "conditionOp": "المعامل",
       "conditionValue": "القيمة",
+      "triggerTypes": {
+        "inactivity": "عدم نشاط",
+        "booking_created": "إنشاء حجز",
+        "match_completed": "اكتمال مباراة",
+        "tournament_joined": "الانضمام لبطولة",
+        "no_show_detected": "رصد عدم حضور"
+      },
+      "conditionFields": {
+        "last_activity_days": "آخر نشاط (أيام)",
+        "total_bookings": "إجمالي الحجوزات",
+        "total_matches": "إجمالي المباريات",
+        "total_tournaments": "إجمالي البطولات",
+        "no_show_count": "عدد عدم الحضور",
+        "cancellation_count": "عدد الإلغاءات",
+        "tags": "الوسوم"
+      },
+      "operators": {
+        "gte": "أكبر من أو يساوي (>=)",
+        "lte": "أقل من أو يساوي (<=)",
+        "gt": "أكبر من (>)",
+        "lt": "أقل من (<)",
+        "eq": "يساوي (=)",
+        "includes": "يتضمن",
+        "excludes": "لا يتضمن"
+      },
+      "matchAllShort": "و",
+      "matchAnyShort": "أو",
+      "actionSuggestWhatsapp": "اقتراح واتساب",
       "conditions": "الشروط",
       "matchAll": "مطابقة كل الشروط",
       "matchAny": "مطابقة أي شرط",

@@ -294,6 +294,32 @@ RSpec.describe "Api::Admin::CRM", type: :request do
       body = JSON.parse(response.body)
       expect(body["data"].map { |row| row["name"] }).to include("Inactive follow-up")
     end
+
+    it "creates automation rule with structured conditions" do
+      post "/api/admin/crm/automation_rules",
+           params: {
+             automation_rule: {
+               name: "No-show follow-up",
+               trigger_type: "inactivity",
+               action_type: "suggest_whatsapp",
+               is_active: true,
+               conditions: {
+                 "operator" => "all",
+                 "rules" => [
+                   { "field" => "last_activity_days", "op" => "gte", "value" => 7 },
+                   { "field" => "total_matches", "op" => "gte", "value" => 1 }
+                 ]
+               }
+             }
+           },
+           headers: headers
+
+      expect(response).to have_http_status(:created)
+      body = JSON.parse(response.body)
+      expect(body.dig("data", "conditions", "operator")).to eq("all")
+      expect(body.dig("data", "conditions", "rules")).to be_an(Array)
+      expect(body.dig("data", "branch_id")).to eq(branch.id)
+    end
   end
 
   describe "Action Center APIs" do
@@ -409,6 +435,24 @@ RSpec.describe "Api::Admin::CRM", type: :request do
       body = JSON.parse(response.body)
       expect(body.dig("data", "activity_weight")).to eq(40)
       expect(CrmScoringSetting.find_by(branch_id: branch.id)&.frequency_weight).to eq(20)
+    end
+
+    it "returns scoring settings for super admin without explicit branch_id" do
+      super_admin = create(:admin, :super_admin)
+      CrmScoringSetting.create!(
+        branch: branch,
+        activity_weight: 28,
+        frequency_weight: 24,
+        engagement_weight: 26,
+        reliability_weight: 22
+      )
+
+      get "/api/admin/crm/scoring_settings", headers: auth_headers(super_admin)
+
+      expect(response).to have_http_status(:ok)
+      body = JSON.parse(response.body)
+      expect(body.dig("data", "branch_id")).to eq(branch.id)
+      expect(body.dig("data", "activity_weight")).to eq(28)
     end
   end
 

@@ -61,6 +61,8 @@ const allowedOpsForField = (field: string): string[] => (isNumericField(field)
   ? ["gte", "lte", "gt", "lt", "eq"]
   : ["includes", "excludes"]);
 
+const labelize = (value: string) => value.replaceAll("_", " ");
+
 export default function CrmAutomationsPage() {
   const t = useTranslations("crm");
   const {
@@ -111,6 +113,38 @@ export default function CrmAutomationsPage() {
   }, [scoringSetting]);
 
   const activeTemplates = useMemo(() => templates.filter((template) => template.active), [templates]);
+
+  const triggerTypeKeyMap: Record<string, string> = {
+    inactivity: "automations.triggerTypes.inactivity",
+    booking_created: "automations.triggerTypes.booking_created",
+    match_completed: "automations.triggerTypes.match_completed",
+    tournament_joined: "automations.triggerTypes.tournament_joined",
+    no_show_detected: "automations.triggerTypes.no_show_detected",
+  };
+
+  const conditionFieldKeyMap: Record<string, string> = {
+    last_activity_days: "automations.conditionFields.last_activity_days",
+    total_bookings: "automations.conditionFields.total_bookings",
+    total_matches: "automations.conditionFields.total_matches",
+    total_tournaments: "automations.conditionFields.total_tournaments",
+    no_show_count: "automations.conditionFields.no_show_count",
+    cancellation_count: "automations.conditionFields.cancellation_count",
+    tags: "automations.conditionFields.tags",
+  };
+
+  const operatorKeyMap: Record<string, string> = {
+    gte: "automations.operators.gte",
+    lte: "automations.operators.lte",
+    gt: "automations.operators.gt",
+    lt: "automations.operators.lt",
+    eq: "automations.operators.eq",
+    includes: "automations.operators.includes",
+    excludes: "automations.operators.excludes",
+  };
+
+  const triggerLabel = (value: string) => triggerTypeKeyMap[value] ? t(triggerTypeKeyMap[value] as never) : labelize(value);
+  const fieldLabel = (value: string) => conditionFieldKeyMap[value] ? t(conditionFieldKeyMap[value] as never) : labelize(value);
+  const opLabel = (value: string) => operatorKeyMap[value] ? t(operatorKeyMap[value] as never) : value.toUpperCase();
 
   const parseWeight = (value: string) => Number(value);
 
@@ -233,7 +267,8 @@ export default function CrmAutomationsPage() {
 
   const formatRuleSummary = (raw: Record<string, unknown>) => {
     const parsed = parseRuleConditions(raw);
-    return parsed.rules.map((rule) => `${rule.field} ${rule.op} ${rule.value}`).join(` ${parsed.operator.toUpperCase()} `);
+    const joiner = parsed.operator === "any" ? t("automations.matchAnyShort") : t("automations.matchAllShort");
+    return parsed.rules.map((rule) => `${fieldLabel(rule.field)} ${opLabel(rule.op)} ${rule.value}`).join(` ${joiner} `);
   };
 
   const addCondition = () => {
@@ -437,7 +472,7 @@ export default function CrmAutomationsPage() {
               <SelectTrigger><SelectValue /></SelectTrigger>
               <SelectContent>
                 {triggerTypes.map((value) => (
-                  <SelectItem key={value} value={value}>{value}</SelectItem>
+                  <SelectItem key={value} value={value}>{triggerLabel(value)}</SelectItem>
                 ))}
               </SelectContent>
             </Select>
@@ -461,7 +496,7 @@ export default function CrmAutomationsPage() {
                     <SelectTrigger><SelectValue /></SelectTrigger>
                     <SelectContent>
                       {conditionFields.map((value) => (
-                        <SelectItem key={value} value={value}>{value}</SelectItem>
+                        <SelectItem key={value} value={value}>{fieldLabel(value)}</SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
@@ -472,7 +507,7 @@ export default function CrmAutomationsPage() {
                       {conditionOps
                         .filter((value) => allowedOpsForField(condition.field).includes(value))
                         .map((value) => (
-                        <SelectItem key={value} value={value}>{value}</SelectItem>
+                        <SelectItem key={value} value={value}>{opLabel(value)}</SelectItem>
                         ))}
                     </SelectContent>
                   </Select>
@@ -546,7 +581,7 @@ export default function CrmAutomationsPage() {
               <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                 <div>
                   <p className="font-medium">{rule.name}</p>
-                  <p className="text-xs text-muted-foreground">{rule.trigger_type} • {rule.action_type}</p>
+                  <p className="text-xs text-muted-foreground">{triggerLabel(rule.trigger_type)} • {t("automations.actionSuggestWhatsapp")}</p>
                   <p className="text-xs text-muted-foreground mt-1">{formatRuleSummary(rule.conditions)}</p>
                 </div>
                 <div className="flex items-center gap-2">

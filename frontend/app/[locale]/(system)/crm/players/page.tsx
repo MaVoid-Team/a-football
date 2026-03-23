@@ -15,6 +15,31 @@ import { toast } from "sonner";
 
 type PlayerStatusFilter = "all" | "active" | "warm" | "inactive";
 
+const segmentFields = [
+  "last_activity_days",
+  "total_bookings",
+  "total_tournaments",
+  "no_show_count",
+  "tags",
+] as const;
+
+const numericSegmentFields = [
+  "last_activity_days",
+  "total_bookings",
+  "total_tournaments",
+  "no_show_count",
+] as const;
+
+const segmentOps = ["gte", "lte", "gt", "lt", "eq", "includes"] as const;
+
+const isNumericSegmentField = (field: string) => numericSegmentFields.includes(field as (typeof numericSegmentFields)[number]);
+
+const allowedSegmentOpsForField = (field: string): string[] => (isNumericSegmentField(field)
+  ? ["gte", "lte", "gt", "lt", "eq"]
+  : ["includes"]);
+
+const labelize = (value: string) => value.replaceAll("_", " ");
+
 export default function CrmPlayersPage() {
   const t = useTranslations("crm");
   const {
@@ -66,6 +91,26 @@ export default function CrmPlayersPage() {
     [segments, segmentIdInput],
   );
 
+  const fieldLabels: Record<string, string> = {
+    last_activity_days: t("automations.conditionFields.last_activity_days"),
+    total_bookings: t("automations.conditionFields.total_bookings"),
+    total_tournaments: t("automations.conditionFields.total_tournaments"),
+    no_show_count: t("automations.conditionFields.no_show_count"),
+    tags: t("automations.conditionFields.tags"),
+  };
+
+  const opLabels: Record<string, string> = {
+    gte: t("automations.operators.gte"),
+    lte: t("automations.operators.lte"),
+    gt: t("automations.operators.gt"),
+    lt: t("automations.operators.lt"),
+    eq: t("automations.operators.eq"),
+    includes: t("automations.operators.includes"),
+  };
+
+  const fieldLabel = (value: string) => fieldLabels[value] ?? labelize(value);
+  const opLabel = (value: string) => opLabels[value] ?? value.toUpperCase();
+
   const summarizeSegmentRules = (conditions: Record<string, unknown> | undefined) => {
     const rules = Array.isArray(conditions?.rules) ? conditions.rules : [];
     if (!rules.length) return t("players.segmentNoRules");
@@ -76,7 +121,7 @@ export default function CrmPlayersPage() {
         const field = String(ruleRecord.field || "");
         const op = String(ruleRecord.op || "");
         const value = String(ruleRecord.value || "");
-        return `${field} ${op} ${value}`;
+        return `${fieldLabel(field)} ${opLabel(op)} ${value}`;
       })
       .join(" • ");
   };
@@ -185,7 +230,7 @@ export default function CrmPlayersPage() {
       auto_update: true,
       conditions: {
         operator: "all",
-        rules: [{ field: segmentField, op: segmentOp, value: Number(segmentValue) || segmentValue }],
+        rules: [{ field: segmentField, op: segmentOp, value: isNumericSegmentField(segmentField) ? Number(segmentValue) || 0 : segmentValue }],
       },
     });
 
@@ -305,25 +350,31 @@ export default function CrmPlayersPage() {
             value={segmentName}
             onChange={(e) => setSegmentName(e.target.value)}
           />
-          <Select value={segmentField} onValueChange={setSegmentField}>
+          <Select
+            value={segmentField}
+            onValueChange={(value) => {
+              setSegmentField(value);
+              const allowedOps = allowedSegmentOpsForField(value);
+              if (!allowedOps.includes(segmentOp)) {
+                setSegmentOp(allowedOps[0]);
+              }
+            }}
+          >
             <SelectTrigger><SelectValue /></SelectTrigger>
             <SelectContent>
-              <SelectItem value="last_activity_days">last_activity_days</SelectItem>
-              <SelectItem value="total_bookings">total_bookings</SelectItem>
-              <SelectItem value="total_tournaments">total_tournaments</SelectItem>
-              <SelectItem value="no_show_count">no_show_count</SelectItem>
-              <SelectItem value="tags">tags</SelectItem>
+              {segmentFields.map((value) => (
+                <SelectItem key={value} value={value}>{fieldLabel(value)}</SelectItem>
+              ))}
             </SelectContent>
           </Select>
           <Select value={segmentOp} onValueChange={setSegmentOp}>
             <SelectTrigger><SelectValue /></SelectTrigger>
             <SelectContent>
-              <SelectItem value="gte">gte</SelectItem>
-              <SelectItem value="lte">lte</SelectItem>
-              <SelectItem value="gt">gt</SelectItem>
-              <SelectItem value="lt">lt</SelectItem>
-              <SelectItem value="eq">eq</SelectItem>
-              <SelectItem value="includes">includes</SelectItem>
+              {segmentOps
+                .filter((value) => allowedSegmentOpsForField(segmentField).includes(value))
+                .map((value) => (
+                  <SelectItem key={value} value={value}>{opLabel(value)}</SelectItem>
+                ))}
             </SelectContent>
           </Select>
           <Input value={segmentValue} onChange={(e) => setSegmentValue(e.target.value)} placeholder={t("players.segmentValue")} />

@@ -32,8 +32,11 @@ module Api
 
         def rule_params
           permitted = params.require(:automation_rule).permit(:name, :trigger_type, :action_type, :template_id, :is_active, :branch_id)
-          permitted[:conditions] = params.dig(:automation_rule, :conditions) if params.dig(:automation_rule, :conditions).present?
-          permitted
+          raw_conditions = params.dig(:automation_rule, :conditions)
+          permitted[:conditions] = raw_conditions.respond_to?(:to_unsafe_h) ? raw_conditions.to_unsafe_h : raw_conditions if raw_conditions.present?
+          return permitted if current_admin.super_admin?
+
+          permitted.merge(branch_id: current_admin.branch_id)
         end
 
         def serialize_rule(rule)
