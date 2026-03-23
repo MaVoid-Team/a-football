@@ -33,6 +33,7 @@ export const tournamentCreateSchema = z.object({
     name: z.string().min(2),
     description: z.string().optional(),
     tournament_type: tournamentTypeEnum,
+    status: z.enum(["draft", "open"]).optional(),
     max_players: z.number().int().positive().optional(),
     max_teams: z.number().int().positive().optional(),
     start_date: z.string().min(1),

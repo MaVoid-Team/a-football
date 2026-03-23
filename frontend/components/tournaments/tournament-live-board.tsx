@@ -47,6 +47,18 @@ export function TournamentLiveBoard({ id }: { id: string }) {
             .sort((a, b) => a.round - b.round);
     }, [matches]);
 
+    const matchStatusLabel = (status?: string) => {
+        const keyByStatus: Record<string, string> = {
+            pending: "live.status.pending",
+            scheduled: "live.status.scheduled",
+            ongoing: "live.status.ongoing",
+            completed: "live.status.completed",
+        };
+
+        if (!status || !keyByStatus[status]) return status || t("live.status.pending");
+        return t(keyByStatus[status]);
+    };
+
     return (
         <div className="w-full max-w-7xl mx-auto space-y-6">
             <div className="flex items-center justify-between gap-3">
@@ -56,6 +68,7 @@ export function TournamentLiveBoard({ id }: { id: string }) {
                         {t("live.lastUpdated")}: {lastUpdatedAt ? lastUpdatedAt.toLocaleTimeString() : t("live.never")}
                         <span className="ms-2">({t("live.nextRefresh", { seconds: secondsUntilRefresh })})</span>
                     </p>
+                    <p className="text-xs text-muted-foreground mt-1">{t("live.boardHint")}</p>
                 </div>
                 <div className="flex items-center gap-2">
                     <Button variant="outline" onClick={() => {
@@ -96,7 +109,7 @@ export function TournamentLiveBoard({ id }: { id: string }) {
                                             <div className="text-lg font-semibold">
                                                 {t("live.matchLine", { round: match.round_number, match: match.match_number })}
                                             </div>
-                                            <Badge variant="outline" className="text-base px-3 py-1">{match.status}</Badge>
+                                            <Badge variant="outline" className="text-base px-3 py-1">{matchStatusLabel(match.status)}</Badge>
                                         </div>
                                     ))}
                                 </div>

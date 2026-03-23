@@ -99,6 +99,19 @@ export function TournamentDetail({ id }: { id: string }) {
     }
 
     const rounds = Array.isArray(bracket?.rounds) ? bracket.rounds : [];
+    const registrationOpen = !!tournament.registration_open;
+
+    const matchStatusLabel = (status?: string) => {
+        const keyByStatus: Record<string, string> = {
+            pending: "live.status.pending",
+            scheduled: "live.status.scheduled",
+            ongoing: "live.status.ongoing",
+            completed: "live.status.completed",
+        };
+
+        if (!status || !keyByStatus[status]) return status || t("live.status.pending");
+        return t(keyByStatus[status]);
+    };
 
     return (
         <div className="w-full max-w-5xl mx-auto space-y-6">
@@ -106,12 +119,24 @@ export function TournamentDetail({ id }: { id: string }) {
                 <Link href="/tournament">{t("backToList")}</Link>
             </Button>
 
+            <div className="rounded-md border border-border/70 bg-muted/30 px-4 py-3 space-y-2">
+                <p className="text-sm font-semibold">{t("logic.title")}</p>
+                <ul className="list-disc ps-5 text-xs text-muted-foreground space-y-1">
+                    <li>{t("logic.step1")}</li>
+                    <li>{t("logic.step2")}</li>
+                    <li>{t("logic.step3")}</li>
+                </ul>
+            </div>
+
             <div className="flex flex-wrap items-center justify-between gap-3 rounded-md border border-border p-3">
                 <div className="text-sm text-muted-foreground">
                     {t("live.lastUpdated")}: {lastUpdatedAt ? lastUpdatedAt.toLocaleTimeString() : t("live.never")}
                     {liveMode && <span className="ms-2">({t("live.nextRefresh", { seconds: secondsUntilRefresh })})</span>}
                 </div>
                 <div className="flex items-center gap-2">
+                    <Badge variant={liveMode ? "default" : "secondary"}>
+                        {liveMode ? t("live.modeOn") : t("live.modeOff")}
+                    </Badge>
                     <Button variant="outline" onClick={() => refreshLiveData(false)}>
                         {t("live.refreshNow")}
                     </Button>
@@ -149,6 +174,9 @@ export function TournamentDetail({ id }: { id: string }) {
                     <CardTitle>{t("registration.title")}</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-3">
+                    <p className="text-xs text-muted-foreground">
+                        {registrationOpen ? t("registration.openHint") : t("registration.closedHint")}
+                    </p>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                         <div className="space-y-1">
                             <Label>{t("registration.name")}</Label>
@@ -194,7 +222,7 @@ export function TournamentDetail({ id }: { id: string }) {
                                         {(round.matches || []).map((match: any) => (
                                             <div key={`match-${round.round_number}-${match.match_number}`} className="rounded-md border border-border p-3 text-sm">
                                                 <div>{t("matchLabel", { match: match.match_number })}</div>
-                                                <div className="text-muted-foreground">{t("statusLabel")}: {match.status}</div>
+                                                <div className="text-muted-foreground">{t("statusLabel")}: {matchStatusLabel(match.status)}</div>
                                             </div>
                                         ))}
                                     </div>
@@ -217,7 +245,7 @@ export function TournamentDetail({ id }: { id: string }) {
                             {matches.map((match) => (
                                 <div key={match.id} className="rounded-md border border-border p-3 text-sm flex items-center justify-between gap-3">
                                     <div>{t("live.matchLine", { round: match.round_number, match: match.match_number })}</div>
-                                    <Badge variant="outline">{match.status}</Badge>
+                                    <Badge variant="outline">{matchStatusLabel(match.status)}</Badge>
                                 </div>
                             ))}
                         </div>

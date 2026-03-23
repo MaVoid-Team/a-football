@@ -20,6 +20,7 @@ export default function AdminTournamentsPage() {
     const [branchId, setBranchId] = useState<string>("all");
     const [name, setName] = useState("");
     const [type, setType] = useState<"knockout" | "round_robin" | "group_knockout">("knockout");
+    const [createStatus, setCreateStatus] = useState<"draft" | "open">("open");
     const [startDate, setStartDate] = useState("");
     const [deadline, setDeadline] = useState("");
     const [maxPlayers, setMaxPlayers] = useState("16");
@@ -36,6 +37,7 @@ export default function AdminTournamentsPage() {
     const [rowTimeByMatch, setRowTimeByMatch] = useState<Record<string, string>>({});
     const [rowOverrideByMatch, setRowOverrideByMatch] = useState<Record<string, boolean>>({});
     const [rowLockReasonByMatch, setRowLockReasonByMatch] = useState<Record<string, string>>({});
+    const [hasScheduledMatches, setHasScheduledMatches] = useState(false);
 
     const { branches, fetchBranches } = useBranchesAPI();
     const { courts, fetchCourts } = useCourtsAPI();
@@ -46,6 +48,7 @@ export default function AdminTournamentsPage() {
         error,
         fetchAdminTournaments,
         createTournament,
+        updateTournament,
         generateBracket,
         fetchBracket,
         fetchAdminMatches,
@@ -81,6 +84,7 @@ export default function AdminTournamentsPage() {
     useEffect(() => {
         if (!selectedTournamentId) {
             setTeamDirectory({});
+            setHasScheduledMatches(false);
             return;
         }
 
@@ -95,9 +99,55 @@ export default function AdminTournamentsPage() {
                 return acc;
             }, {});
 
+            const scheduled = allMatches.some((match) => ["scheduled", "ongoing", "completed"].includes(match.status));
+
             setTeamDirectory(directory);
+            setHasScheduledMatches(scheduled);
         });
     }, [selectedTournamentId, fetchAdminMatches]);
+
+    const selectedTournament = useMemo(
+        () => tournaments.find((tour) => tour.id === selectedTournamentId) || null,
+        [tournaments, selectedTournamentId]
+    );
+
+    const bracketReady = useMemo(() => {
+        const fromTournament = Array.isArray(selectedTournament?.bracket_data?.rounds) && selectedTournament.bracket_data.rounds.length > 0;
+        const fromFetchedBracket = Array.isArray(bracket?.rounds) && bracket.rounds.length > 0;
+        return fromTournament || fromFetchedBracket;
+    }, [selectedTournament, bracket]);
+
+    const selectedApprovedPlayers = selectedTournament?.approved_registrations_count ?? 0;
+    const checklistItems = selectedTournament
+        ? [
+            {
+                key: "public",
+                label: t("admin.scheduler.checklistStepPublic"),
+                done: selectedTournament.status !== "draft",
+                hint: t("admin.scheduler.checklistStepPublicHint"),
+            },
+            {
+                key: "players",
+                label: t("admin.scheduler.checklistStepPlayers", { min: 2 }),
+                done: selectedApprovedPlayers >= 2,
+                hint: t("admin.scheduler.checklistStepPlayersHint", { current: selectedApprovedPlayers, min: 2 }),
+            },
+            {
+                key: "bracket",
+                label: t("admin.scheduler.checklistStepBracket"),
+                done: bracketReady,
+                hint: bracketReady ? t("admin.scheduler.checklistReady") : t("admin.scheduler.checklistStepBracketHint"),
+            },
+            {
+                key: "schedule",
+                label: t("admin.scheduler.checklistStepSchedule"),
+                done: hasScheduledMatches,
+                hint: hasScheduledMatches ? t("admin.scheduler.checklistReady") : t("admin.scheduler.checklistStepScheduleHint"),
+            },
+        ]
+        : [];
+
+    const checklistDoneCount = checklistItems.filter((item) => item.done).length;
 
     const schedulingErrorMessage = (codes?: string[]) => {
         const code = codes?.[0];
@@ -129,6 +179,7 @@ export default function AdminTournamentsPage() {
             branch_id: Number(branchId),
             name,
             tournament_type: type,
+            status: createStatus,
             start_date: startDate,
             registration_deadline: deadline,
             max_players: Number(maxPlayers),
@@ -138,9 +189,20 @@ export default function AdminTournamentsPage() {
         if (result.success) {
             toast.success(t("admin.created"));
             setName("");
+            setCreateStatus("open");
             fetchAdminTournaments({ branch_id: Number(branchId) });
         } else {
             toast.error(result.errorMessage || t("admin.createFailed"));
+        }
+    };
+
+    const onOpenRegistration = async (id: string) => {
+        const result = await updateTournament(id, { status: "open" });
+        if (result.success) {
+            toast.success(t("admin.openedForRegistration"));
+            fetchAdminTournaments(branchId === "all" ? undefined : { branch_id: Number(branchId) });
+        } else {
+            toast.error(result.errorMessage || t("admin.openRegistrationFailed"));
         }
     };
 
@@ -311,6 +373,19 @@ export default function AdminTournamentsPage() {
                             </Select>
                         </div>
                         <div className="space-y-1">
+                            <Label>{t("admin.visibility")}</Label>
+                            <Select value={createStatus} onValueChange={(v: "draft" | "open") => setCreateStatus(v)}>
+                                <SelectTrigger><SelectValue /></SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="open">{t("admin.visibilityOpen")}</SelectItem>
+                                    <SelectItem value="draft">{t("admin.visibilityDraft")}</SelectItem>
+                                </SelectContent>
+                            </Select>
+                            <p className="text-xs text-muted-foreground">
+                                {createStatus === "open" ? t("admin.visibilityOpenHint") : t("admin.visibilityDraftHint")}
+                            </p>
+                        </div>
+                        <div className="space-y-1">
                             <Label>{t("admin.startDate")}</Label>
                             <Input type="datetime-local" value={startDate} onChange={(e) => setStartDate(e.target.value)} />
                         </div>
@@ -345,12 +420,35 @@ export default function AdminTournamentsPage() {
                                         <div className="text-xs text-muted-foreground">
                                             {t("typeLabel")}: {t(`type.${tour.tournament_type}`)} | {t("startDate")}: {formatDate(tour.start_date)}
                                         </div>
+                                        <div className="text-xs text-muted-foreground mt-1">
+                                            {t("admin.participantsSummary", {
+                                                approved: tour.approved_registrations_count ?? 0,
+                                                max: tour.max_players ?? "-",
+                                            })}
+                                        </div>
                                         <div className="mt-1">
                                             <Badge variant="outline">{t(`status.${tour.status}`)}</Badge>
+                                            <Badge className="ms-2" variant={tour.registration_open ? "default" : "secondary"}>
+                                                {tour.registration_open ? t("admin.registrationOpen") : t("admin.registrationClosed")}
+                                            </Badge>
                                         </div>
+                                        {tour.status === "draft" && (
+                                            <p className="text-xs text-amber-600 mt-2">{t("admin.draftHiddenHint")}</p>
+                                        )}
                                     </div>
                                     <div className="flex items-center gap-2">
-                                        <Button variant="outline" onClick={() => onGenerateBracket(tour.id)}>{t("admin.generateBracket")}</Button>
+                                        <Button
+                                            variant="outline"
+                                            onClick={() => onGenerateBracket(tour.id)}
+                                            disabled={(tour.approved_registrations_count ?? 0) < 2}
+                                        >
+                                            {t("admin.generateBracket")}
+                                        </Button>
+                                        {tour.status === "draft" && (
+                                            <Button variant="secondary" onClick={() => onOpenRegistration(tour.id)}>
+                                                {t("admin.openForRegistration")}
+                                            </Button>
+                                        )}
                                         <Button variant={selectedTournamentId === tour.id ? "default" : "secondary"} onClick={() => setSelectedTournamentId(tour.id)}>
                                             {t("admin.scheduler.manageSchedule")}
                                         </Button>
@@ -372,6 +470,64 @@ export default function AdminTournamentsPage() {
                             {error}
                         </div>
                     )}
+
+                    <div className="rounded-md border border-border/70 bg-muted/30 p-3 space-y-2">
+                        <p className="text-sm font-semibold">{t("admin.scheduler.workflowTitle")}</p>
+                        <ul className="list-disc ps-5 text-xs text-muted-foreground space-y-1">
+                            <li>{t("admin.scheduler.workflowStep1")}</li>
+                            <li>{t("admin.scheduler.workflowStep2")}</li>
+                            <li>{t("admin.scheduler.workflowStep3")}</li>
+                        </ul>
+                    </div>
+
+                    {!selectedTournamentId ? (
+                        <div className="rounded-md border border-border/70 bg-muted/20 px-3 py-2 text-sm text-muted-foreground">
+                            {t("admin.scheduler.selectTournamentHint")}
+                        </div>
+                    ) : selectedTournament ? (
+                        <div className="space-y-3">
+                            <div className="rounded-md border border-border bg-muted/20 p-3 space-y-2">
+                                <div className="flex items-center justify-between gap-2">
+                                    <p className="text-sm font-semibold">{t("admin.scheduler.setupChecklistTitle")}</p>
+                                    <Badge variant={checklistDoneCount === checklistItems.length ? "default" : "secondary"}>
+                                        {t("admin.scheduler.checklistProgress", { done: checklistDoneCount, total: checklistItems.length })}
+                                    </Badge>
+                                </div>
+                                <div className="space-y-2">
+                                    {checklistItems.map((item) => (
+                                        <div key={item.key} className="rounded-md border border-border bg-background px-3 py-2">
+                                            <div className="flex items-center justify-between gap-2 text-xs">
+                                                <span className="font-medium">{item.label}</span>
+                                                <Badge variant={item.done ? "default" : "outline"}>
+                                                    {item.done ? t("admin.scheduler.checklistDone") : t("admin.scheduler.checklistPending")}
+                                                </Badge>
+                                            </div>
+                                            <p className="text-xs text-muted-foreground mt-1">{item.hint}</p>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
+                                <div className="rounded-md border border-border p-2 text-xs">
+                                    <div className="text-muted-foreground">{t("admin.scheduler.selectedStatus")}</div>
+                                    <div className="font-medium mt-1">{t(`status.${selectedTournament.status}`)}</div>
+                                </div>
+                                <div className="rounded-md border border-border p-2 text-xs">
+                                    <div className="text-muted-foreground">{t("admin.scheduler.registrationState")}</div>
+                                    <div className="font-medium mt-1">
+                                        {selectedTournament.registration_open ? t("admin.scheduler.registrationOpen") : t("admin.scheduler.registrationClosed")}
+                                    </div>
+                                </div>
+                                <div className="rounded-md border border-border p-2 text-xs">
+                                    <div className="text-muted-foreground">{t("admin.scheduler.bracketState")}</div>
+                                    <div className="font-medium mt-1">
+                                        {bracketReady ? t("admin.scheduler.bracketReady") : t("admin.scheduler.bracketMissing")}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    ) : null}
 
                     <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3">
                         <div className="space-y-1">
@@ -397,6 +553,7 @@ export default function AdminTournamentsPage() {
                             >
                                 {autoOverrideLocked ? t("admin.scheduler.enabled") : t("admin.scheduler.disabled")}
                             </Button>
+                            <p className="text-xs text-muted-foreground">{t("admin.scheduler.overrideHelp")}</p>
                         </div>
                     </div>
 
@@ -419,9 +576,12 @@ export default function AdminTournamentsPage() {
                         </div>
                     </div>
 
-                    <Button onClick={onAutoSchedule} disabled={!selectedTournamentId}>
+                    <Button onClick={onAutoSchedule} disabled={!selectedTournamentId || !bracketReady}>
                         {t("admin.scheduler.runAuto")}
                     </Button>
+                    {selectedTournamentId && !bracketReady && (
+                        <p className="text-xs text-amber-600">{t("admin.scheduler.bracketRequiredHint")}</p>
+                    )}
 
                     <div className="space-y-3 pt-4 border-t border-border">
                         <h3 className="text-sm font-semibold">{t("admin.scheduler.groupStandingsTitle")}</h3>

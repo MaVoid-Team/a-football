@@ -35,6 +35,7 @@ export function TournamentsView() {
             <div className="space-y-2 text-center">
                 <h1 className="text-4xl font-bold tracking-tight">{t("title")}</h1>
                 <p className="text-muted-foreground text-lg">{t("subtitle")}</p>
+                <p className="text-sm text-muted-foreground">{t("listHint")}</p>
             </div>
 
             {branches.length > 1 && (
@@ -97,6 +98,12 @@ export function TournamentsView() {
                                     <div>{t("startDate")}: {formatDate(tour.start_date)}</div>
                                     <div>{t("deadline")}: {formatDate(tour.registration_deadline)}</div>
                                     <div>{t("participants")}: {tour.approved_registrations_count ?? 0}/{tour.max_players ?? "-"}</div>
+                                </div>
+                                <div className="flex flex-wrap gap-2 text-xs">
+                                    <Badge variant={tour.registration_open ? "default" : "secondary"}>
+                                        {tour.registration_open ? t("registrationState.open") : t("registrationState.closed")}
+                                    </Badge>
+                                    <Badge variant="outline">{t(`status.${tour.status}`)}</Badge>
                                 </div>
                                 <Button asChild className="w-full mt-2">
                                     <Link href={`/tournament/${tour.id}`}>{t("viewDetails")}</Link>

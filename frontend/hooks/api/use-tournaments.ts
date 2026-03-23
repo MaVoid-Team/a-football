@@ -122,6 +122,22 @@ export function useTournamentsAPI() {
         }
     };
 
+    const updateTournament = async (id: string, payload: Partial<TournamentCreateData>) => {
+        setLoading(true);
+        setError(null);
+        try {
+            const response = await api.patch(`/api/admin/tournaments/${id}`, { tournament: payload });
+            const data = response.data?.data ? flatten(response.data.data) : null;
+            return { success: true, data };
+        } catch (err: any) {
+            const message = getApiErrorMessage(err, "Failed to update tournament");
+            setError(message);
+            return { success: false, error: err, errorMessage: message };
+        } finally {
+            setLoading(false);
+        }
+    };
+
     const generateBracket = async (id: string) => {
         setLoading(true);
         setError(null);
@@ -283,6 +299,7 @@ export function useTournamentsAPI() {
         fetchAdminTournaments,
         fetchTournament,
         createTournament,
+        updateTournament,
         generateBracket,
         registerTournament,
         fetchBracket,
