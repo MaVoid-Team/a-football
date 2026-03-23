@@ -3,7 +3,7 @@ module Api
     module Crm
       class PlayersController < BaseController
         def index
-          result = Crm::PlayersQuery.new(admin: current_admin, params: params).call
+          result = ::Crm::PlayersQuery.new(admin: current_admin, params: params).call
 
           response.set_header("X-Total-Count", result[:meta][:total_count].to_s)
           response.set_header("X-Page", result[:meta][:page].to_s)

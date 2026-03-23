@@ -11,7 +11,7 @@ module Api
               Branch.find_by(id: current_admin.branch_id)&.name
             end
 
-          rendered = Crm::TemplateRenderer.new(
+          rendered = ::Crm::TemplateRenderer.new(
             content: template.content,
             variables: {
               "name" => player.name,
@@ -19,7 +19,7 @@ module Api
             }
           ).call
 
-          link = Crm::WhatsappLinkBuilder.new(phone: template.whatsapp_number, message: rendered).call
+          link = ::Crm::WhatsappLinkBuilder.new(phone: template.whatsapp_number, message: rendered).call
 
           render json: {
             data: {

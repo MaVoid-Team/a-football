@@ -11,7 +11,7 @@ module Api
 
         def players
           segment = scoped_segments.active_only.find(params[:id])
-          players = Crm::PlayersQuery.new(admin: current_admin, params: params.merge(segment_id: segment.id)).call
+          players = ::Crm::PlayersQuery.new(admin: current_admin, params: params.merge(segment_id: segment.id)).call
 
           response.set_header("X-Total-Count", players[:meta][:total_count].to_s)
           response.set_header("X-Page", players[:meta][:page].to_s)

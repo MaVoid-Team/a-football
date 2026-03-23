@@ -42,7 +42,7 @@ module Api
         booking = Booking.find(params[:id])
         authorize booking, :update?
 
-        Crm::ActivityLogger.new(
+        ::Crm::ActivityLogger.new(
           player: booking.user,
           activity_type: "no_show",
           reference: booking,
