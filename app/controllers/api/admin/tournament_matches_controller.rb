@@ -20,7 +20,7 @@ module Api
           match: match,
           court_id: schedule_params[:court_id],
           scheduled_time: schedule_params[:scheduled_time],
-          override: ActiveModel::Type::Boolean.new.cast(schedule_params[:override])
+          manual_override: ActiveModel::Type::Boolean.new.cast(schedule_params[:override])
         ).call
 
         if result.failure?
