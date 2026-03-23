@@ -21,7 +21,7 @@ RSpec.describe "Api::Bookings", type: :request do
     end
 
     it "creates a booking" do
-      post "/api/bookings", params: valid_params
+      post "/api/bookings", params: valid_params, headers: user_auth_headers(user)
 
       expect(response).to have_http_status(:created)
       data = JSON.parse(response.body)["data"]
@@ -57,7 +57,7 @@ RSpec.describe "Api::Bookings", type: :request do
         }
       }
 
-      post "/api/bookings", params: params
+      post "/api/bookings", params: params, headers: user_auth_headers(user)
 
       expect(response).to have_http_status(:unprocessable_entity)
       errors = JSON.parse(response.body)["errors"]
@@ -81,7 +81,7 @@ RSpec.describe "Api::Bookings", type: :request do
         }
       }
 
-      post "/api/bookings", params: params
+      post "/api/bookings", params: params, headers: user_auth_headers(user)
 
       expect(response).to have_http_status(:unprocessable_entity)
       errors = JSON.parse(response.body)["errors"]
@@ -94,14 +94,14 @@ RSpec.describe "Api::Bookings", type: :request do
       create(:booking, court: court, date: Date.tomorrow,
              start_time: "10:00", end_time: "12:00")
 
-      post "/api/bookings", params: valid_params
+      post "/api/bookings", params: valid_params, headers: user_auth_headers(user)
 
       expect(response).to have_http_status(:unprocessable_entity)
     end
 
     it "returns errors for inactive branch" do
       branch.update!(active: false)
-      post "/api/bookings", params: valid_params
+      post "/api/bookings", params: valid_params, headers: user_auth_headers(user)
       expect(response).to have_http_status(:unprocessable_entity)
     end
 
@@ -110,7 +110,7 @@ RSpec.describe "Api::Bookings", type: :request do
       params = valid_params.deep_dup
       params[:booking][:promo_code] = "SAVE10"
 
-      post "/api/bookings", params: params
+      post "/api/bookings", params: params, headers: user_auth_headers(user)
 
       expect(response).to have_http_status(:created)
       data = JSON.parse(response.body)["data"]["attributes"]
@@ -123,7 +123,7 @@ RSpec.describe "Api::Bookings", type: :request do
       params = valid_params.deep_dup
       params[:booking][:promo_code] = "NOTREAL"
 
-      post "/api/bookings", params: params
+      post "/api/bookings", params: params, headers: user_auth_headers(user)
 
       expect(response).to have_http_status(:unprocessable_entity)
       errors = JSON.parse(response.body)["errors"]
@@ -137,7 +137,7 @@ RSpec.describe "Api::Bookings", type: :request do
       params = valid_params.deep_dup
       params[:booking][:pay_deposit] = true
 
-      post "/api/bookings", params: params
+      post "/api/bookings", params: params, headers: user_auth_headers(user)
 
       expect(response).to have_http_status(:created)
       data = JSON.parse(response.body)["data"]["attributes"]
@@ -152,7 +152,7 @@ RSpec.describe "Api::Bookings", type: :request do
       params = valid_params.deep_dup
       params[:booking][:pay_deposit] = true
 
-      post "/api/bookings", params: params
+      post "/api/bookings", params: params, headers: user_auth_headers(user)
 
       expect(response).to have_http_status(:unprocessable_entity)
       errors = JSON.parse(response.body)["errors"]
