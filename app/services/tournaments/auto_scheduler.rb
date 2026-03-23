@@ -45,8 +45,8 @@ module Tournaments
             match: match,
             court_id: court_id,
             scheduled_time: time_cursor,
-            override: false,
-            ignore_lock: @override_locked
+            manual_override: false,
+            override_locked: @override_locked
           ).call
 
           return result if result.success?

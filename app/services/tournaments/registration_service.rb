@@ -20,13 +20,28 @@ module Tournaments
       return failure("already_registered", "Already registered") if duplicate
 
       registration = nil
+      transaction_error = nil
       ActiveRecord::Base.transaction do
+        @tournament.lock!
+
+        unless @tournament.registration_open?
+          transaction_error = failure("registration_closed", "Registration is closed")
+          raise ActiveRecord::Rollback
+        end
+
+        if @tournament.full_capacity?
+          transaction_error = failure("tournament_full", "Tournament is full")
+          raise ActiveRecord::Rollback
+        end
+
         player.save! if player.new_record? || player.changed?
         registration = @tournament.tournament_registrations.create!(
           player: player,
           status: :pending
         )
       end
+
+      return transaction_error if transaction_error
 
       ServiceResult.success(registration)
     rescue ActiveRecord::RecordNotUnique

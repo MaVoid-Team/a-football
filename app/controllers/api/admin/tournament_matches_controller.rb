@@ -5,7 +5,7 @@ module Api
         tournament = Tournament.find(params[:tournament_id])
         authorize tournament, :show?
 
-        matches = tournament.tournament_matches.order(:round_number, :match_number)
+        matches = tournament.tournament_matches.includes(:team1, :team2, :winner).order(:round_number, :match_number)
         matches = matches.where(status: params[:status]) if params[:status].present?
         matches = matches.where(round_number: params[:round_number].to_i) if params[:round_number].present?
 

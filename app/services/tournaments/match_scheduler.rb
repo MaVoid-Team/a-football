@@ -1,19 +1,19 @@
 module Tournaments
   class MatchScheduler
-    def initialize(match:, court_id:, scheduled_time:, override: false, ignore_lock: false)
+    def initialize(match:, court_id:, scheduled_time:, manual_override: false, override_locked: false)
       @match = match
       @tournament = match.tournament
       @court_id = court_id.to_i
       @scheduled_time = Time.zone.parse(scheduled_time.to_s)
-      @override = override
-      @ignore_lock = ignore_lock
+      @manual_override = manual_override
+      @override_locked = override_locked
     end
 
     def call
       return failure("invalid_time", "Scheduled time is invalid") if @scheduled_time.blank?
-      return failure("locked_match", "Match scheduling is locked") if @match.schedule_locked? && !@override && !@ignore_lock
+      return failure("locked_match", "Match scheduling is locked") if @match.schedule_locked? && !@manual_override && !@override_locked
 
-      unless @override
+      unless @manual_override
         return failure("invalid_court", "Court does not belong to tournament branch") unless valid_branch_court?
         return failure("blocked_slot", "Court is blocked for that time") if blocked_slot?
         return failure("court_conflict", "Court has another match at this time") if court_conflict?

@@ -2,7 +2,7 @@ module Api
   module Admin
     class TournamentsController < BaseController
       def index
-        tournaments = policy_scope(Tournament).includes(:branch)
+        tournaments = policy_scope(Tournament).includes(:branch, :tournament_registrations)
         tournaments = tournaments.where(branch_id: params[:branch_id]) if params[:branch_id].present?
         tournaments = tournaments.where(status: params[:status]) if params[:status].present?
         tournaments = tournaments.where(tournament_type: params[:tournament_type]) if params[:tournament_type].present?
@@ -37,6 +37,11 @@ module Api
       def start
         tournament = Tournament.find(params[:id])
         authorize tournament, :start?
+
+        unless tournament.open? || tournament.full?
+          render json: { errors: ["Tournament cannot be started from current status"], error_codes: ["invalid_state"] }, status: :unprocessable_entity
+          return
+        end
 
         if tournament.bracket_data.blank? || tournament.bracket_data["rounds"].blank?
           render json: { error: "Generate bracket before starting tournament" }, status: :unprocessable_entity
@@ -83,7 +88,16 @@ module Api
         tournament = Tournament.find(params[:id])
         authorize tournament, :bracket?
 
-        render json: { id: tournament.id, bracket: tournament.bracket_data }, status: :ok
+        render json: {
+          data: {
+            id: tournament.id.to_s,
+            type: "tournament_brackets",
+            attributes: {
+              tournament_id: tournament.id,
+              bracket: tournament.bracket_data
+            }
+          }
+        }, status: :ok
       end
 
       private

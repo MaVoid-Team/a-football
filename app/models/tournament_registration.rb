@@ -5,7 +5,7 @@ class TournamentRegistration < ApplicationRecord
   belongs_to :approved_by, class_name: "Admin", optional: true
 
   enum :status, { pending: 0, approved: 1, rejected: 2, cancelled: 3 }
-  enum :refund_status, { none: 0, eligible: 1, processed: 2 }
+  enum :refund_status, { none: 0, eligible: 1, processed: 2 }, prefix: :refund
 
   validates :player_id, uniqueness: { scope: :tournament_id }
 

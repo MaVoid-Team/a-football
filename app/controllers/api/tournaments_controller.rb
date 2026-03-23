@@ -1,7 +1,7 @@
 module Api
   class TournamentsController < BaseController
     def index
-      tournaments = Tournament.visible_publicly.includes(:branch)
+      tournaments = Tournament.visible_publicly.includes(:branch, :tournament_registrations)
       tournaments = tournaments.where(branch_id: params[:branch_id]) if params[:branch_id].present?
       tournaments = tournaments.where(status: params[:status]) if params[:status].present?
       tournaments = apply_sort(tournaments, { "start_date" => :start_date, "name" => :name }, { start_date: :asc })
@@ -17,7 +17,7 @@ module Api
 
     def matches
       tournament = Tournament.visible_publicly.find(params[:id])
-      matches = tournament.tournament_matches.includes(:team1, :team2).order(:round_number, :match_number)
+      matches = tournament.tournament_matches.includes(:team1, :team2, :winner).order(:round_number, :match_number)
       expires_in 10.seconds, public: true
       render json: TournamentMatchSerializer.new(matches).serializable_hash, status: :ok
     end
@@ -25,7 +25,16 @@ module Api
     def bracket
       tournament = Tournament.visible_publicly.find(params[:id])
       expires_in 10.seconds, public: true
-      render json: { id: tournament.id, bracket: tournament.bracket_data }, status: :ok
+      render json: {
+        data: {
+          id: tournament.id.to_s,
+          type: "tournament_brackets",
+          attributes: {
+            tournament_id: tournament.id,
+            bracket: tournament.bracket_data
+          }
+        }
+      }, status: :ok
     end
   end
 end

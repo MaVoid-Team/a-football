@@ -153,7 +153,11 @@ export function useTournamentsAPI() {
         try {
             const endpoint = isAdmin ? `/api/admin/tournaments/${id}/bracket` : `/api/tournaments/${id}/bracket`;
             const response = await api.get(endpoint);
-            return { success: true, data: response.data?.bracket || {} };
+            const bracket =
+                response.data?.data?.attributes?.bracket ||
+                response.data?.bracket ||
+                {};
+            return { success: true, data: bracket };
         } catch (err: any) {
             const message = err.response?.data?.error || "Failed to fetch bracket";
             setError(message);

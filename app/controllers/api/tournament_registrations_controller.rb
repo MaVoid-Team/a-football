@@ -19,7 +19,7 @@ module Api
     private
 
     def player_params
-      params.require(:registration).permit(:user_id, :name, :phone, :skill_level)
+      params.require(:registration).permit(:name, :phone, :skill_level)
     end
 
   end

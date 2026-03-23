@@ -7,7 +7,11 @@ class TournamentSerializer
              :bracket_data, :created_at, :updated_at
 
   attribute :approved_registrations_count do |tournament|
-    tournament.tournament_registrations.approved.count
+    if tournament.association(:tournament_registrations).loaded?
+      tournament.tournament_registrations.count(&:approved?)
+    else
+      tournament.tournament_registrations.approved.count
+    end
   end
 
   attribute :registration_open do |tournament|

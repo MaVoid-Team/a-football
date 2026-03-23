@@ -74,5 +74,49 @@ RSpec.describe "Api::Tournaments", type: :request do
       body = JSON.parse(response.body)
       expect(body["error_codes"]).to include("tournament_full")
     end
+
+    it "ignores client-supplied user_id on public registration" do
+      post "/api/tournaments/#{tournament.id}/register", params: {
+        registration: {
+          user_id: 123_456,
+          name: "Player One",
+          phone: "+201001234567",
+          skill_level: "intermediate"
+        }
+      }
+
+      expect(response).to have_http_status(:created)
+      created_player = tournament.tournament_players.order(:id).last
+      expect(created_player.user_id).to be_nil
+    end
+  end
+
+  describe "GET /api/tournaments/:id/bracket" do
+    let(:branch) { create(:branch, active: true) }
+
+    it "returns bracket in a JSON:API-style envelope" do
+      tournament = create(
+        :tournament,
+        branch: branch,
+        status: :open,
+        bracket_data: {
+          "rounds" => [
+            {
+              "round_number" => 1,
+              "matches" => []
+            }
+          ]
+        }
+      )
+
+      get "/api/tournaments/#{tournament.id}/bracket"
+
+      expect(response).to have_http_status(:ok)
+      body = JSON.parse(response.body)
+      expect(body.dig("data", "id")).to eq(tournament.id.to_s)
+      expect(body.dig("data", "type")).to eq("tournament_brackets")
+      expect(body.dig("data", "attributes", "tournament_id")).to eq(tournament.id)
+      expect(body.dig("data", "attributes", "bracket", "rounds")).to be_an(Array)
+    end
   end
 end
