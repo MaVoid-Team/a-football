@@ -7,7 +7,15 @@ class PackageRequest < ApplicationRecord
   validates :customer_phone, presence: true
   validates :special_needs, presence: true
 
-  enum :status, { pending: 0, reviewed: 1, contacted: 2, completed: 3, archived: 4 }
+  enum :status,
+       {
+         pending: "pending",
+         reviewed: "reviewed",
+         contacted: "contacted",
+         completed: "completed",
+         archived: "archived"
+       },
+       default: :pending
 
   scope :for_branch, ->(branch_id) { where(branch_id: branch_id) }
   scope :by_status, ->(status) { where(status: status) }
