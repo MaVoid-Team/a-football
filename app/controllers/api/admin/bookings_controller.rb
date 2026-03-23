@@ -40,7 +40,7 @@ module Api
       private
 
       def booking_update_params
-        params.require(:booking).permit(:payment_status)
+        params.require(:booking).permit(:payment_status, :admin_notes)
       end
 
       def build_booking_filter

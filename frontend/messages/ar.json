@@ -35,6 +35,7 @@
     "toast": {
       "created": "تمام كده! الأدمن اتضاف",
       "updated": "تمام! الدور اتغير",
+      "viewDetails": "التفاصيل",
       "deleted": "خلاص اتمسح"
     },
     "table": {
@@ -172,13 +173,17 @@
     "happeningRecently": "اللي حصل {scope} الفترة دي",
     "cards": {
       "totalRevenue30d": "المبيعات (30 يوم)",
+      "collectedNow30d": "المحصل الآن (30 يوم)",
       "revenueDeltaVsLastMonth": "+12% عن الشهر اللي فات",
       "confirmedBookings30d": "الحجوزات (30 يوم)",
       "bookingsDeltaVsLastMonth": "+5% عن الشهر اللي فات",
       "globalOccupancy": "نسبة الإشغال",
       "capacityFilled": "المشغول",
       "averageOrderValue": "متوسط الحجز",
-      "perBookingTransaction": "للحجز"
+      "perBookingTransaction": "للحجز",
+      "amountDueAtBooking": "المبلغ المحصل وقت الحجز",
+      "perBookingCollected": "المحصل لكل حجز",
+      "outstandingBalance": "الرصيد المتبقي"
     },
     "utilization": {
       "title": "استخدام الملاعب",
@@ -384,6 +389,14 @@
       "invalid": "كود الخصم غير صالح.",
       "notApplicable": "كود الخصم لا ينطبق على الحجز المختار."
     },
+    "deposit": {
+      "toggleLabel": "ادفع عربون",
+      "toggleDescription": "ادفع {percentage}% دلوقتي والباقي بعدين.",
+      "total": "إجمالي المبلغ",
+      "dueNow": "المطلوب الآن",
+      "remaining": "المبلغ المتبقي",
+      "unavailable": "الدفع بالعربون غير متاح للفرع ده."
+    },
     "selectCourtFirst": "اختار ملعب الأول",
     "noCourts": "مفيش ملاعب. ارجع بعدين",
     "termsPrefix": "موافق على",
@@ -553,7 +566,12 @@
         "title": "الدفع",
         "numberLabel": "رقم التحويل",
         "numberPlaceholder": "+201234567890",
-        "numberDescription": "الرقم اللي هيحولوا عليه الفلوس"
+        "numberDescription": "الرقم اللي هيحولوا عليه الفلوس",
+        "depositEnabledLabel": "تفعيل الدفع بالعربون",
+        "depositEnabledDescription": "اسمح للعميل يدفع عربون وقت الحجز.",
+        "depositPercentageLabel": "نسبة العربون",
+        "depositPercentagePlaceholder": "30",
+        "depositPercentageDescription": "نسبة من إجمالي الحجز لازم تتدفع الآن (من 1 إلى 100)."
       },
       "actions": {
         "saving": "بيتحفظ...",
@@ -719,6 +737,11 @@
       "locationHeader": "المكان",
       "scheduleHeader": "الميعاد",
       "priceHeader": "السعر",
+      "paymentTypeHeader": "نوع الدفع",
+      "paymentTypeFull": "كامل",
+      "paymentTypeDeposit": "عربون",
+      "dueNowHeader": "المطلوب الآن",
+      "remainingHeader": "المتبقي",
       "notesHeader": "ملاحظات",
       "statusHeader": "الحالة",
       "actionsHeader": "أكشنز",
@@ -738,11 +761,46 @@
       "emptyTitle": "مفيش حجوزات",
       "emptyDescription": "لسه محدش حجز عندك"
     },
+    "detail": {
+      "backToBookings": "ارجع للحجوزات",
+      "notFound": "الحجز مش موجود",
+      "financialTitle": "ملخص الحساب",
+      "originalAmount": "السعر قبل الخصم",
+      "discountAmount": "الخصم",
+      "finalAmount": "الإجمالي النهائي",
+      "amountDueNow": "المطلوب دلوقتي",
+      "amountRemaining": "المتبقي",
+      "paymentOption": "طريقة الدفع",
+      "depositPercentage": "نسبة العربون",
+      "promoCode": "كود الخصم",
+      "paymentOptionValues": {
+        "full": "دفع كامل",
+        "deposit": "عربون"
+      },
+      "paymentStatusTitle": "حالة الدفع",
+      "customerTitle": "بيانات العميل",
+      "customerName": "اسم العميل",
+      "customerPhone": "رقم العميل",
+      "customerNotes": "ملاحظات العميل",
+      "bookingInfoTitle": "تفاصيل الحجز",
+      "branch": "الفرع",
+      "court": "الملعب",
+      "date": "التاريخ",
+      "time": "الوقت",
+      "hours": "عدد الساعات",
+      "createdAt": "اتعمل في",
+      "screenshotTitle": "إيصال الدفع",
+      "adminNotesTitle": "ملاحظات الأدمن",
+      "adminNotesLabel": "ملاحظات داخلية",
+      "adminNotesPlaceholder": "اكتب ملاحظات داخلية تخص الحجز...",
+      "saveAdminNotes": "احفظ ملاحظات الأدمن"
+    },
     "status": {
       "confirmed": "مؤكد",
       "cancelled": "ملغي",
       "pending": "مستني",
       "paid": "مدفوع",
+      "failed": "فشل",
       "refunded": "مسترجع"
     },
     "export": {
@@ -752,7 +810,10 @@
     },
     "toasts": {
       "paymentStatusUpdated": "تمام! الحاله بقت: {status}",
+      "paymentStatusUpdateFailed": "مقدرناش نحدث حالة الدفع",
       "cancelled": "تمام! اتلغى",
+      "adminNotesSaved": "تمام! الملاحظات اتحفظت",
+      "adminNotesSaveFailed": "مقدرناش نحفظ ملاحظات الأدمن",
       "excelExported": "تمام! اتصدّر Excel",
       "csvExported": "تمام! اتصدّر CSV",
       "allExported": "تمام! اتصدّر الكل",

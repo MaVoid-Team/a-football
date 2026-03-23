@@ -207,5 +207,53 @@ RSpec.describe Bookings::Creator do
         expect(result.errors).to include("Promo code is not applicable")
       end
     end
+
+    context "with deposit payments" do
+      it "creates a full-payment booking by default" do
+        result = subject.call
+
+        expect(result).to be_success
+        expect(result.data.payment_option).to eq("full")
+        expect(result.data.deposit_percentage_snapshot.to_f).to eq(0.0)
+        expect(result.data.amount_due_now.to_f).to eq(200.0)
+        expect(result.data.amount_remaining.to_f).to eq(0.0)
+      end
+
+      it "creates a deposit booking when branch deposit is enabled" do
+        create(:setting, branch: branch, deposit_enabled: true, deposit_percentage: 30)
+        params = valid_params.merge(pay_deposit: true)
+
+        result = described_class.new(params: params, branch: branch).call
+
+        expect(result).to be_success
+        expect(result.data.payment_option).to eq("deposit")
+        expect(result.data.deposit_percentage_snapshot.to_f).to eq(30.0)
+        expect(result.data.amount_due_now.to_f).to eq(60.0)
+        expect(result.data.amount_remaining.to_f).to eq(140.0)
+      end
+
+      it "applies deposit to discounted total when promo code is used" do
+        create(:setting, branch: branch, deposit_enabled: true, deposit_percentage: 50)
+        create(:promo_code, branch: branch, code: "SAVE10", discount_percentage: 10)
+
+        params = valid_params.merge(pay_deposit: true, promo_code: "SAVE10")
+        result = described_class.new(params: params, branch: branch).call
+
+        expect(result).to be_success
+        expect(result.data.total_price.to_f).to eq(180.0)
+        expect(result.data.amount_due_now.to_f).to eq(90.0)
+        expect(result.data.amount_remaining.to_f).to eq(90.0)
+      end
+
+      it "fails when deposit is requested but not enabled for branch" do
+        create(:setting, branch: branch, deposit_enabled: false, deposit_percentage: 30)
+        params = valid_params.merge(pay_deposit: true)
+
+        result = described_class.new(params: params, branch: branch).call
+
+        expect(result).to be_failure
+        expect(result.errors).to include("Deposit payment is not available for this branch")
+      end
+    end
   end
 end

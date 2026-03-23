@@ -21,9 +21,15 @@ export const bookingSchema = z.object({
     discount_amount: z.string().nullable().optional(),
     hours: z.number().nullable().optional(),
     status: z.enum(["confirmed", "cancelled"]),
-    payment_status: z.enum(["pending", "paid", "refunded"]).nullable().optional(),
+    payment_status: z.enum(["pending", "paid", "failed", "refunded"]).nullable().optional(),
+    payment_option: z.enum(["full", "deposit"]).nullable().optional(),
+    deposit_percentage_snapshot: z.string().nullable().optional(),
+    amount_due_now: z.string().nullable().optional(),
+    amount_remaining: z.string().nullable().optional(),
     notes: z.string().nullable().optional(),
+    admin_notes: z.string().nullable().optional(),
     promo_code_id: z.string().nullable().optional(),
+    promo_code_code: z.string().nullable().optional(),
     booking_slots: z.array(bookingSlotSchema).optional(),
     payment_screenshot_url: z.string().nullable().optional(),
     created_at: z.string(),
@@ -46,12 +52,14 @@ export const bookingFormSchema = z.object({
     })).min(2, "Select at least two adjacent time slots (1 hour minimum)"),
     notes: z.string().optional(),
     promo_code: z.string().optional(),
+    pay_deposit: z.boolean().optional(),
 });
 
 export type BookingFormData = z.infer<typeof bookingFormSchema>;
 
 export const bookingUpdateSchema = z.object({
-    payment_status: z.enum(["pending", "paid", "refunded"]),
+    payment_status: z.enum(["pending", "paid", "refunded"]).optional(),
+    admin_notes: z.string().optional(),
 });
 
 export type BookingUpdateData = z.infer<typeof bookingUpdateSchema>;

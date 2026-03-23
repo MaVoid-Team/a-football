@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Save, Phone } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import {
@@ -46,6 +47,8 @@ export function SettingsForm({ setting, loading, branches, selectedBranchId, onB
             closing_hour: 22,
             booking_terms: "",
             payment_number: "",
+            deposit_enabled: false,
+            deposit_percentage: 0,
         },
     });
 
@@ -60,6 +63,8 @@ export function SettingsForm({ setting, loading, branches, selectedBranchId, onB
                 closing_hour: setting.closing_hour,
                 booking_terms: setting.booking_terms || "",
                 payment_number: setting.payment_number || "",
+                deposit_enabled: setting.deposit_enabled ?? false,
+                deposit_percentage: Number(setting.deposit_percentage || 0),
             });
         } else {
             form.reset({
@@ -71,9 +76,13 @@ export function SettingsForm({ setting, loading, branches, selectedBranchId, onB
                 closing_hour: 22,
                 booking_terms: "",
                 payment_number: "",
+                deposit_enabled: false,
+                deposit_percentage: 0,
             });
         }
     }, [setting, selectedBranchId, form]);
+
+    const depositEnabled = !!form.watch("deposit_enabled");
 
     return (
         <Card className="max-w-2xl p-6">
@@ -141,6 +150,41 @@ export function SettingsForm({ setting, loading, branches, selectedBranchId, onB
                             <p className="text-xs text-muted-foreground">
                                 {t("form.payment.numberDescription")}
                             </p>
+                        </div>
+
+                        <div className="space-y-3 rounded-lg border border-border/70 p-4">
+                            <div className="flex items-start gap-3">
+                                <Checkbox
+                                    id="deposit_enabled"
+                                    checked={depositEnabled}
+                                    onCheckedChange={(checked) => {
+                                        form.setValue("deposit_enabled", Boolean(checked), { shouldValidate: true });
+                                    }}
+                                    disabled={loading}
+                                />
+                                <div className="space-y-1">
+                                    <Label htmlFor="deposit_enabled">{t("form.payment.depositEnabledLabel")}</Label>
+                                    <p className="text-xs text-muted-foreground">{t("form.payment.depositEnabledDescription")}</p>
+                                </div>
+                            </div>
+
+                            <div className="space-y-2">
+                                <Label htmlFor="deposit_percentage">{t("form.payment.depositPercentageLabel")}</Label>
+                                <Input
+                                    id="deposit_percentage"
+                                    type="number"
+                                    min="0"
+                                    max="100"
+                                    step="0.01"
+                                    {...form.register("deposit_percentage", { valueAsNumber: true })}
+                                    disabled={loading || !depositEnabled}
+                                    placeholder={t("form.payment.depositPercentagePlaceholder")}
+                                />
+                                {form.formState.errors.deposit_percentage && (
+                                    <p className="text-xs text-destructive">{form.formState.errors.deposit_percentage.message}</p>
+                                )}
+                                <p className="text-xs text-muted-foreground">{t("form.payment.depositPercentageDescription")}</p>
+                            </div>
                         </div>
                     </div>
 

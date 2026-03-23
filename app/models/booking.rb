@@ -2,8 +2,8 @@ class Booking < ApplicationRecord
   include MeiliSearch::Rails
 
   meilisearch enqueue: true, raise_on_failure: false do
-    attribute :user_name, :user_phone, :branch_id, :court_id, :date, :status, :notes
-    searchable_attributes [:user_name, :user_phone, :notes]
+    attribute :user_name, :user_phone, :branch_id, :court_id, :date, :status, :notes, :admin_notes
+    searchable_attributes [:user_name, :user_phone, :notes, :admin_notes]
     filterable_attributes [:branch_id, :court_id, :date, :status]
   end
 
@@ -18,6 +18,7 @@ class Booking < ApplicationRecord
 
   enum :status, { confirmed: 0, cancelled: 1 }
   enum :payment_status, { pending: 0, paid: 1, failed: 2, refunded: 3 }
+  enum :payment_option, { full: 0, deposit: 1 }
 
   validates :user_name, presence: true
   validates :user_phone, presence: true
@@ -26,6 +27,14 @@ class Booking < ApplicationRecord
   validates :end_time, presence: true
   validates :hours, presence: true, numericality: { greater_than: 0 }
   validates :total_price, presence: true, numericality: { greater_than_or_equal_to: 0 }
+  validates :amount_due_now, presence: true, numericality: { greater_than_or_equal_to: 0 }
+  validates :amount_remaining, presence: true, numericality: { greater_than_or_equal_to: 0 }
+  validates :deposit_percentage_snapshot,
+            presence: true,
+            numericality: {
+              greater_than_or_equal_to: 0,
+              less_than_or_equal_to: 100
+            }
 
   scope :for_branch, ->(branch_id) { where(branch_id: branch_id) }
   scope :for_court, ->(court_id) { where(court_id: court_id) }

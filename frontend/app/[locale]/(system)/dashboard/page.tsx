@@ -35,14 +35,14 @@ export default function DashboardPage() {
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
                 <Card>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">{t("cards.totalRevenue30d")}</CardTitle>
+                        <CardTitle className="text-sm font-medium">{t("cards.collectedNow30d")}</CardTitle>
                         <Banknote className="h-4 w-4 text-muted-foreground" />
                     </CardHeader>
                     <CardContent>
                         {loading ? <Skeleton className="h-8 w-[100px]" /> : (
                             <>
-                                <div className="text-2xl font-bold">{formatCurrency(statistics?.total_revenue || "0")}</div>
-                                <p className="text-xs text-muted-foreground pt-1">{t("cards.revenueDeltaVsLastMonth")}</p>
+                                <div className="text-2xl font-bold">{formatCurrency(statistics?.collected_due_now || "0")}</div>
+                                <p className="text-xs text-muted-foreground pt-1">{t("cards.amountDueAtBooking")}</p>
                             </>
                         )}
                     </CardContent>
@@ -89,12 +89,36 @@ export default function DashboardPage() {
                                 <div className="text-2xl font-bold">
                                     {formatCurrency(
                                         statistics?.total_confirmed_bookings
-                                            ? Number(statistics.total_revenue) / statistics.total_confirmed_bookings
+                                            ? Number(statistics.collected_due_now) / statistics.total_confirmed_bookings
                                             : 0
                                     )}
                                 </div>
-                                <p className="text-xs text-muted-foreground pt-1">{t("cards.perBookingTransaction")}</p>
+                                <p className="text-xs text-muted-foreground pt-1">{t("cards.perBookingCollected")}</p>
                             </>
+                        )}
+                    </CardContent>
+                </Card>
+            </div>
+
+            <div className="grid gap-4 md:grid-cols-2">
+                <Card>
+                    <CardHeader className="pb-2">
+                        <CardTitle className="text-sm font-medium">{t("cards.totalRevenue30d")}</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        {loading ? <Skeleton className="h-8 w-[100px]" /> : (
+                            <div className="text-2xl font-bold">{formatCurrency(statistics?.total_revenue || "0")}</div>
+                        )}
+                    </CardContent>
+                </Card>
+
+                <Card>
+                    <CardHeader className="pb-2">
+                        <CardTitle className="text-sm font-medium">{t("cards.outstandingBalance")}</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        {loading ? <Skeleton className="h-8 w-[100px]" /> : (
+                            <div className="text-2xl font-bold">{formatCurrency(statistics?.outstanding_balance || "0")}</div>
                         )}
                     </CardContent>
                 </Card>

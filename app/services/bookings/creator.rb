@@ -36,6 +36,12 @@ module Bookings
       total_price = original_price
       discount_amount = BigDecimal("0")
       promo_code = nil
+      setting = Setting.find_by(branch_id: @branch.id)
+      pay_deposit = ActiveModel::Type::Boolean.new.cast(@params[:pay_deposit])
+      payment_option = :full
+      deposit_percentage_snapshot = BigDecimal("0")
+      amount_due_now = total_price
+      amount_remaining = BigDecimal("0")
 
       booking = nil
       failure_message = nil
@@ -57,6 +63,23 @@ module Bookings
 
           discount_amount = promo_code.calculate_discount(original_price)
           total_price = [original_price - discount_amount, 0].max
+        end
+
+        if pay_deposit
+          unless setting&.deposit_enabled?
+            failure_message = "Deposit payment is not available for this branch"
+            raise ActiveRecord::Rollback
+          end
+
+          payment_option = :deposit
+          deposit_percentage_snapshot = setting.deposit_percentage.to_d
+          amount_due_now = (total_price * deposit_percentage_snapshot / 100).round(2)
+          amount_remaining = (total_price - amount_due_now).round(2)
+        else
+          payment_option = :full
+          deposit_percentage_snapshot = BigDecimal("0")
+          amount_due_now = total_price
+          amount_remaining = BigDecimal("0")
         end
 
         parsed_slots.each do |slot|
@@ -83,6 +106,10 @@ module Bookings
           total_price:     total_price,
           original_price:  original_price,
           discount_amount: discount_amount,
+          payment_option:  payment_option,
+          deposit_percentage_snapshot: deposit_percentage_snapshot,
+          amount_due_now: amount_due_now,
+          amount_remaining: amount_remaining,
           status:          :confirmed,
           payment_status:  :pending
         )

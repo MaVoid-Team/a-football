@@ -10,6 +10,8 @@ export const settingSchema = z.object({
     closing_hour: z.number(),
     booking_terms: z.string().nullable().optional(),
     payment_number: z.string().nullable().optional(),
+    deposit_enabled: z.boolean().optional(),
+    deposit_percentage: z.coerce.number().nullable().optional(),
     created_at: z.string(),
     updated_at: z.string(),
 });
@@ -25,9 +27,14 @@ export const settingFormSchema = z.object({
     closing_hour: z.number().min(0).max(24),
     booking_terms: z.string().optional(),
     payment_number: z.string().optional(),
+    deposit_enabled: z.boolean().optional(),
+    deposit_percentage: z.number().min(0).max(100).optional(),
 }).refine((data) => data.closing_hour > data.opening_hour, {
     message: "Closing hour must be after opening hour",
     path: ["closing_hour"],
+}).refine((data) => !data.deposit_enabled || (data.deposit_percentage ?? 0) > 0, {
+    message: "Deposit percentage must be greater than 0 when deposit is enabled",
+    path: ["deposit_percentage"],
 });
 
-export type SettingFormData = z.infer<typeof settingFormSchema>;
+export type SettingFormData = z.input<typeof settingFormSchema>;

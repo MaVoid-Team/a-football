@@ -2,7 +2,7 @@
 
 import { useState, useCallback } from "react";
 import api from "@/lib/axios";
-import { Booking, BookingFormData } from "@/schemas/booking.schema";
+import { Booking, BookingFormData, BookingUpdateData } from "@/schemas/booking.schema";
 import { PaginationMeta } from "@/schemas/api.schema";
 import { buildQueryString } from "@/lib/build-query-string";
 
@@ -101,18 +101,22 @@ export function useBookingsAPI() {
         }
     };
 
-    const updatePaymentStatus = async (id: string, payment_status: "pending" | "paid" | "refunded") => {
+    const updateBooking = async (id: string, booking: BookingUpdateData) => {
         setLoading(true);
         setError(null);
         try {
-            await api.patch(`/api/admin/bookings/${id}`, { booking: { payment_status } });
+            await api.patch(`/api/admin/bookings/${id}`, { booking });
             return { success: true };
         } catch (err: any) {
-            setError(err.response?.data?.error || "Failed to update payment status");
+            setError(err.response?.data?.error || "Failed to update booking");
             return { success: false, error: err };
         } finally {
             setLoading(false);
         }
+    };
+
+    const updatePaymentStatus = async (id: string, payment_status: "pending" | "paid" | "refunded") => {
+        return updateBooking(id, { payment_status });
     };
 
     const cancelBooking = async (id: string) => {
@@ -129,5 +133,5 @@ export function useBookingsAPI() {
         }
     };
 
-    return { bookings, booking, pagination, loading, error, fetchBookings, fetchBooking, createBooking, updatePaymentStatus, cancelBooking };
+    return { bookings, booking, pagination, loading, error, fetchBookings, fetchBooking, createBooking, updateBooking, updatePaymentStatus, cancelBooking };
 }

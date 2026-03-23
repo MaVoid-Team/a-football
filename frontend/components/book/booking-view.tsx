@@ -67,6 +67,7 @@ const mapBookingError = (error: string, t: (key: string) => string) => {
     if (error.includes("Invalid promo code")) return t("promoErrors.invalid");
     if (error.includes("Promo code is not applicable")) return t("promoErrors.notApplicable");
     if (error.includes("Time slot is not available")) return t("slotRules.unavailable");
+    if (error.includes("Deposit payment is not available for this branch")) return t("deposit.unavailable");
     return error;
 };
 
@@ -89,10 +90,13 @@ export function BookingView() {
     const [acceptedTerms, setAcceptedTerms] = useState(false);
     const [submitError, setSubmitError] = useState<string | null>(null);
     const [paymentScreenshot, setPaymentScreenshot] = useState<File | null>(null);
+    const [payDeposit, setPayDeposit] = useState(false);
 
-    const bookingTerms = (setting as any)?.booking_terms as string | undefined;
+    const bookingTerms = setting?.booking_terms ?? undefined;
     const hasTerms = !!bookingTerms;
-    const paymentNumber = (setting as any)?.payment_number as string | undefined;
+    const paymentNumber = setting?.payment_number ?? undefined;
+    const depositEnabled = !!setting?.deposit_enabled && Number(setting?.deposit_percentage ?? 0) > 0;
+    const depositPercentage = Number(setting?.deposit_percentage ?? 0);
 
     const form = useForm<BookingFormData>({
         resolver: zodResolver(bookingFormSchema),
@@ -107,6 +111,7 @@ export function BookingView() {
             user_phone: "",
             notes: "",
             promo_code: "",
+            pay_deposit: false,
         },
     });
 
@@ -144,6 +149,8 @@ export function BookingView() {
         form.setValue("end_time", "");
         form.setValue("booking_slots_attributes", []);
         form.setValue("promo_code", "");
+        form.setValue("pay_deposit", false);
+        setPayDeposit(false);
     }, [form]);
 
     // ── Handlers ──
@@ -221,6 +228,7 @@ export function BookingView() {
             start_time: slots[0]?.start_time,
             end_time: slots[slots.length - 1]?.end_time,
             promo_code: appliedPromoCode || data.promo_code || "",
+            pay_deposit: payDeposit,
         };
 
         const res = await createBooking(bookingData, paymentScreenshot);
@@ -269,6 +277,11 @@ export function BookingView() {
     const displayedOriginalPrice = pricingPreview?.originalAmount ?? estimatedPrice;
     const displayedFinalPrice = pricingPreview?.finalAmount ?? estimatedPrice;
     const displayedDiscount = pricingPreview?.discountAmount ?? 0;
+    const calculatedDepositAmount = Math.round((displayedFinalPrice * (depositPercentage / 100)) * 100) / 100;
+    const amountDueNow = payDeposit && depositEnabled ? calculatedDepositAmount : displayedFinalPrice;
+    const amountRemaining = payDeposit && depositEnabled
+        ? Math.max(0, Math.round((displayedFinalPrice - calculatedDepositAmount) * 100) / 100)
+        : 0;
 
     const canSubmit =
         !!selectedBranch &&
@@ -569,6 +582,45 @@ export function BookingView() {
                                 onAppliedPromoCodeChange={setAppliedPromoCode}
                                 onPricingPreviewChange={setPricingPreview}
                             />
+
+                            {depositEnabled && (
+                                <div className="space-y-3 rounded-xl border border-border/70 bg-muted/30 p-4">
+                                    <div className="flex items-start gap-3">
+                                        <Checkbox
+                                            id="pay_deposit"
+                                            checked={payDeposit}
+                                            onCheckedChange={(checked) => {
+                                                const enabled = Boolean(checked);
+                                                setPayDeposit(enabled);
+                                                form.setValue("pay_deposit", enabled);
+                                            }}
+                                        />
+                                        <div className="space-y-1">
+                                            <label htmlFor="pay_deposit" className="text-sm font-medium cursor-pointer">
+                                                {t("deposit.toggleLabel")}
+                                            </label>
+                                            <p className="text-xs text-muted-foreground">
+                                                {t("deposit.toggleDescription", { percentage: depositPercentage })}
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-sm">
+                                        <div className="rounded-lg border border-border/60 bg-background/70 p-3">
+                                            <p className="text-xs text-muted-foreground">{t("deposit.total")}</p>
+                                            <p className="font-semibold">{formatCurrency(displayedFinalPrice)}</p>
+                                        </div>
+                                        <div className="rounded-lg border border-border/60 bg-background/70 p-3">
+                                            <p className="text-xs text-muted-foreground">{t("deposit.dueNow")}</p>
+                                            <p className="font-semibold">{formatCurrency(amountDueNow)}</p>
+                                        </div>
+                                        <div className="rounded-lg border border-border/60 bg-background/70 p-3">
+                                            <p className="text-xs text-muted-foreground">{t("deposit.remaining")}</p>
+                                            <p className="font-semibold">{formatCurrency(amountRemaining)}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
 
                             {paymentNumber && (
                                 <div className="flex items-start gap-3 p-4 bg-amber-500/10 border border-amber-500/30 rounded-xl">

@@ -14,7 +14,7 @@ module Api
         days_in_period = (params[:days] || 30).to_i
         start_date = days_in_period.days.ago.to_date
 
-        revenue = Analytics::RevenueQuery.new(scope: scope, params: params).call
+        revenue_stats = Analytics::RevenueQuery.new(scope: scope, params: params).call
 
         period_scope = scope.where("date >= ?", start_date)
         bookings_per_court = Analytics::BookingsPerCourtQuery.new(scope: period_scope).call
@@ -36,7 +36,9 @@ module Api
         occupancy_rate = total_possible > 0 ? (total_confirmed.to_f / total_possible * 100).round(2) : 0
 
         render json: {
-          total_revenue: revenue,
+          total_revenue: revenue_stats[:total_revenue],
+          collected_due_now: revenue_stats[:collected_due_now],
+          outstanding_balance: revenue_stats[:outstanding_balance],
           total_confirmed_bookings: total_confirmed,
           bookings_per_court: bookings_per_court,
           occupancy_rate_percent: occupancy_rate

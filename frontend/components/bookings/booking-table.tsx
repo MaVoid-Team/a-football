@@ -10,15 +10,16 @@ import {
     DropdownMenu,
     DropdownMenuContent,
     DropdownMenuItem,
+    DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { MoreHorizontal, Banknote, Ban } from "lucide-react";
+import { MoreHorizontal, Banknote, Ban, Eye } from "lucide-react";
 import { formatDate } from "@/lib/format-date";
 import { formatTime } from "@/lib/format-time";
 import { formatCurrency } from "@/lib/format-currency";
-import { PaymentScreenshotViewer } from "@/components/bookings/payment-screenshot-viewer";
+import { Link } from "@/i18n/navigation";
 
 interface BookingTableProps {
     bookings: Booking[];
@@ -31,20 +32,21 @@ interface BookingTableProps {
 
 export function BookingTable({ bookings, branches, courts, isLoading, onUpdatePayment, onCancel }: BookingTableProps) {
     const t = useTranslations("bookings");
-    
+
     const getBranchName = (branchId: number) => {
-        const branch = branches.find(b => Number(b.id) === branchId);
+        const branch = branches.find((b) => Number(b.id) === branchId);
         return branch ? branch.name : t("table.unknown");
     };
 
     const getCourtName = (courtId: number) => {
-        const court = courts.find(c => Number(c.id) === courtId);
+        const court = courts.find((c) => Number(c.id) === courtId);
         return court ? court.name : t("table.unknown");
     };
 
     const paymentStatusMap = {
         pending: { label: t("status.pending"), variant: "secondary" as const },
         paid: { label: t("status.paid"), variant: "default" as const },
+        failed: { label: t("status.failed"), variant: "destructive" as const },
         refunded: { label: t("status.refunded"), variant: "destructive" as const },
     };
 
@@ -62,7 +64,7 @@ export function BookingTable({ bookings, branches, courts, isLoading, onUpdatePa
             header: t("table.locationHeader"),
             cell: (b: Booking) => (
                 <div className="flex flex-col">
-                    <span className="text-sm">{getCourtName(b.court_id)}</span>
+                    <span className="text-sm font-medium">{getCourtName(b.court_id)}</span>
                     <span className="text-xs text-muted-foreground">{getBranchName(b.branch_id)}</span>
                 </div>
             ),
@@ -80,12 +82,37 @@ export function BookingTable({ bookings, branches, courts, isLoading, onUpdatePa
         },
         {
             header: t("table.priceHeader"),
-            cell: (b: Booking) => <span className="font-semibold">{formatCurrency(b.total_price)}</span>,
+            cell: (b: Booking) => (
+                <div className="flex flex-col">
+                    <span className="font-semibold">{formatCurrency(b.total_price)}</span>
+                    {Number(b.discount_amount ?? 0) > 0 && (
+                        <span className="text-xs text-green-600 dark:text-green-400">
+                            -{formatCurrency(b.discount_amount)}
+                        </span>
+                    )}
+                </div>
+            ),
+        },
+        {
+            header: t("table.paymentTypeHeader"),
+            cell: (b: Booking) => (
+                <Badge variant={b.payment_option === "deposit" ? "outline" : "secondary"} className="text-[10px]">
+                    {b.payment_option === "deposit" ? t("table.paymentTypeDeposit") : t("table.paymentTypeFull")}
+                </Badge>
+            ),
+        },
+        {
+            header: t("table.dueNowHeader"),
+            cell: (b: Booking) => <span className="font-medium">{formatCurrency(b.amount_due_now || b.total_price || 0)}</span>,
+        },
+        {
+            header: t("table.remainingHeader"),
+            cell: (b: Booking) => <span>{formatCurrency(b.amount_remaining || 0)}</span>,
         },
         {
             header: t("table.notesHeader"),
             cell: (b: Booking) => (
-                <div className="max-w-[200px]">
+                <div className="max-w-[220px]">
                     {b.notes ? (
                         <p className="text-sm text-muted-foreground truncate" title={b.notes}>
                             {b.notes}
@@ -110,16 +137,10 @@ export function BookingTable({ bookings, branches, courts, isLoading, onUpdatePa
             ),
         },
         {
-            header: t("table.screenshotHeader"),
-            cell: (b: Booking) => (
-                <PaymentScreenshotViewer screenshotUrl={b.payment_screenshot_url} />
-            ),
-        },
-        {
             header: t("table.actionsHeader"),
             className: "text-right",
             cell: (b: Booking) => (
-                <div className="flex justify-end pr-2">
+                <div className="flex justify-end pr-2 gap-1">
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                             <Button variant="ghost" className="h-8 w-8 p-0" data-testid={`booking-actions-${b.id}`}>
@@ -128,6 +149,12 @@ export function BookingTable({ bookings, branches, courts, isLoading, onUpdatePa
                             </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
+                            <DropdownMenuItem asChild>
+                                <Link href={`/bookings/${b.id}`}>
+                                    <Eye className="mr-2 h-4 w-4" /> {t("table.viewDetails")}
+                                </Link>
+                            </DropdownMenuItem>
+                            <DropdownMenuSeparator />
                             <DropdownMenuItem onClick={() => onUpdatePayment(b.id, "paid")} disabled={b.payment_status === "paid"}>
                                 <Banknote className="mr-2 h-4 w-4" /> {t("table.markAsPaid")}
                             </DropdownMenuItem>

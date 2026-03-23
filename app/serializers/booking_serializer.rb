@@ -3,8 +3,10 @@ class BookingSerializer
 
   attributes :id, :branch_id, :court_id, :user_name, :user_phone,
              :date, :start_time, :end_time, :hours, :total_price,
-             :original_price, :discount_amount, :status, :payment_status, 
-             :notes, :promo_code_id, :created_at, :updated_at
+             :original_price, :discount_amount, :status, :payment_status,
+             :payment_option, :deposit_percentage_snapshot,
+             :amount_due_now, :amount_remaining,
+             :notes, :admin_notes, :promo_code_id, :created_at, :updated_at
 
   has_one :promo_code
 
@@ -18,6 +20,10 @@ class BookingSerializer
 
   attribute :hours do |booking|
     booking.hours&.to_f
+  end
+
+  attribute :promo_code_code do |booking|
+    booking.promo_code&.code
   end
 
   attribute :booking_slots do |booking|

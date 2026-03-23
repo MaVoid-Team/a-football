@@ -110,5 +110,32 @@ RSpec.describe "Api::Bookings", type: :request do
       errors = JSON.parse(response.body)["errors"]
       expect(errors).to include("Invalid promo code")
     end
+
+    it "creates a deposit booking when branch deposit is enabled" do
+      create(:setting, branch: branch, deposit_enabled: true, deposit_percentage: 30)
+      params = valid_params.deep_dup
+      params[:booking][:pay_deposit] = true
+
+      post "/api/bookings", params: params
+
+      expect(response).to have_http_status(:created)
+      data = JSON.parse(response.body)["data"]["attributes"]
+      expect(data["payment_option"]).to eq("deposit")
+      expect(data["deposit_percentage_snapshot"]).to eq("30.0")
+      expect(data["amount_due_now"]).to eq("90.0")
+      expect(data["amount_remaining"]).to eq("210.0")
+    end
+
+    it "rejects deposit booking when branch deposit is disabled" do
+      create(:setting, branch: branch, deposit_enabled: false, deposit_percentage: 30)
+      params = valid_params.deep_dup
+      params[:booking][:pay_deposit] = true
+
+      post "/api/bookings", params: params
+
+      expect(response).to have_http_status(:unprocessable_entity)
+      errors = JSON.parse(response.body)["errors"]
+      expect(errors).to include("Deposit payment is not available for this branch")
+    end
   end
 end

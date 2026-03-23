@@ -28,6 +28,9 @@ export const exportBookingsToExcel = ({ bookings, branches, courts }: ExportBook
             'Start Time': booking.start_time,
             'End Time': booking.end_time,
             'Total Price': booking.total_price || 0,
+            'Payment Type': booking.payment_option || 'full',
+            'Amount Due Now': booking.amount_due_now || booking.total_price || 0,
+            'Amount Remaining': booking.amount_remaining || 0,
             'Status': booking.status,
             'Payment Status': booking.payment_status || 'pending',
             'Notes': booking.notes || '',
@@ -49,6 +52,9 @@ export const exportBookingsToExcel = ({ bookings, branches, courts }: ExportBook
         { wch: 10 }, // Start Time
         { wch: 10 }, // End Time
         { wch: 12 }, // Total Price
+        { wch: 14 }, // Payment Type
+        { wch: 14 }, // Amount Due Now
+        { wch: 16 }, // Amount Remaining
         { wch: 12 }, // Status
         { wch: 15 }, // Payment Status
         { wch: 30 }, // Notes
@@ -83,6 +89,9 @@ export const exportBookingsToCSV = ({ bookings, branches, courts }: ExportBookin
             'Start Time': booking.start_time,
             'End Time': booking.end_time,
             'Total Price': booking.total_price || 0,
+            'Payment Type': booking.payment_option || 'full',
+            'Amount Due Now': booking.amount_due_now || booking.total_price || 0,
+            'Amount Remaining': booking.amount_remaining || 0,
             'Status': booking.status,
             'Payment Status': booking.payment_status || 'pending',
             'Notes': booking.notes || '',

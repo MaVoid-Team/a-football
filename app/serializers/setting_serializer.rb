@@ -3,5 +3,7 @@ class SettingSerializer
 
   attributes :id, :branch_id, :whatsapp_number, :contact_email,
              :contact_phone, :opening_hour, :closing_hour,
-             :booking_terms, :payment_number, :created_at, :updated_at
+             :booking_terms, :payment_number,
+             :deposit_enabled, :deposit_percentage,
+             :created_at, :updated_at
 end

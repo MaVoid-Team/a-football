@@ -6,5 +6,7 @@ FactoryBot.define do
     contact_phone { Faker::PhoneNumber.phone_number }
     opening_hour { 8 }
     closing_hour { 23 }
+    deposit_enabled { false }
+    deposit_percentage { 0 }
   end
 end

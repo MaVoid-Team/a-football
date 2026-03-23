@@ -34,6 +34,7 @@
     },
     "toast": {
       "created": "Admin created successfully",
+      "viewDetails": "View Details",
       "updated": "Admin role updated successfully",
       "deleted": "Admin deleted successfully"
     },
@@ -172,13 +173,17 @@
     "happeningRecently": "Here is what's happening {scope} recently.",
     "cards": {
       "totalRevenue30d": "Total Revenue (30d)",
+      "collectedNow30d": "Collected Now (30d)",
       "revenueDeltaVsLastMonth": "+12% from last month",
       "confirmedBookings30d": "Confirmed Bookings (30d)",
       "bookingsDeltaVsLastMonth": "+5% from last month",
       "globalOccupancy": "Global Occupancy",
       "capacityFilled": "Capacity filled",
       "averageOrderValue": "Average Order Value",
-      "perBookingTransaction": "Per booking transaction"
+      "perBookingTransaction": "Per booking transaction",
+      "amountDueAtBooking": "Amount collected at booking time",
+      "perBookingCollected": "Per booking collected",
+      "outstandingBalance": "Outstanding Balance"
     },
     "utilization": {
       "title": "Court Utilization",
@@ -384,6 +389,14 @@
       "invalid": "The promo code is invalid.",
       "notApplicable": "This promo code does not apply to the selected booking."
     },
+    "deposit": {
+      "toggleLabel": "Pay deposit",
+      "toggleDescription": "Pay {percentage}% now and keep the rest for later.",
+      "total": "Total Amount",
+      "dueNow": "Due Now",
+      "remaining": "Remaining Amount",
+      "unavailable": "Deposit payment is not available for this branch."
+    },
     "selectCourtFirst": "Please select a court first.",
     "noCourts": "No courts available for this branch.",
     "termsPrefix": "I agree to the",
@@ -553,7 +566,12 @@
         "title": "Payment Settings",
         "numberLabel": "Payment Number",
         "numberPlaceholder": "+201234567890",
-        "numberDescription": "The phone number users will send payments to. This number will be shown on the booking page with transfer instructions."
+        "numberDescription": "The phone number users will send payments to. This number will be shown on the booking page with transfer instructions.",
+        "depositEnabledLabel": "Enable deposit payments",
+        "depositEnabledDescription": "Allow customers to pay only a deposit during booking.",
+        "depositPercentageLabel": "Deposit Percentage",
+        "depositPercentagePlaceholder": "30",
+        "depositPercentageDescription": "Percentage of the booking total that must be paid now (1 to 100)."
       },
       "actions": {
         "saving": "Saving...",
@@ -719,6 +737,11 @@
       "locationHeader": "Location",
       "scheduleHeader": "Schedule",
       "priceHeader": "Price",
+      "paymentTypeHeader": "Payment Type",
+      "paymentTypeFull": "Full",
+      "paymentTypeDeposit": "Deposit",
+      "dueNowHeader": "Due Now",
+      "remainingHeader": "Remaining",
       "notesHeader": "Notes",
       "statusHeader": "Status",
       "actionsHeader": "Actions",
@@ -738,11 +761,46 @@
       "emptyTitle": "No bookings found",
       "emptyDescription": "No reservations have been made yet."
     },
+    "detail": {
+      "backToBookings": "Back to Bookings",
+      "notFound": "Booking not found.",
+      "financialTitle": "Financial Summary",
+      "originalAmount": "Original Amount",
+      "discountAmount": "Discount",
+      "finalAmount": "Final Amount",
+      "amountDueNow": "Amount Due Now",
+      "amountRemaining": "Amount Remaining",
+      "paymentOption": "Payment Option",
+      "depositPercentage": "Deposit Percentage",
+      "promoCode": "Promo Code",
+      "paymentOptionValues": {
+        "full": "Full payment",
+        "deposit": "Deposit"
+      },
+      "paymentStatusTitle": "Payment Status",
+      "customerTitle": "Customer Information",
+      "customerName": "Customer Name",
+      "customerPhone": "Customer Phone",
+      "customerNotes": "Customer Notes",
+      "bookingInfoTitle": "Booking Information",
+      "branch": "Branch",
+      "court": "Court",
+      "date": "Date",
+      "time": "Time",
+      "hours": "Hours",
+      "createdAt": "Created At",
+      "screenshotTitle": "Payment Screenshot",
+      "adminNotesTitle": "Admin Notes",
+      "adminNotesLabel": "Internal note",
+      "adminNotesPlaceholder": "Write internal notes for this booking...",
+      "saveAdminNotes": "Save Admin Notes"
+    },
     "status": {
       "confirmed": "Confirmed",
       "cancelled": "Cancelled",
       "pending": "Pending",
       "paid": "Paid",
+      "failed": "Failed",
       "refunded": "Refunded"
     },
     "export": {
@@ -752,7 +810,10 @@
     },
     "toasts": {
       "paymentStatusUpdated": "Payment status updated to {status}",
+      "paymentStatusUpdateFailed": "Failed to update payment status",
       "cancelled": "Booking cancelled successfully",
+      "adminNotesSaved": "Admin notes saved successfully",
+      "adminNotesSaveFailed": "Failed to save admin notes",
       "excelExported": "Excel file exported successfully",
       "csvExported": "CSV file exported successfully",
       "allExported": "All bookings exported successfully",
