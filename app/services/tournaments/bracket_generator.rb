@@ -5,17 +5,19 @@ module Tournaments
     end
 
     def call
-      return ServiceResult.failure("Bracket already exists", error_codes: [:bracket_exists]) if @tournament.bracket_data.present? && @tournament.bracket_data["rounds"].present?
+      @tournament.with_lock do
+        return ServiceResult.failure("Bracket already exists", error_codes: [:bracket_exists]) if @tournament.bracket_data.present? && @tournament.bracket_data["rounds"].present?
 
-      case @tournament.tournament_type
-      when "knockout"
-        generate_knockout
-      when "round_robin"
-        generate_round_robin
-      when "group_knockout"
-        generate_group_knockout
-      else
-        ServiceResult.failure("Bracket generation for this tournament type is not implemented yet", error_codes: [:not_implemented])
+        case @tournament.tournament_type
+        when "knockout"
+          generate_knockout
+        when "round_robin"
+          generate_round_robin
+        when "group_knockout"
+          generate_group_knockout
+        else
+          ServiceResult.failure("Bracket generation for this tournament type is not implemented yet", error_codes: [:not_implemented])
+        end
       end
     end
 

@@ -40,6 +40,17 @@ export function useTournamentsAPI() {
         setPagination({ totalCount, page, perPage, totalPages });
     };
 
+    const getApiErrorMessage = (err: any, fallback: string) => {
+        const payload = err?.response?.data;
+        if (Array.isArray(payload?.errors) && payload.errors.length > 0) {
+            return String(payload.errors[0]);
+        }
+        if (typeof payload?.error === "string" && payload.error.length > 0) {
+            return payload.error;
+        }
+        return fallback;
+    };
+
     const fetchPublicTournaments = useCallback(async (params?: { branch_id?: number; status?: string; page?: number; per_page?: number }, options?: { silent?: boolean }) => {
         if (!options?.silent) setLoading(true);
         setError(null);
@@ -51,7 +62,7 @@ export function useTournamentsAPI() {
             setPaginationFromHeaders(response.headers);
             return { success: true, data };
         } catch (err: any) {
-            setError(err.response?.data?.error || "Failed to fetch tournaments");
+            setError(getApiErrorMessage(err, "Failed to fetch tournaments"));
             setTournaments([]);
             return { success: false, error: err, data: [] as Tournament[] };
         } finally {
@@ -70,7 +81,7 @@ export function useTournamentsAPI() {
             setPaginationFromHeaders(response.headers);
             return { success: true, data };
         } catch (err: any) {
-            setError(err.response?.data?.error || "Failed to fetch tournaments");
+            setError(getApiErrorMessage(err, "Failed to fetch tournaments"));
             setTournaments([]);
             return { success: false, error: err, data: [] as Tournament[] };
         } finally {
@@ -88,7 +99,7 @@ export function useTournamentsAPI() {
             setTournament(data);
             return { success: true, data };
         } catch (err: any) {
-            setError(err.response?.data?.error || "Failed to fetch tournament");
+            setError(getApiErrorMessage(err, "Failed to fetch tournament"));
             return { success: false, error: err };
         } finally {
             if (!options?.silent) setLoading(false);
@@ -103,7 +114,7 @@ export function useTournamentsAPI() {
             const data = response.data?.data ? flatten(response.data.data) : null;
             return { success: true, data };
         } catch (err: any) {
-            const message = err.response?.data?.error || err.response?.data?.errors?.[0] || "Failed to create tournament";
+            const message = getApiErrorMessage(err, "Failed to create tournament");
             setError(message);
             return { success: false, error: err, errorMessage: message };
         } finally {
@@ -119,7 +130,7 @@ export function useTournamentsAPI() {
             const data = response.data?.data ? flatten(response.data.data) : null;
             return { success: true, data };
         } catch (err: any) {
-            const message = err.response?.data?.errors?.[0] || err.response?.data?.error || "Failed to generate bracket";
+            const message = getApiErrorMessage(err, "Failed to generate bracket");
             setError(message);
             return { success: false, error: err, errorMessage: message };
         } finally {
@@ -134,7 +145,7 @@ export function useTournamentsAPI() {
             const response = await api.post(`/api/tournaments/${id}/register`, { registration: payload });
             return { success: true, data: response.data?.data };
         } catch (err: any) {
-            const message = err.response?.data?.errors?.[0] || err.response?.data?.error || "Failed to register";
+            const message = getApiErrorMessage(err, "Failed to register");
             setError(message);
             return {
                 success: false,
@@ -159,7 +170,7 @@ export function useTournamentsAPI() {
                 {};
             return { success: true, data: bracket };
         } catch (err: any) {
-            const message = err.response?.data?.error || "Failed to fetch bracket";
+            const message = getApiErrorMessage(err, "Failed to fetch bracket");
             setError(message);
             return { success: false, error: err, errorMessage: message };
         } finally {
@@ -176,7 +187,7 @@ export function useTournamentsAPI() {
             setMatches(data);
             return { success: true, data };
         } catch (err: any) {
-            const message = err.response?.data?.error || "Failed to fetch tournament matches";
+            const message = getApiErrorMessage(err, "Failed to fetch tournament matches");
             setError(message);
             setMatches([]);
             return { success: false, error: err, errorMessage: message, data: [] as TournamentMatch[] };
@@ -204,7 +215,7 @@ export function useTournamentsAPI() {
             }
             return { success: true, data };
         } catch (err: any) {
-            const message = err.response?.data?.error || "Failed to fetch tournament matches";
+            const message = getApiErrorMessage(err, "Failed to fetch tournament matches");
             setError(message);
             if (shouldSetState) setMatches([]);
             return { success: false, error: err, errorMessage: message, data: [] as TournamentMatch[] };
@@ -221,7 +232,7 @@ export function useTournamentsAPI() {
             const data = response.data?.data?.map(flattenMatch) || [];
             return { success: true, data };
         } catch (err: any) {
-            const message = err.response?.data?.errors?.[0] || err.response?.data?.error || "Failed to auto schedule";
+            const message = getApiErrorMessage(err, "Failed to auto schedule");
             setError(message);
             return { success: false, error: err, errorMessage: message, errorCodes: err.response?.data?.error_codes || [] };
         } finally {
@@ -237,7 +248,7 @@ export function useTournamentsAPI() {
             const data = response.data?.data ? flattenMatch(response.data.data) : null;
             return { success: true, data };
         } catch (err: any) {
-            const message = err.response?.data?.errors?.[0] || err.response?.data?.error || "Failed to schedule match";
+            const message = getApiErrorMessage(err, "Failed to schedule match");
             setError(message);
             return { success: false, error: err, errorMessage: message, errorCodes: err.response?.data?.error_codes || [] };
         } finally {
@@ -253,7 +264,7 @@ export function useTournamentsAPI() {
             const data = response.data?.data ? flattenMatch(response.data.data) : null;
             return { success: true, data };
         } catch (err: any) {
-            const message = err.response?.data?.errors?.[0] || err.response?.data?.error || "Failed to update lock";
+            const message = getApiErrorMessage(err, "Failed to update lock");
             setError(message);
             return { success: false, error: err, errorMessage: message, errorCodes: err.response?.data?.error_codes || [] };
         } finally {

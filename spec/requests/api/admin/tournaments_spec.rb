@@ -5,6 +5,28 @@ RSpec.describe "Api::Admin::Tournaments", type: :request do
   let(:admin) { create(:admin, branch: branch) }
   let(:headers) { auth_headers(admin) }
 
+  describe "POST /api/admin/tournaments" do
+    it "defaults status to open when omitted" do
+      post "/api/admin/tournaments",
+           params: {
+             tournament: {
+               branch_id: branch.id,
+               name: "Community Cup",
+               tournament_type: "knockout",
+               max_players: 16,
+               start_date: 10.days.from_now,
+               registration_deadline: 5.days.from_now,
+               match_duration_minutes: 60
+             }
+           },
+           headers: headers
+
+      expect(response).to have_http_status(:created)
+      body = JSON.parse(response.body)
+      expect(body.dig("data", "attributes", "status")).to eq("open")
+    end
+  end
+
   describe "POST /api/admin/tournaments/:id/start" do
     it "starts tournament when status is open and bracket exists" do
       tournament = create(

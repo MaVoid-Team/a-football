@@ -728,7 +728,8 @@
           "locked_match": "Match is locked. Use manual override or unlock first.",
           "unable_to_schedule": "Auto scheduler could not find valid time slots.",
           "missing_courts": "Please select at least one court.",
-          "invalid_start_time": "Invalid auto scheduler start time."
+          "invalid_start_time": "Invalid auto scheduler start time.",
+          "override_not_allowed": "Manual override is only allowed for super admins."
         }
       }
     }

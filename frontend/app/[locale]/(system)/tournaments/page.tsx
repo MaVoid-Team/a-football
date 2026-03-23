@@ -43,6 +43,7 @@ export default function AdminTournamentsPage() {
         tournaments,
         matches,
         loading,
+        error,
         fetchAdminTournaments,
         createTournament,
         generateBracket,
@@ -100,7 +101,7 @@ export default function AdminTournamentsPage() {
 
     const schedulingErrorMessage = (codes?: string[]) => {
         const code = codes?.[0];
-        if (!code) return t("admin.scheduler.genericError");
+        if (!code) return null;
         const keys: Record<string, string> = {
             invalid_time: "admin.scheduler.errors.invalid_time",
             invalid_court: "admin.scheduler.errors.invalid_court",
@@ -111,9 +112,11 @@ export default function AdminTournamentsPage() {
             unable_to_schedule: "admin.scheduler.errors.unable_to_schedule",
             missing_courts: "admin.scheduler.errors.missing_courts",
             invalid_start_time: "admin.scheduler.errors.invalid_start_time",
+            override_not_allowed: "admin.scheduler.errors.override_not_allowed",
         };
 
-        return t(keys[code] || "admin.scheduler.genericError");
+        if (!keys[code]) return null;
+        return t(keys[code]);
     };
 
     const onCreate = async () => {
@@ -222,7 +225,7 @@ export default function AdminTournamentsPage() {
             toast.success(t("admin.scheduler.autoScheduled"));
             fetchAdminMatches(selectedTournamentId);
         } else {
-            toast.error(result.errorMessage || schedulingErrorMessage(result.errorCodes));
+            toast.error(schedulingErrorMessage(result.errorCodes) || result.errorMessage || t("admin.scheduler.genericError"));
         }
     };
 
@@ -245,7 +248,7 @@ export default function AdminTournamentsPage() {
             toast.success(t("admin.scheduler.manualScheduled"));
             fetchAdminMatches(selectedTournamentId);
         } else {
-            toast.error(result.errorMessage || schedulingErrorMessage(result.errorCodes));
+            toast.error(schedulingErrorMessage(result.errorCodes) || result.errorMessage || t("admin.scheduler.genericError"));
         }
     };
 
@@ -364,6 +367,12 @@ export default function AdminTournamentsPage() {
                     <CardTitle>{t("admin.scheduler.title")}</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
+                    {error && (
+                        <div className="rounded-md border border-destructive/40 bg-destructive/10 px-3 py-2 text-sm text-destructive">
+                            {error}
+                        </div>
+                    )}
+
                     <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3">
                         <div className="space-y-1">
                             <Label>{t("admin.scheduler.selectedTournament")}</Label>

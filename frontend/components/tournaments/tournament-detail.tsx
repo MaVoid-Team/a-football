@@ -124,6 +124,12 @@ export function TournamentDetail({ id }: { id: string }) {
                 </div>
             </div>
 
+            {error && (
+                <div className="rounded-md border border-destructive/40 bg-destructive/10 px-3 py-2 text-sm text-destructive">
+                    {error}
+                </div>
+            )}
+
             <Card>
                 <CardHeader>
                     <CardTitle className="text-3xl">{tournament.name}</CardTitle>

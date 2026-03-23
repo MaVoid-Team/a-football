@@ -12,8 +12,8 @@ module Tournaments
       return failure("missing_courts", "At least one court is required") if @court_ids.empty?
 
       pending_matches = @tournament.tournament_matches
-                                 .where(status: %i[pending scheduled])
-                                 .order(:round_number, :match_number)
+                 .where(status: :pending)
+                 .order(:round_number, :match_number)
 
       scheduled_matches = []
       next_time = @start_time

@@ -34,6 +34,17 @@ RSpec.describe Tournaments::ScoreUpdater, type: :service do
       expect(final.team1_id).to eq(team1.id)
     end
 
+    it "rejects scoring a completed match" do
+      semi.update!(status: :completed, winner: team2, score: { set1: "6-0" })
+
+      result = described_class.new(match: semi, winner_id: team1.id, score: { set1: "6-4" }).call
+
+      expect(result).to be_failure
+      expect(result.error_codes).to include("match_not_scoreable")
+      semi.reload
+      expect(semi.winner_id).to eq(team2.id)
+    end
+
     it "promotes group winners into first knockout round for group_knockout" do
       tournament.update!(tournament_type: :group_knockout)
 

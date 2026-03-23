@@ -7,6 +7,7 @@ module Tournaments
     end
 
     def call
+      return failure("match_not_scoreable", "Match cannot be scored in its current status") unless scoreable_status?
       return failure("invalid_winner", "Winner must be one of the match teams") unless [@match.team1_id, @match.team2_id].include?(@winner_id)
 
       ActiveRecord::Base.transaction do
@@ -186,6 +187,10 @@ module Tournaments
 
     def failure(code, message)
       ServiceResult.failure(message, error_codes: [code])
+    end
+
+    def scoreable_status?
+      @match.pending? || @match.scheduled? || @match.ongoing?
     end
   end
 end

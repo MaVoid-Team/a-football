@@ -10,6 +10,10 @@ Rack::Attack.throttle("bookings/create", limit: 10, period: 60.seconds) do |req|
   req.ip if req.path == "/api/bookings" && req.post?
 end
 
+Rack::Attack.throttle("tournaments/register", limit: 10, period: 60.seconds) do |req|
+  req.ip if req.path.match?(%r{\A/api/tournaments/\d+/register\z}) && req.post?
+end
+
 Rack::Attack.throttle("api/general", limit: 300, period: 60.seconds) do |req|
   req.ip if req.path.start_with?("/api")
 end

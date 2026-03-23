@@ -83,6 +83,7 @@ Authorization: Bearer <your_jwt_token>
 |----------|-------|--------|
 | `POST /api/admin/login` | 5 requests | 60 seconds |
 | `POST /api/bookings` | 10 requests | 60 seconds |
+| `POST /api/tournaments/:id/register` | 10 requests | 60 seconds |
 | General API | 300 requests | 60 seconds |
 
 When rate limit is exceeded, the API returns `429 Too Many Requests` with:
@@ -563,6 +564,8 @@ All admin endpoints require `Authorization: Bearer <token>`.
 
 Notes:
 - Public tournament visibility includes statuses: `open`, `full`, `ongoing`, `completed`.
+- `POST /api/tournaments/:id/register` is rate-limited to `10 requests / 60 seconds` per IP.
+- `GET /api/tournaments/:id/matches` supports `page`/`per_page` and defaults to `per_page=100` (max 100).
 - `GET /api/tournaments/:id`, `GET /api/tournaments/:id/matches`, and `GET /api/tournaments/:id/bracket` are short-cache endpoints for live views.
 
 ---
@@ -612,6 +615,8 @@ Notes:
 
 `status` values: `draft`, `open`, `full`, `ongoing`, `completed`
 
+If `status` is omitted on admin create, the API defaults it to `open` so the tournament is visible on public tournament listings.
+
 #### Auto-schedule body
 
 ```json
@@ -639,6 +644,10 @@ Notes:
 ```
 
 `override=true` is a manual override that bypasses scheduling constraints for that request.
+
+Manual override restriction:
+- Only `super_admin` users can schedule with `override=true`.
+- Branch admins receive `403 Forbidden` with `error_codes: ["override_not_allowed"]`.
 
 #### Lock/unlock body
 

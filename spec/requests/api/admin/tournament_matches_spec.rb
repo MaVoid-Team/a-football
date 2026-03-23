@@ -3,7 +3,9 @@ require "rails_helper"
 RSpec.describe "Api::Admin::TournamentMatches", type: :request do
   let(:branch) { create(:branch) }
   let(:admin) { create(:admin, branch: branch) }
+  let(:super_admin) { create(:admin, :super_admin) }
   let(:headers) { auth_headers(admin) }
+  let(:super_admin_headers) { auth_headers(super_admin) }
 
   let(:tournament) { create(:tournament, branch: branch, created_by: admin, tournament_type: :knockout) }
   let(:p1) { create(:tournament_player, tournament: tournament, status: :approved) }
@@ -52,12 +54,24 @@ RSpec.describe "Api::Admin::TournamentMatches", type: :request do
 
       patch "/api/admin/matches/#{semi1.id}/schedule",
             params: { match: { court_id: court.id, scheduled_time: 2.days.from_now, override: true } },
-            headers: headers
+            headers: super_admin_headers
 
       expect(response).to have_http_status(:ok)
       semi1.reload
       expect(semi1.court_id).to eq(court.id)
       expect(semi1.status).to eq("scheduled")
+    end
+
+    it "rejects override scheduling for branch admin" do
+      semi1.update!(schedule_locked: true, schedule_lock_reason: "Manual lock")
+
+      patch "/api/admin/matches/#{semi1.id}/schedule",
+            params: { match: { court_id: court.id, scheduled_time: 2.days.from_now, override: true } },
+            headers: headers
+
+      expect(response).to have_http_status(:forbidden)
+      body = JSON.parse(response.body)
+      expect(body["error_codes"]).to include("override_not_allowed")
     end
 
     it "prevents back-to-back scheduling for same team" do

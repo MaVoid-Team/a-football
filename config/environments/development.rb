@@ -3,6 +3,13 @@ require "active_support/core_ext/integer/time"
 Rails.application.configure do
   # Settings specified here will take precedence over those in config/application.rb.
 
+  config.secret_key_base = ENV.fetch("SECRET_KEY_BASE") { "dev-secret-key-base-please-change-in-real-env-0123456789abcdef" }
+  config.credentials.content_path = Rails.root.join("config/credentials/development.yml.enc")
+  config.credentials.key_path = Rails.root.join("config/credentials/development.key")
+  config.active_record.encryption.primary_key = ENV.fetch("ACTIVE_RECORD_ENCRYPTION_PRIMARY_KEY") { "dev_primary_key_0123456789abcdef0123456789abcdef" }
+  config.active_record.encryption.deterministic_key = ENV.fetch("ACTIVE_RECORD_ENCRYPTION_DETERMINISTIC_KEY") { "dev_deterministic_key_0123456789abcdef01234567" }
+  config.active_record.encryption.key_derivation_salt = ENV.fetch("ACTIVE_RECORD_ENCRYPTION_KEY_DERIVATION_SALT") { "dev_key_derivation_salt_0123456789abcdef" }
+
   # Make code changes take effect immediately without server restart.
   config.enable_reloading = true
 

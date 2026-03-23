@@ -18,7 +18,10 @@ module Api
       end
 
       def create
-        tournament = Tournament.new(tournament_params)
+        attrs = tournament_params.to_h
+        attrs["status"] = "open" if attrs["status"].blank?
+
+        tournament = Tournament.new(attrs)
         tournament.created_by = current_admin
         authorize tournament
         tournament.save!
@@ -44,7 +47,7 @@ module Api
         end
 
         if tournament.bracket_data.blank? || tournament.bracket_data["rounds"].blank?
-          render json: { error: "Generate bracket before starting tournament" }, status: :unprocessable_entity
+          render json: { errors: ["Generate bracket before starting tournament"], error_codes: ["bracket_required"] }, status: :unprocessable_entity
           return
         end
 

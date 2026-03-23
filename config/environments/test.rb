@@ -6,6 +6,13 @@
 Rails.application.configure do
   # Settings specified here will take precedence over those in config/application.rb.
 
+  config.secret_key_base = ENV.fetch("SECRET_KEY_BASE") { "test-secret-key-base-for-local-and-ci-rspec-0123456789abcdef" }
+  config.credentials.content_path = Rails.root.join("config/credentials/test.yml.enc")
+  config.credentials.key_path = Rails.root.join("config/credentials/test.key")
+  config.active_record.encryption.primary_key = ENV.fetch("ACTIVE_RECORD_ENCRYPTION_PRIMARY_KEY") { "test_primary_key_0123456789abcdef0123456789abcdef" }
+  config.active_record.encryption.deterministic_key = ENV.fetch("ACTIVE_RECORD_ENCRYPTION_DETERMINISTIC_KEY") { "test_deterministic_key_0123456789abcdef01234567" }
+  config.active_record.encryption.key_derivation_salt = ENV.fetch("ACTIVE_RECORD_ENCRYPTION_KEY_DERIVATION_SALT") { "test_key_derivation_salt_0123456789abcdef" }
+
   # While tests run files are not watched, reloading is not necessary.
   config.enable_reloading = false
 

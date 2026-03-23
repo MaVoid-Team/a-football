@@ -119,4 +119,32 @@ RSpec.describe "Api::Tournaments", type: :request do
       expect(body.dig("data", "attributes", "bracket", "rounds")).to be_an(Array)
     end
   end
+
+  describe "GET /api/tournaments/:id/matches" do
+    let(:branch) { create(:branch, active: true) }
+    let(:tournament) { create(:tournament, branch: branch, status: :open) }
+
+    before do
+      create_list(:tournament_match, 35, tournament: tournament, status: :pending)
+    end
+
+    it "returns paginated matches with default page size" do
+      get "/api/tournaments/#{tournament.id}/matches"
+
+      expect(response).to have_http_status(:ok)
+      body = JSON.parse(response.body)
+      expect(body["data"].length).to eq(35)
+      expect(response.headers["X-Per-Page"]).to eq("100")
+    end
+
+    it "respects explicit pagination params" do
+      get "/api/tournaments/#{tournament.id}/matches", params: { per_page: 10, page: 2 }
+
+      expect(response).to have_http_status(:ok)
+      body = JSON.parse(response.body)
+      expect(body["data"].length).to eq(10)
+      expect(response.headers["X-Per-Page"]).to eq("10")
+      expect(response.headers["X-Page"]).to eq("2")
+    end
+  end
 end

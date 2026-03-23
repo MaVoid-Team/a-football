@@ -66,6 +66,23 @@ RSpec.describe Tournaments::AutoScheduler, type: :service do
       expect(match1.scheduled_time).to be_present
     end
 
+    it "does not reschedule already scheduled matches" do
+      original_time = 1.day.from_now.change(min: 0)
+      match1.update!(court: court_one, scheduled_time: original_time, status: :scheduled)
+
+      result = described_class.new(
+        tournament: tournament,
+        start_time: 2.days.from_now,
+        court_ids: [court_one.id, court_two.id]
+      ).call
+
+      expect(result).to be_success
+      match1.reload
+      match2.reload
+      expect(match1.scheduled_time.to_i).to eq(original_time.to_i)
+      expect(match2.scheduled_time).to be_present
+    end
+
     it "fails when no courts are provided" do
       result = described_class.new(
         tournament: tournament,

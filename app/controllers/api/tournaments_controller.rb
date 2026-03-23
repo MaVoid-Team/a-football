@@ -18,8 +18,10 @@ module Api
     def matches
       tournament = Tournament.visible_publicly.find(params[:id])
       matches = tournament.tournament_matches.includes(:team1, :team2, :winner).order(:round_number, :match_number)
+      params[:per_page] = 100 if params[:per_page].blank?
+      paginated_matches = paginate(matches)
       expires_in 10.seconds, public: true
-      render json: TournamentMatchSerializer.new(matches).serializable_hash, status: :ok
+      render json: TournamentMatchSerializer.new(paginated_matches).serializable_hash, status: :ok
     end
 
     def bracket

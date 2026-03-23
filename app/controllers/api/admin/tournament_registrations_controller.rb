@@ -5,7 +5,10 @@ module Api
         tournament = Tournament.find(params[:tournament_id])
         authorize tournament, :show?
 
-        registrations = tournament.tournament_registrations.includes(:player, :team).order(created_at: :desc)
+        registrations = policy_scope(TournamentRegistration)
+                          .where(tournament_id: tournament.id)
+                          .includes(:player, :team)
+                          .order(created_at: :desc)
         registrations = registrations.where(status: params[:status]) if params[:status].present?
 
         render json: TournamentRegistrationSerializer.new(paginate(registrations)).serializable_hash, status: :ok
@@ -25,7 +28,7 @@ module Api
           registration.update!(status: :cancelled, notes: update_params[:notes], refund_status: update_params[:refund_status] || registration.refund_status)
           registration.player.update!(status: :cancelled)
         else
-          render json: { errors: ["Invalid status action"] }, status: :unprocessable_entity
+          render json: { errors: ["Invalid status action"], error_codes: ["invalid_status_action"] }, status: :unprocessable_entity
           return
         end
 

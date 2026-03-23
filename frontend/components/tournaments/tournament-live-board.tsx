@@ -10,7 +10,7 @@ import { Link } from "@/i18n/navigation";
 
 export function TournamentLiveBoard({ id }: { id: string }) {
     const t = useTranslations("publicTournaments");
-    const { tournament, matches, fetchTournament, fetchPublicMatches } = useTournamentsAPI();
+    const { tournament, matches, error, fetchTournament, fetchPublicMatches } = useTournamentsAPI();
     const [lastUpdatedAt, setLastUpdatedAt] = useState<Date | null>(null);
     const [secondsUntilRefresh, setSecondsUntilRefresh] = useState(10);
 
@@ -71,6 +71,12 @@ export function TournamentLiveBoard({ id }: { id: string }) {
                     </Button>
                 </div>
             </div>
+
+            {error && (
+                <Card className="border-destructive/30">
+                    <CardContent className="pt-6 text-center text-destructive">{error}</CardContent>
+                </Card>
+            )}
 
             {groupedByRound.length === 0 ? (
                 <Card>
