@@ -516,6 +516,180 @@ All admin endpoints require `Authorization: Bearer <token>`.
 
 ---
 
+### Tournaments (Public)
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/tournaments` | List publicly visible tournaments |
+| GET | `/api/tournaments/:id` | Show tournament details |
+| POST | `/api/tournaments/:id/register` | Submit tournament registration |
+| GET | `/api/tournaments/:id/matches` | List tournament matches |
+| GET | `/api/tournaments/:id/bracket` | Get tournament bracket payload |
+
+**Query params (list):** `branch_id`, `status`, `sort`, `page`, `per_page`
+
+#### Public registration body
+
+```json
+{
+  "registration": {
+    "name": "Player One",
+    "phone": "+201001234567",
+    "skill_level": "intermediate"
+  }
+}
+```
+
+`skill_level` values: `beginner`, `intermediate`, `advanced`
+
+#### Public bracket response
+
+```json
+{
+  "data": {
+    "id": "12",
+    "type": "tournament_brackets",
+    "attributes": {
+      "tournament_id": 12,
+      "bracket": {
+        "generated_at": "2026-03-23T10:00:00Z",
+        "tournament_type": "group_knockout",
+        "rounds": []
+      }
+    }
+  }
+}
+```
+
+Notes:
+- Public tournament visibility includes statuses: `open`, `full`, `ongoing`, `completed`.
+- `GET /api/tournaments/:id`, `GET /api/tournaments/:id/matches`, and `GET /api/tournaments/:id/bracket` are short-cache endpoints for live views.
+
+---
+
+### Tournaments (Admin)
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/admin/tournaments` | List tournaments in admin scope |
+| GET | `/api/admin/tournaments/:id` | Show tournament |
+| POST | `/api/admin/tournaments` | Create tournament |
+| PATCH | `/api/admin/tournaments/:id` | Update tournament |
+| POST | `/api/admin/tournaments/:id/start` | Start tournament |
+| POST | `/api/admin/tournaments/:id/generate_bracket` | Generate bracket |
+| POST | `/api/admin/tournaments/:id/auto_schedule` | Auto-schedule playable matches |
+| GET | `/api/admin/tournaments/:id/bracket` | Get bracket payload |
+| GET | `/api/admin/tournaments/:tournament_id/registrations` | List registrations |
+| PATCH | `/api/admin/registrations/:id` | Approve/reject/cancel registration |
+| GET | `/api/admin/tournaments/:tournament_id/matches` | List matches |
+| PATCH | `/api/admin/matches/:id/schedule` | Schedule a match |
+| PATCH | `/api/admin/matches/:id/lock` | Lock/unlock scheduling |
+| PATCH | `/api/admin/matches/:id/score` | Submit match score and winner |
+
+#### Create/update tournament body
+
+```json
+{
+  "tournament": {
+    "branch_id": 1,
+    "name": "Spring Cup",
+    "description": "Annual branch tournament",
+    "tournament_type": "group_knockout",
+    "status": "open",
+    "max_players": 16,
+    "max_teams": null,
+    "start_date": "2026-04-01T09:00:00Z",
+    "registration_deadline": "2026-03-28T23:59:00Z",
+    "match_duration_minutes": 60,
+    "manual_seeding": false,
+    "points_win": 3,
+    "points_loss": 0
+  }
+}
+```
+
+`tournament_type` values: `knockout`, `round_robin`, `group_knockout`
+
+`status` values: `draft`, `open`, `full`, `ongoing`, `completed`
+
+#### Auto-schedule body
+
+```json
+{
+  "schedule": {
+    "start_time": "2026-04-02T10:00:00Z",
+    "court_ids": [1, 2],
+    "override_locked": false
+  }
+}
+```
+
+`override_locked=true` allows scheduling matches that are lock-flagged, but still enforces court and timing constraints.
+
+#### Manual schedule body
+
+```json
+{
+  "match": {
+    "court_id": 1,
+    "scheduled_time": "2026-04-02T10:00:00Z",
+    "override": false
+  }
+}
+```
+
+`override=true` is a manual override that bypasses scheduling constraints for that request.
+
+#### Lock/unlock body
+
+```json
+{
+  "match": {
+    "locked": true,
+    "reason": "Referee assignment fixed"
+  }
+}
+```
+
+When `locked=true`, `reason` is required.
+
+#### Score body
+
+```json
+{
+  "match": {
+    "winner_id": 42,
+    "score": {
+      "set1": "6-4",
+      "set2": "6-3"
+    }
+  }
+}
+```
+
+`winner_id` must be one of the two participating teams.
+
+#### Admin bracket response
+
+```json
+{
+  "data": {
+    "id": "12",
+    "type": "tournament_brackets",
+    "attributes": {
+      "tournament_id": 12,
+      "bracket": {
+        "generated_at": "2026-03-23T10:00:00Z",
+        "tournament_type": "knockout",
+        "rounds": []
+      }
+    }
+  }
+}
+```
+
+---
+
 ### Statistics
 
 ```
