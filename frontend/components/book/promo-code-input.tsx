@@ -32,6 +32,7 @@ export function PromoCodeInput({ branchId, selectedCourt, selectedSlots = [], st
     const [isValidating, setIsValidating] = useState(false);
     const [validationResult, setValidationResult] = useState<any>(null);
     const [discountAmount, setDiscountAmount] = useState(0);
+    const [appliedContext, setAppliedContext] = useState<string | null>(null);
     
     const { validatePromoCode } = usePublicPromoCodesAPI();
 
@@ -60,6 +61,7 @@ export function PromoCodeInput({ branchId, selectedCourt, selectedSlots = [], st
 
     const currentTotal = calculateCurrentTotal();
     const slotSignature = selectedSlots.map((slot) => `${slot.start_time}-${slot.end_time}`).join("|");
+    const pricingContext = `${branchId ?? ""}:${selectedCourt?.id ?? ""}:${slotSignature}`;
     const displayedTotal = validationResult?.validated_total_amount ?? currentTotal;
 
     useEffect(() => {
@@ -71,12 +73,14 @@ export function PromoCodeInput({ branchId, selectedCourt, selectedSlots = [], st
     }, [validationResult]);
 
     useEffect(() => {
-        if (!validationResult?.valid) return;
+        if (!validationResult?.valid || !appliedContext) return;
+        if (appliedContext === pricingContext) return;
 
         setValidationResult(null);
         setDiscountAmount(0);
+        setAppliedContext(null);
         form.setValue("promo_code", "");
-    }, [currentTotal, selectedCourt?.id, slotSignature, validationResult?.valid, form]);
+    }, [appliedContext, pricingContext, validationResult?.valid, form]);
 
     const handleValidatePromoCode = async () => {
         if (!promoCode.trim()) {
@@ -111,15 +115,18 @@ export function PromoCodeInput({ branchId, selectedCourt, selectedSlots = [], st
             if (result.valid) {
                 setValidationResult(result);
                 form.setValue("promo_code", promoCode.toUpperCase());
+                setAppliedContext(pricingContext);
                 toast.success(t("toasts.applied", { amount: formatCurrency(result.discount_amount || 0) }));
             } else {
                 setValidationResult(null);
                 form.setValue("promo_code", "");
+                setAppliedContext(null);
                 toast.error(result.error || t("toasts.invalidPromoCode"));
             }
         } catch (error) {
             setValidationResult(null);
             form.setValue("promo_code", "");
+            setAppliedContext(null);
             toast.error(t("toasts.validateFailed"));
         } finally {
             setIsValidating(false);
@@ -131,6 +138,7 @@ export function PromoCodeInput({ branchId, selectedCourt, selectedSlots = [], st
         setValidationResult(null);
         form.setValue("promo_code", "");
         setDiscountAmount(0);
+        setAppliedContext(null);
     };
 
     return (
