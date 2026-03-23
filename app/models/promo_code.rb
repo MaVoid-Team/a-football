@@ -30,15 +30,16 @@ class PromoCode < ApplicationRecord
   def calculate_discount(total_amount)
     return 0 unless applicable?(total_amount)
 
-    discount = 0
+    amount = BigDecimal(total_amount.to_s)
+    discount = BigDecimal("0")
     if discount_percentage.present?
-      discount = total_amount * (discount_percentage / 100.0)
+      discount = (amount * BigDecimal(discount_percentage.to_s)) / BigDecimal("100")
     elsif discount_amount.present?
-      discount = discount_amount
+      discount = BigDecimal(discount_amount.to_s)
     end
 
     # Don't discount below zero
-    [discount, total_amount].min
+    [discount, amount].min
   end
 
   def increment_usage!

@@ -38,6 +38,12 @@ interface Slot {
     end_time: string;
 }
 
+interface PricingPreview {
+    originalAmount: number;
+    discountAmount: number;
+    finalAmount: number;
+}
+
 const toMinutes = (time: string) => {
     const [hours, minutes] = time.split(":").map(Number);
     return hours * 60 + minutes;
@@ -78,6 +84,7 @@ export function BookingView() {
     const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
     const [selectedSlots, setSelectedSlots] = useState<Slot[]>([]);
     const [appliedPromoCode, setAppliedPromoCode] = useState("");
+    const [pricingPreview, setPricingPreview] = useState<PricingPreview | null>(null);
     const [bookingResult, setBookingResult] = useState<Booking | null>(null);
     const [acceptedTerms, setAcceptedTerms] = useState(false);
     const [submitError, setSubmitError] = useState<string | null>(null);
@@ -132,6 +139,7 @@ export function BookingView() {
     const clearSlots = useCallback(() => {
         setSelectedSlots([]);
         setAppliedPromoCode("");
+        setPricingPreview(null);
         form.setValue("start_time", "");
         form.setValue("end_time", "");
         form.setValue("booking_slots_attributes", []);
@@ -248,8 +256,19 @@ export function BookingView() {
     }, 0);
 
     const estimatedPrice = selectedCourt
-        ? totalHours * Number(selectedCourt.price_per_hour ?? 0)
+        ? selectedSlots.reduce((sum, slot) => {
+            const slotHour = Number(slot.start_time.split(":")[0]);
+            const rates = selectedCourt.hourly_rates?.filter((rate) => rate.active) ?? [];
+            const rateForHour = rates.find((rate) => rate.start_hour <= slotHour && rate.end_hour > slotHour);
+            const hourlyPrice = Number(rateForHour?.price_per_hour ?? selectedCourt.price_per_hour ?? 0);
+            const slotHours = (toMinutes(slot.end_time) - toMinutes(slot.start_time)) / 60;
+            return sum + hourlyPrice * slotHours;
+        }, 0)
         : 0;
+
+    const displayedOriginalPrice = pricingPreview?.originalAmount ?? estimatedPrice;
+    const displayedFinalPrice = pricingPreview?.finalAmount ?? estimatedPrice;
+    const displayedDiscount = pricingPreview?.discountAmount ?? 0;
 
     const canSubmit =
         !!selectedBranch &&
@@ -453,9 +472,17 @@ export function BookingView() {
                                                     {selectedSlots.length} {selectedSlots.length === 1 ? "slot" : "slots"} ({totalHours}h)
                                                 </span>
                                                 <span className="font-semibold text-primary-text">
-                                                    {formatCurrency(estimatedPrice)}
+                                                    {formatCurrency(displayedFinalPrice)}
                                                 </span>
                                             </div>
+                                            {displayedDiscount > 0 && (
+                                                <div className="mt-1 flex justify-between text-xs text-green-700 dark:text-green-400">
+                                                    <span>{t("promoCode")}</span>
+                                                    <span>
+                                                        {formatCurrency(displayedOriginalPrice)} - {formatCurrency(displayedDiscount)}
+                                                    </span>
+                                                </div>
+                                            )}
                                             <p className="mt-1 text-xs text-muted-foreground">
                                                 {selectedSlots.map(s => `${s.start_time}–${s.end_time}`).join(", ")}
                                             </p>
@@ -540,6 +567,7 @@ export function BookingView() {
                                 selectedCourt={selectedCourt ?? undefined}
                                 selectedSlots={selectedSlots}
                                 onAppliedPromoCodeChange={setAppliedPromoCode}
+                                onPricingPreviewChange={setPricingPreview}
                             />
 
                             {paymentNumber && (

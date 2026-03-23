@@ -24,9 +24,10 @@ interface PromoCodeInputProps {
     startTime?: string;
     endTime?: string;
     onAppliedPromoCodeChange?: (code: string) => void;
+    onPricingPreviewChange?: (preview: { originalAmount: number; discountAmount: number; finalAmount: number } | null) => void;
 }
 
-export function PromoCodeInput({ branchId, selectedCourt, selectedSlots = [], startTime, endTime, onAppliedPromoCodeChange }: PromoCodeInputProps) {
+export function PromoCodeInput({ branchId, selectedCourt, selectedSlots = [], startTime, endTime, onAppliedPromoCodeChange, onPricingPreviewChange }: PromoCodeInputProps) {
     const t = useTranslations("promoInput");
     const form = useFormContext();
     const [promoCode, setPromoCode] = useState("");
@@ -82,7 +83,8 @@ export function PromoCodeInput({ branchId, selectedCourt, selectedSlots = [], st
         setAppliedContext(null);
         form.setValue("promo_code", "");
         onAppliedPromoCodeChange?.("");
-    }, [appliedContext, pricingContext, validationResult?.valid, form, onAppliedPromoCodeChange]);
+        onPricingPreviewChange?.(null);
+    }, [appliedContext, pricingContext, validationResult?.valid, form, onAppliedPromoCodeChange, onPricingPreviewChange]);
 
     const handleValidatePromoCode = async () => {
         if (!promoCode.trim()) {
@@ -95,7 +97,7 @@ export function PromoCodeInput({ branchId, selectedCourt, selectedSlots = [], st
             return;
         }
 
-        if (selectedSlots.length === 1) {
+        if (selectedSlots.length < 2) {
             toast.error(t("toasts.selectCourtAndTime"));
             return;
         }
@@ -120,12 +122,20 @@ export function PromoCodeInput({ branchId, selectedCourt, selectedSlots = [], st
                 form.setValue("promo_code", normalizedCode);
                 setAppliedContext(pricingContext);
                 onAppliedPromoCodeChange?.(normalizedCode);
+                const originalAmount = Number(result.validated_total_amount ?? currentTotal) || 0;
+                const discount = Number(result.discount_amount ?? 0) || 0;
+                onPricingPreviewChange?.({
+                    originalAmount,
+                    discountAmount: discount,
+                    finalAmount: Math.max(originalAmount - discount, 0),
+                });
                 toast.success(t("toasts.applied", { amount: formatCurrency(result.discount_amount || 0) }));
             } else {
                 setValidationResult(null);
                 form.setValue("promo_code", "");
                 setAppliedContext(null);
                 onAppliedPromoCodeChange?.("");
+                onPricingPreviewChange?.(null);
                 toast.error(result.error || t("toasts.invalidPromoCode"));
             }
         } catch (error) {
@@ -133,6 +143,7 @@ export function PromoCodeInput({ branchId, selectedCourt, selectedSlots = [], st
             form.setValue("promo_code", "");
             setAppliedContext(null);
             onAppliedPromoCodeChange?.("");
+            onPricingPreviewChange?.(null);
             toast.error(t("toasts.validateFailed"));
         } finally {
             setIsValidating(false);
@@ -146,6 +157,7 @@ export function PromoCodeInput({ branchId, selectedCourt, selectedSlots = [], st
         setDiscountAmount(0);
         setAppliedContext(null);
         onAppliedPromoCodeChange?.("");
+        onPricingPreviewChange?.(null);
     };
 
     return (
@@ -160,7 +172,13 @@ export function PromoCodeInput({ branchId, selectedCourt, selectedSlots = [], st
                     <Input
                         placeholder={t("placeholder")}
                         value={promoCode}
-                        onChange={(e) => setPromoCode(e.target.value.toUpperCase())}
+                        onChange={(e) => {
+                            const normalizedCode = e.target.value.toUpperCase();
+                            setPromoCode(normalizedCode);
+                            form.setValue("promo_code", normalizedCode);
+                            onAppliedPromoCodeChange?.("");
+                            onPricingPreviewChange?.(null);
+                        }}
                         className="flex-1"
                         disabled={currentTotal <= 0 || !branchId}
                     />
