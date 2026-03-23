@@ -557,6 +557,7 @@
       "title": "سجل في البطولة",
       "name": "الاسم",
       "phone": "رقم الموبايل",
+      "email": "الإيميل",
       "skill": "المستوى",
       "submit": "إرسال التسجيل",
       "closed": "التسجيل مغلق",
@@ -639,6 +640,7 @@
       "selectBranchFirst": "اختار الفرع الأول.",
       "created": "تم إنشاء البطولة.",
       "createFailed": "فشل إنشاء البطولة.",
+      "openDetails": "افتح التفاصيل",
       "bracketGenerated": "تم توليد الجدول بنجاح.",
       "bracketFailed": "فشل توليد الجدول.",
       "scheduler": {
@@ -734,6 +736,82 @@
           "invalid_start_time": "وقت بداية الجدولة التلقائية غير صالح.",
           "override_not_allowed": "التجاوز اليدوي مسموح فقط للسوبر أدمن."
         }
+      },
+      "details": {
+        "back": "ارجع للبطولات",
+        "subtitle": "اتحكم في المشاركين، جهّز الجدول، ونظّم المواعيد من مكان واحد.",
+        "notFound": "البطولة مش موجودة.",
+        "hideChecklist": "اخفيها دلوقتي",
+        "showChecklist": "اظهر الـ checklist",
+        "tabs": {
+          "overview": "نظرة عامة",
+          "participants": "المشاركين",
+          "bracket": "الجدول",
+          "scheduling": "الجدولة"
+        },
+        "summary": {
+          "status": "الحالة",
+          "registration": "التسجيل",
+          "approvedPlayers": "اللاعبين المعتمدين",
+          "approvedPlayersValue": "{count}/{min} جاهز",
+          "bracket": "الجدول"
+        },
+        "lifecycle": {
+          "title": "تقدم دورة البطولة",
+          "visibility": "افتح التسجيل",
+          "participants": "اعتمد اللاعبين",
+          "bracket": "ولّد الجدول",
+          "scheduling": "جدول المباريات",
+          "nextAction": "الخطوة الجاية: {action}",
+          "complete": "كل خطوات تجهيز البطولة الأساسية خلصت.",
+          "done": "جاهز",
+          "inProgress": "شغال"
+        },
+        "participants": {
+          "title": "اعتماد المشاركين",
+          "all": "الكل",
+          "phone": "الموبايل",
+          "email": "الإيميل",
+          "skill": "المستوى",
+          "notes": "ملاحظات",
+          "approve": "اعتمد",
+          "reject": "ارفض",
+          "empty": "مفيش تسجيلات بالفلتر ده.",
+          "unknownPlayer": "لاعب غير معروف",
+          "createdAt": "اتبعت: {value}",
+          "approvedToast": "تم اعتماد التسجيل.",
+          "rejectedToast": "تم رفض التسجيل.",
+          "actionFailed": "فشل تحديث التسجيل.",
+          "status": {
+            "pending": "معلق",
+            "approved": "معتمد",
+            "rejected": "مرفوض",
+            "cancelled": "ملغي"
+          },
+          "skillValue": {
+            "beginner": "مبتدئ",
+            "intermediate": "متوسط",
+            "advanced": "متقدم"
+          }
+        },
+        "bracket": {
+          "title": "جاهزية الجدول",
+          "prerequisitesTitle": "المتطلبات",
+          "prerequisitesBody": "اللاعبين المعتمدين: {approved}. الحد الأدنى المطلوب: {required}.",
+          "blockedReason": "اعتمد على الأقل {required} لاعبين قبل توليد الجدول.",
+          "goToParticipants": "روح للمشاركين",
+          "empty": "الجدول لسه متولدش.",
+          "groupStage": "مرحلة المجموعات",
+          "roundLabel": "الجولة {round}",
+          "matchStatus": "الحالة: {status}"
+        },
+        "scheduling": {
+          "blockedTitle": "الجدولة مقفولة لحد ما الجدول يبقى جاهز.",
+          "blockedBody": "ولّد الجدول الأول، وبعدها ارجع هنا للجدولة التلقائية أو توزيع المباريات يدويًا.",
+          "goToBracket": "روح للجدول",
+          "matchesTitle": "جدولة المباريات",
+          "groupFallback": "مجموعة"
+        }
       }
     }
   },
@@ -824,6 +902,14 @@
         "depositPercentageLabel": "نسبة العربون",
         "depositPercentagePlaceholder": "30",
         "depositPercentageDescription": "نسبة من إجمالي الحجز لازم تتدفع الآن (من 1 إلى 100)."
+      },
+      "tournamentAlerts": {
+        "title": "تنبيهات تسجيل البطولات",
+        "emailLabel": "إيميل تنبيهات الفرع",
+        "emailPlaceholder": "alerts@branch.com",
+        "emailDescription": "الإيميل ده بيستقبل دائمًا تنبيهات تسجيل البطولات الجديدة للفرع لو موجود.",
+        "globalToggleLabel": "ابعت كمان للمستلم العالمي الثابت",
+        "globalToggleDescription": "لما ده يتفعل، تنبيهات تسجيل البطولات الجديدة هتتبعت كمان إلى z.ahmed@mavoid.com."
       },
       "actions": {
         "saving": "بيتحفظ...",

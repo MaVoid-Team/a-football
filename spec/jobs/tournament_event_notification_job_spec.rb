@@ -33,5 +33,66 @@ RSpec.describe TournamentEventNotificationJob, type: :job do
 
       described_class.new.perform("match_scored", tournament.id, { "match_id" => 1 })
     end
+
+    it "uses only branch and conditional global recipients for registration-created alerts" do
+      allow(ENV).to receive(:fetch).with("TOURNAMENT_NOTIFICATION_CHANNELS", "log").and_return("email")
+      create(
+        :setting,
+        branch: branch,
+        tournament_registration_admin_email: " BranchAlerts@example.com ",
+        send_registration_alerts_to_global_recipient: true
+      )
+
+      mail_delivery = instance_double(ActionMailer::MessageDelivery, deliver_later: true)
+      allow(TournamentNotificationMailer).to receive(:with).and_return(double(event_notification: mail_delivery))
+
+      described_class.new.perform("tournament_registration_created", tournament.id, { "registration_id" => 1 })
+
+      expect(TournamentNotificationMailer).to have_received(:with).with(
+        hash_including(event: "tournament_registration_created", recipient: "branchalerts@example.com")
+      )
+      expect(TournamentNotificationMailer).to have_received(:with).with(
+        hash_including(event: "tournament_registration_created", recipient: "z.ahmed@mavoid.com")
+      )
+      expect(TournamentNotificationMailer).not_to have_received(:with).with(
+        hash_including(event: "tournament_registration_created", recipient: branch_admin.email)
+      )
+      expect(TournamentNotificationMailer).not_to have_received(:with).with(
+        hash_including(event: "tournament_registration_created", recipient: super_admin.email)
+      )
+    end
+
+    it "deduplicates and validates registration alert recipients" do
+      allow(ENV).to receive(:fetch).with("TOURNAMENT_NOTIFICATION_CHANNELS", "log").and_return("email")
+      create(
+        :setting,
+        branch: branch,
+        tournament_registration_admin_email: "Z.AHMED@mavoid.com",
+        send_registration_alerts_to_global_recipient: true
+      )
+
+      mail_delivery = instance_double(ActionMailer::MessageDelivery, deliver_later: true)
+      recipients = []
+      allow(TournamentNotificationMailer).to receive(:with) do |args|
+        recipients << args[:recipient]
+        double(event_notification: mail_delivery)
+      end
+
+      described_class.new.perform("tournament_registration_created", tournament.id, { "registration_id" => 1 })
+
+      expect(recipients).to eq(["z.ahmed@mavoid.com"])
+    end
+
+    it "logs and continues when email enqueue fails" do
+      allow(ENV).to receive(:fetch).with("TOURNAMENT_NOTIFICATION_CHANNELS", "log").and_return("email")
+      allow(Rails.logger).to receive(:error)
+      allow(TournamentNotificationMailer).to receive(:with).and_raise(StandardError, "mailer down")
+
+      expect do
+        described_class.new.perform("match_scored", tournament.id, { "match_id" => 1 })
+      end.not_to raise_error
+
+      expect(Rails.logger).to have_received(:error).with(include("failed_to_enqueue_email", "match_scored"))
+    end
   end
 end

@@ -8,5 +8,7 @@ FactoryBot.define do
     closing_hour { 23 }
     deposit_enabled { false }
     deposit_percentage { 0 }
+    tournament_registration_admin_email { nil }
+    send_registration_alerts_to_global_recipient { false }
   end
 end

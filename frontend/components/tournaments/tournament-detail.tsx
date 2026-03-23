@@ -18,6 +18,7 @@ export function TournamentDetail({ id }: { id: string }) {
     const { tournament, matches, loading, error, fetchTournament, registerTournament, fetchBracket, fetchPublicMatches } = useTournamentsAPI();
     const [name, setName] = useState("");
     const [phone, setPhone] = useState("");
+    const [email, setEmail] = useState("");
     const [skillLevel, setSkillLevel] = useState<"beginner" | "intermediate" | "advanced">("intermediate");
     const [bracket, setBracket] = useState<any>(null);
     const [liveMode, setLiveMode] = useState(false);
@@ -70,6 +71,7 @@ export function TournamentDetail({ id }: { id: string }) {
         const result = await registerTournament(id, {
             name: name.trim(),
             phone: phone.trim(),
+            email: email.trim(),
             skill_level: skillLevel,
         });
 
@@ -77,6 +79,7 @@ export function TournamentDetail({ id }: { id: string }) {
             toast.success(t("registration.success"));
             setName("");
             setPhone("");
+            setEmail("");
             fetchTournament(id, false);
         } else {
             toast.error(result.errorMessage || t("registration.failed"));
@@ -185,6 +188,10 @@ export function TournamentDetail({ id }: { id: string }) {
                         <div className="space-y-1">
                             <Label>{t("registration.phone")}</Label>
                             <Input value={phone} onChange={(e) => setPhone(e.target.value)} />
+                        </div>
+                        <div className="space-y-1 md:col-span-2">
+                            <Label>{t("registration.email")}</Label>
+                            <Input type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
                         </div>
                     </div>
                     <div className="space-y-1">

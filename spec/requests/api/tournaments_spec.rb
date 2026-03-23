@@ -22,12 +22,27 @@ RSpec.describe "Api::Tournaments", type: :request do
         registration: {
           name: "Player One",
           phone: "+201001234567",
+          email: "player.one@example.com",
           skill_level: "intermediate"
         }
       }
     end
 
     it "creates pending registration" do
+      expect(Tournaments::NotificationDispatcher).to receive(:dispatch).with(
+        hash_including(
+          event: :tournament_registration_created,
+          tournament: tournament,
+          payload: hash_including(
+            player_name: "Player One",
+            player_phone: "+201001234567",
+            player_email: "player.one@example.com",
+            tournament_name: tournament.name,
+            branch_name: branch.name
+          )
+        )
+      )
+
       post "/api/tournaments/#{tournament.id}/register", params: params
 
       expect(response).to have_http_status(:created)
@@ -35,6 +50,17 @@ RSpec.describe "Api::Tournaments", type: :request do
       expect(data["attributes"]["status"]).to eq("pending")
       expect(tournament.tournament_players.count).to eq(1)
       expect(tournament.tournament_registrations.count).to eq(1)
+      expect(tournament.tournament_players.last.email).to eq("player.one@example.com")
+    end
+
+    it "returns success even when notification dispatch fails" do
+      allow(Tournaments::NotificationDispatcher).to receive(:dispatch).and_raise(StandardError, "queue unavailable")
+      allow(Rails.logger).to receive(:error)
+
+      post "/api/tournaments/#{tournament.id}/register", params: params
+
+      expect(response).to have_http_status(:created)
+      expect(Rails.logger).to have_received(:error).with(include("failed_to_dispatch", "tournament_registration_created"))
     end
 
     it "rejects registration when deadline passed" do
@@ -81,6 +107,7 @@ RSpec.describe "Api::Tournaments", type: :request do
           user_id: 123_456,
           name: "Player One",
           phone: "+201001234567",
+          email: "player.one@example.com",
           skill_level: "intermediate"
         }
       }

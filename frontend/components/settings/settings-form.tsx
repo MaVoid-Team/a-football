@@ -49,6 +49,8 @@ export function SettingsForm({ setting, loading, branches, selectedBranchId, onB
             payment_number: "",
             deposit_enabled: false,
             deposit_percentage: 0,
+            tournament_registration_admin_email: "",
+            send_registration_alerts_to_global_recipient: false,
         },
     });
 
@@ -65,6 +67,8 @@ export function SettingsForm({ setting, loading, branches, selectedBranchId, onB
                 payment_number: setting.payment_number || "",
                 deposit_enabled: setting.deposit_enabled ?? false,
                 deposit_percentage: Number(setting.deposit_percentage || 0),
+                tournament_registration_admin_email: setting.tournament_registration_admin_email || "",
+                send_registration_alerts_to_global_recipient: setting.send_registration_alerts_to_global_recipient ?? false,
             });
         } else {
             form.reset({
@@ -78,6 +82,8 @@ export function SettingsForm({ setting, loading, branches, selectedBranchId, onB
                 payment_number: "",
                 deposit_enabled: false,
                 deposit_percentage: 0,
+                tournament_registration_admin_email: "",
+                send_registration_alerts_to_global_recipient: false,
             });
         }
     }, [setting, selectedBranchId, form]);
@@ -224,6 +230,45 @@ export function SettingsForm({ setting, loading, branches, selectedBranchId, onB
                             <p className="text-xs text-muted-foreground">
                                 {t("form.bookingTerms.description")}
                             </p>
+                        </div>
+                    </div>
+
+                    <div className="space-y-4 pt-4 border-t border-border">
+                        <h3 className="text-lg font-medium leading-none">{t("form.tournamentAlerts.title")}</h3>
+                        <div className="space-y-2">
+                            <Label htmlFor="tournament_registration_admin_email">{t("form.tournamentAlerts.emailLabel")}</Label>
+                            <Input
+                                id="tournament_registration_admin_email"
+                                type="email"
+                                {...form.register("tournament_registration_admin_email")}
+                                disabled={loading}
+                                placeholder={t("form.tournamentAlerts.emailPlaceholder")}
+                            />
+                            {form.formState.errors.tournament_registration_admin_email && (
+                                <p className="text-xs text-destructive">{form.formState.errors.tournament_registration_admin_email.message}</p>
+                            )}
+                            <p className="text-xs text-muted-foreground">{t("form.tournamentAlerts.emailDescription")}</p>
+                        </div>
+
+                        <div className="space-y-3 rounded-lg border border-border/70 p-4">
+                            <div className="flex items-start gap-3">
+                                <Checkbox
+                                    id="send_registration_alerts_to_global_recipient"
+                                    checked={!!form.watch("send_registration_alerts_to_global_recipient")}
+                                    onCheckedChange={(checked) => {
+                                        form.setValue("send_registration_alerts_to_global_recipient", Boolean(checked), { shouldValidate: true });
+                                    }}
+                                    disabled={loading}
+                                />
+                                <div className="space-y-1">
+                                    <Label htmlFor="send_registration_alerts_to_global_recipient">
+                                        {t("form.tournamentAlerts.globalToggleLabel")}
+                                    </Label>
+                                    <p className="text-xs text-muted-foreground">
+                                        {t("form.tournamentAlerts.globalToggleDescription")}
+                                    </p>
+                                </div>
+                            </div>
                         </div>
                     </div>
 

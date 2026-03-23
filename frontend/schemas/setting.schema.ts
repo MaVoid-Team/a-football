@@ -12,6 +12,8 @@ export const settingSchema = z.object({
     payment_number: z.string().nullable().optional(),
     deposit_enabled: z.boolean().optional(),
     deposit_percentage: z.coerce.number().nullable().optional(),
+    tournament_registration_admin_email: z.string().nullable().optional(),
+    send_registration_alerts_to_global_recipient: z.boolean().optional(),
     created_at: z.string(),
     updated_at: z.string(),
 });
@@ -29,6 +31,8 @@ export const settingFormSchema = z.object({
     payment_number: z.string().optional(),
     deposit_enabled: z.boolean().optional(),
     deposit_percentage: z.number().min(0).max(100).optional(),
+    tournament_registration_admin_email: z.union([z.literal(""), z.string().email()]).optional(),
+    send_registration_alerts_to_global_recipient: z.boolean().optional(),
 }).refine((data) => data.closing_hour > data.opening_hour, {
     message: "Closing hour must be after opening hour",
     path: ["closing_hour"],

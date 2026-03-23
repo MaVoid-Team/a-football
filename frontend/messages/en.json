@@ -615,6 +615,7 @@
       "title": "Register",
       "name": "Name",
       "phone": "Phone",
+      "email": "Email",
       "skill": "Skill Level",
       "submit": "Submit Registration",
       "closed": "Registration Closed",
@@ -697,6 +698,7 @@
       "selectBranchFirst": "Please select a branch first.",
       "created": "Tournament created.",
       "createFailed": "Failed to create tournament.",
+      "openDetails": "Open Details",
       "bracketGenerated": "Bracket generated successfully.",
       "bracketFailed": "Failed to generate bracket.",
       "scheduler": {
@@ -792,6 +794,82 @@
           "invalid_start_time": "Invalid auto scheduler start time.",
           "override_not_allowed": "Manual override is only allowed for super admins."
         }
+      },
+      "details": {
+        "back": "Back to tournaments",
+        "subtitle": "Moderate participants, prepare the bracket, and manage scheduling from one place.",
+        "notFound": "Tournament not found.",
+        "hideChecklist": "Hide for now",
+        "showChecklist": "Show checklist",
+        "tabs": {
+          "overview": "Overview",
+          "participants": "Participants",
+          "bracket": "Bracket",
+          "scheduling": "Scheduling"
+        },
+        "summary": {
+          "status": "Status",
+          "registration": "Registration",
+          "approvedPlayers": "Approved players",
+          "approvedPlayersValue": "{count}/{min} ready",
+          "bracket": "Bracket"
+        },
+        "lifecycle": {
+          "title": "Lifecycle progress",
+          "visibility": "Open registration",
+          "participants": "Approve players",
+          "bracket": "Generate bracket",
+          "scheduling": "Schedule matches",
+          "nextAction": "Next action: {action}",
+          "complete": "All core tournament setup steps are complete.",
+          "done": "Ready",
+          "inProgress": "In progress"
+        },
+        "participants": {
+          "title": "Participant moderation",
+          "all": "All",
+          "phone": "Phone",
+          "email": "Email",
+          "skill": "Skill",
+          "notes": "Notes",
+          "approve": "Approve",
+          "reject": "Reject",
+          "empty": "No registrations match this filter.",
+          "unknownPlayer": "Unknown player",
+          "createdAt": "Submitted: {value}",
+          "approvedToast": "Registration approved.",
+          "rejectedToast": "Registration rejected.",
+          "actionFailed": "Failed to update registration.",
+          "status": {
+            "pending": "Pending",
+            "approved": "Approved",
+            "rejected": "Rejected",
+            "cancelled": "Cancelled"
+          },
+          "skillValue": {
+            "beginner": "Beginner",
+            "intermediate": "Intermediate",
+            "advanced": "Advanced"
+          }
+        },
+        "bracket": {
+          "title": "Bracket readiness",
+          "prerequisitesTitle": "Prerequisites",
+          "prerequisitesBody": "Approved players: {approved}. Minimum required: {required}.",
+          "blockedReason": "Approve at least {required} players before generating the bracket.",
+          "goToParticipants": "Go to Participants",
+          "empty": "Bracket has not been generated yet.",
+          "groupStage": "Group stage",
+          "roundLabel": "Round {round}",
+          "matchStatus": "Status: {status}"
+        },
+        "scheduling": {
+          "blockedTitle": "Scheduling is locked until the bracket is ready.",
+          "blockedBody": "Generate the bracket first, then come back here to run auto-scheduling or update match assignments.",
+          "goToBracket": "Go to Bracket",
+          "matchesTitle": "Match scheduling",
+          "groupFallback": "Group"
+        }
       }
     }
   },
@@ -882,6 +960,14 @@
         "depositPercentageLabel": "Deposit Percentage",
         "depositPercentagePlaceholder": "30",
         "depositPercentageDescription": "Percentage of the booking total that must be paid now (1 to 100)."
+      },
+      "tournamentAlerts": {
+        "title": "Tournament Registration Alerts",
+        "emailLabel": "Branch alert recipient",
+        "emailPlaceholder": "alerts@branch.com",
+        "emailDescription": "This branch-specific email always receives new tournament registration alerts when provided.",
+        "globalToggleLabel": "Also send the fixed global recipient",
+        "globalToggleDescription": "When enabled, new tournament registration alerts also go to z.ahmed@mavoid.com."
       },
       "actions": {
         "saving": "Saving...",

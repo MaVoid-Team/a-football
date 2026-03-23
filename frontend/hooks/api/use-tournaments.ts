@@ -8,6 +8,7 @@ import {
     Tournament,
     TournamentCreateData,
     TournamentRegistrationData,
+    AdminTournamentRegistration,
     TournamentMatch,
     TournamentAutoScheduleData,
     TournamentMatchScheduleData,
@@ -17,6 +18,7 @@ import {
 export function useTournamentsAPI() {
     const [tournaments, setTournaments] = useState<Tournament[]>([]);
     const [tournament, setTournament] = useState<Tournament | null>(null);
+    const [registrations, setRegistrations] = useState<AdminTournamentRegistration[]>([]);
     const [matches, setMatches] = useState<TournamentMatch[]>([]);
     const [pagination, setPagination] = useState<PaginationMeta | null>(null);
     const [loading, setLoading] = useState(false);
@@ -28,6 +30,11 @@ export function useTournamentsAPI() {
     });
 
     const flattenMatch = (resource: any): TournamentMatch => ({
+        id: resource.id,
+        ...resource.attributes,
+    });
+
+    const flattenRegistration = (resource: any): AdminTournamentRegistration => ({
         id: resource.id,
         ...resource.attributes,
     });
@@ -240,6 +247,53 @@ export function useTournamentsAPI() {
         }
     }, []);
 
+    const fetchAdminRegistrations = useCallback(async (
+        tournamentId: string,
+        params?: { status?: string; page?: number; per_page?: number },
+        options?: { silent?: boolean; setState?: boolean }
+    ) => {
+        const shouldSetState = options?.setState !== false;
+
+        if (!options?.silent) setLoading(true);
+        setError(null);
+        try {
+            const query = buildQueryString(params);
+            const response = await api.get(`/api/admin/tournaments/${tournamentId}/registrations${query}`);
+            const data = response.data?.data?.map(flattenRegistration) || [];
+            if (shouldSetState) {
+                setRegistrations(data);
+                setPaginationFromHeaders(response.headers);
+            }
+            return { success: true, data };
+        } catch (err: any) {
+            const message = getApiErrorMessage(err, "Failed to fetch registrations");
+            setError(message);
+            if (shouldSetState) setRegistrations([]);
+            return { success: false, error: err, errorMessage: message, data: [] as AdminTournamentRegistration[] };
+        } finally {
+            if (!options?.silent) setLoading(false);
+        }
+    }, []);
+
+    const updateRegistration = async (
+        id: string,
+        payload: { status: "approved" | "rejected" | "cancelled"; notes?: string; refund_status?: "none" | "eligible" | "processed" }
+    ) => {
+        setLoading(true);
+        setError(null);
+        try {
+            const response = await api.patch(`/api/admin/registrations/${id}`, { registration: payload });
+            const data = response.data?.data ? flattenRegistration(response.data.data) : null;
+            return { success: true, data };
+        } catch (err: any) {
+            const message = getApiErrorMessage(err, "Failed to update registration");
+            setError(message);
+            return { success: false, error: err, errorMessage: message };
+        } finally {
+            setLoading(false);
+        }
+    };
+
     const autoScheduleTournament = async (id: string, payload: TournamentAutoScheduleData) => {
         setLoading(true);
         setError(null);
@@ -291,6 +345,7 @@ export function useTournamentsAPI() {
     return {
         tournaments,
         tournament,
+        registrations,
         matches,
         pagination,
         loading,
@@ -305,6 +360,8 @@ export function useTournamentsAPI() {
         fetchBracket,
         fetchPublicMatches,
         fetchAdminMatches,
+        fetchAdminRegistrations,
+        updateRegistration,
         autoScheduleTournament,
         scheduleMatch,
         lockMatch,

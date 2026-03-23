@@ -1,5 +1,6 @@
 Tournament: <%= @tournament.name %>
 Event: <%= @event %>
+Branch: <%= @payload[:branch_name].presence || @tournament.branch&.name || "N/A" %>
 
 <% if @event == "match_scored" %>
 A tournament match result has been recorded.
@@ -7,20 +8,26 @@ A tournament match result has been recorded.
 Match ID: <%= @payload[:match_id] %>
 Winner Team ID: <%= @payload[:winner_id] %>
 <% elsif @event == "tournament_registration_created" %>
-A new tournament registration has been submitted.
+A new tournament registration has been submitted and is waiting for review.
 
 Registration ID: <%= @payload[:registration_id] %>
 Player ID: <%= @payload[:player_id] %>
 Player Name: <%= @payload[:player_name] %>
 Player Phone: <%= @payload[:player_phone] %>
 Player Email: <%= @payload[:player_email].presence || "N/A" %>
-Status: <%= @payload[:status] %>
+Skill Level: <%= @payload[:player_skill_level].presence || "N/A" %>
+Status: <%= @payload[:status].to_s.humanize %>
+Moderation Link: <%= @payload[:moderation_url].presence || "Not configured" %>
 <% elsif @event == "registration_status_changed" %>
 A tournament registration status has changed.
 
 Registration ID: <%= @payload[:registration_id] %>
 Player ID: <%= @payload[:player_id] %>
-New Status: <%= @payload[:status] %>
+Player Name: <%= @payload[:player_name] %>
+Player Phone: <%= @payload[:player_phone] %>
+Player Email: <%= @payload[:player_email].presence || "N/A" %>
+New Status: <%= @payload[:status].to_s.humanize %>
+Moderation Link: <%= @payload[:moderation_url].presence || "Not configured" %>
 <% else %>
 A tournament event has occurred.
 <% end %>

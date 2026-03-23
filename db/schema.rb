@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_03_23_173000) do
+ActiveRecord::Schema[8.1].define(version: 2026_03_23_190000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gist"
   enable_extension "pg_catalog.plpgsql"
@@ -160,6 +160,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_23_173000) do
     t.boolean "deposit_enabled", default: false, null: false
     t.decimal "deposit_percentage", precision: 5, scale: 2, default: "0.0", null: false
     t.integer "opening_hour", default: 8, null: false
+    t.boolean "send_registration_alerts_to_global_recipient", default: false, null: false
+    t.string "tournament_registration_admin_email"
     t.datetime "updated_at", null: false
     t.string "whatsapp_number"
     t.index ["branch_id"], name: "index_settings_on_branch_id", unique: true
@@ -192,6 +194,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_23_173000) do
 
   create_table "tournament_players", force: :cascade do |t|
     t.datetime "created_at", null: false
+    t.string "email"
     t.string "name", null: false
     t.string "phone", null: false
     t.integer "ranking_points"
@@ -200,6 +203,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_23_173000) do
     t.bigint "tournament_id", null: false
     t.datetime "updated_at", null: false
     t.bigint "user_id"
+    t.index ["tournament_id", "email"], name: "index_tournament_players_on_tournament_id_and_email"
     t.index ["tournament_id", "phone"], name: "index_tournament_players_on_tournament_id_and_phone"
     t.index ["tournament_id", "user_id"], name: "idx_tournament_players_unique_user", unique: true, where: "(user_id IS NOT NULL)"
     t.index ["tournament_id"], name: "index_tournament_players_on_tournament_id"

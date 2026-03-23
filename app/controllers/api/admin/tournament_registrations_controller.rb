@@ -39,12 +39,7 @@ module Api
         Tournaments::NotificationDispatcher.dispatch(
           event: :registration_status_changed,
           tournament: registration.tournament,
-          payload: {
-            registration_id: registration.id,
-            status: registration.status,
-            player_id: registration.player_id,
-            refund_status: registration.refund_status
-          }
+          payload: notification_payload(registration)
         )
 
         render json: TournamentRegistrationSerializer.new(registration).serializable_hash, status: :ok
@@ -54,6 +49,28 @@ module Api
 
       def update_params
         params.require(:registration).permit(:status, :notes, :refund_status)
+      end
+
+      def notification_payload(registration)
+        {
+          registration_id: registration.id,
+          status: registration.status,
+          player_id: registration.player_id,
+          player_name: registration.player&.name,
+          player_phone: registration.player&.phone,
+          player_email: registration.player&.email,
+          refund_status: registration.refund_status,
+          tournament_name: registration.tournament.name,
+          branch_name: registration.tournament.branch&.name,
+          moderation_url: moderation_url_for(registration.tournament)
+        }
+      end
+
+      def moderation_url_for(tournament)
+        base_url = ENV.fetch("ADMIN_APP_URL", "").strip.sub(%r{\/+\z}, "")
+        return nil if base_url.blank?
+
+        "#{base_url}/en/tournaments/#{tournament.id}?tab=participants"
       end
     end
   end

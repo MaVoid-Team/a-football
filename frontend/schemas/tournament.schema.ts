@@ -50,11 +50,31 @@ export type TournamentCreateData = z.infer<typeof tournamentCreateSchema>;
 export const tournamentRegistrationSchema = z.object({
     name: z.string().min(2),
     phone: z.string().min(8),
+    email: z.union([z.literal(""), z.string().email()]).optional(),
     user_id: z.number().optional(),
     skill_level: z.enum(["beginner", "intermediate", "advanced"]).default("intermediate"),
 });
 
 export type TournamentRegistrationData = z.infer<typeof tournamentRegistrationSchema>;
+
+export const adminTournamentRegistrationSchema = z.object({
+    id: z.string(),
+    tournament_id: z.number(),
+    player_id: z.number(),
+    team_id: z.number().nullable().optional(),
+    approved_by_id: z.number().nullable().optional(),
+    status: z.enum(["pending", "approved", "rejected", "cancelled"]),
+    refund_status: z.enum(["none", "eligible", "processed"]).optional(),
+    notes: z.string().nullable().optional(),
+    created_at: z.string(),
+    updated_at: z.string().optional(),
+    player_name: z.string().nullable().optional(),
+    player_phone: z.string().nullable().optional(),
+    player_email: z.string().nullable().optional(),
+    player_skill_level: z.enum(["beginner", "intermediate", "advanced"]).nullable().optional(),
+});
+
+export type AdminTournamentRegistration = z.infer<typeof adminTournamentRegistrationSchema>;
 
 export const tournamentMatchSchema = z.object({
     id: z.string(),
