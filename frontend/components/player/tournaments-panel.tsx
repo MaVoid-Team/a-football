@@ -20,7 +20,7 @@ export function TournamentsPanel() {
         <AccountShell
             title="My Tournaments"
             description="Track every registration, approval, and tournament run from one place."
-            backHref="/tournament"
+            backHref="/tournaments"
             backLabel="Back to Tournaments"
         >
             <div className="space-y-4">

@@ -1,12 +1,18 @@
 module Tournaments
   class BracketGenerator
-    def initialize(tournament:)
+    def initialize(tournament:, force: false)
       @tournament = tournament
+      @force = force
     end
 
     def call
       @tournament.with_lock do
-        return ServiceResult.failure("Bracket already exists", error_codes: [:bracket_exists]) if @tournament.bracket_data.present? && @tournament.bracket_data["rounds"].present?
+        if bracket_present?
+          return ServiceResult.failure("Bracket already exists", error_codes: [:bracket_exists]) unless @force
+          return ServiceResult.failure("Bracket can no longer be regenerated", error_codes: [:bracket_locked]) unless bracket_reset_allowed?
+
+          reset_existing_bracket!
+        end
 
         case @tournament.tournament_type
         when "knockout"
@@ -22,6 +28,24 @@ module Tournaments
     end
 
     private
+
+    def bracket_present?
+      @tournament.bracket_data.present? && @tournament.bracket_data["rounds"].present?
+    end
+
+    def bracket_reset_allowed?
+      @tournament.tournament_matches.none? do |match|
+        match.scheduled_time.present? ||
+          match.ongoing? ||
+          (match.completed? && match.team1_id.present? && match.team2_id.present?) ||
+          match.score.present?
+      end
+    end
+
+    def reset_existing_bracket!
+      @tournament.tournament_matches.destroy_all
+      @tournament.update!(bracket_data: nil)
+    end
 
     def generate_knockout
       teams = source_teams

@@ -11,6 +11,8 @@ module Tournaments
 
     def call
       return failure("invalid_time", "Scheduled time is invalid") if @scheduled_time.blank?
+      return failure("match_not_ready", "Both participants must be assigned before scheduling") if @match.team1_id.blank? || @match.team2_id.blank?
+      return failure("match_completed", "Completed matches cannot be rescheduled") if @match.completed?
       return failure("locked_match", "Match scheduling is locked") if @match.schedule_locked? && !@manual_override && !@override_locked
 
       unless @manual_override

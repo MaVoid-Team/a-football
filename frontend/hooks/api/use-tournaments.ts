@@ -163,11 +163,11 @@ export function useTournamentsAPI() {
         }
     };
 
-    const generateBracket = async (id: string) => {
+    const generateBracket = async (id: string, options?: { force?: boolean }) => {
         setLoading(true);
         setError(null);
         try {
-            const response = await api.post(`/api/admin/tournaments/${id}/generate_bracket`);
+            const response = await api.post(`/api/admin/tournaments/${id}/generate_bracket`, options?.force ? { force: true } : undefined);
             const data = response.data?.data ? flatten(response.data.data) : null;
             return { success: true, data };
         } catch (err: any) {

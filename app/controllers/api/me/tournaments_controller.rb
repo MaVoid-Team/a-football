@@ -2,22 +2,28 @@ module Api
   module Me
     class TournamentsController < BaseController
       def index
-        registrations = current_user.tournament_players
-                                    .includes(registration_records: [:team, tournament: :branch])
-                                    .flat_map(&:registration_records)
-                                    .sort_by(&:created_at)
-                                    .reverse
+        TournamentPlayer.claim_for_account!(current_user)
+
+        registrations = player_scope
+                        .includes(registration_records: [:team, tournament: :branch])
+                        .flat_map(&:registration_records)
+                        .uniq(&:id)
+                        .sort_by(&:created_at)
+                        .reverse
 
         render json: { data: registrations.map { |registration| serialize_participation(registration) } }, status: :ok
       end
 
       def show
         tournament = Tournament.find(params[:id])
-        registration = current_user.tournament_players
-                                   .where(tournament_id: tournament.id)
-                                   .includes(registration_records: :team)
-                                   .flat_map(&:registration_records)
-                                   .max_by(&:created_at)
+        TournamentPlayer.claim_for_account!(current_user)
+
+        registration = player_scope
+                       .where(tournament_id: tournament.id)
+                       .includes(registration_records: :team)
+                       .flat_map(&:registration_records)
+                       .uniq(&:id)
+                       .max_by(&:created_at)
 
         if registration.blank?
           render json: { error: "Participation not found" }, status: :not_found
@@ -58,6 +64,10 @@ module Api
         return "eliminated" if registration.team&.eliminated?
 
         registration.status
+      end
+
+      def player_scope
+        @player_scope ||= TournamentPlayer.for_account(current_user)
       end
     end
   end

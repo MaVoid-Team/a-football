@@ -55,14 +55,35 @@ module Tournaments
     def build_player
       params = normalized_params
       if params[:user_id].present?
-        @tournament.tournament_players.find_or_initialize_by(user_id: params[:user_id]).tap do |player|
-          player.assign_attributes(params.slice(:name, :phone, :email, :skill_level))
-        end
+        find_or_build_account_player(params)
       else
         @tournament.tournament_players.find_or_initialize_by(phone: params[:phone]).tap do |player|
           player.assign_attributes(params.slice(:name, :email, :skill_level))
         end
       end
+    end
+
+    def find_or_build_account_player(params)
+      player =
+        @tournament.tournament_players.find_by(user_id: params[:user_id]) ||
+        @tournament.tournament_players.find_by(phone: params[:phone]) ||
+        find_player_by_email(params[:email])
+
+      if player.present?
+        player.user_id ||= params[:user_id]
+        player.assign_attributes(params.slice(:name, :phone, :email, :skill_level))
+        player
+      else
+        @tournament.tournament_players.new(
+          params.slice(:user_id, :name, :phone, :email, :skill_level)
+        )
+      end
+    end
+
+    def find_player_by_email(email)
+      return if email.blank?
+
+      @tournament.tournament_players.find_by(email: email)
     end
 
     def normalized_params

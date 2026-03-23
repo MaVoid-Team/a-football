@@ -2,6 +2,8 @@ module Api
   module Me
     class MatchesController < BaseController
       def index
+        TournamentPlayer.claim_for_account!(current_user)
+
         if team_ids.empty?
           render json: TournamentMatchSerializer.new([]).serializable_hash, status: :ok
           return
@@ -24,7 +26,7 @@ module Api
       end
 
       def player_ids
-        @player_ids ||= current_user.tournament_players.pluck(:id)
+        @player_ids ||= TournamentPlayer.for_account(current_user).pluck(:id)
       end
     end
   end

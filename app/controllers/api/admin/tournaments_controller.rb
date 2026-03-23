@@ -59,7 +59,10 @@ module Api
         tournament = Tournament.find(params[:id])
         authorize tournament, :generate_bracket?
 
-        result = Tournaments::BracketGenerator.new(tournament: tournament).call
+        result = Tournaments::BracketGenerator.new(
+          tournament: tournament,
+          force: ActiveModel::Type::Boolean.new.cast(params[:force])
+        ).call
         if result.failure?
           render json: { errors: result.errors, error_codes: result.error_codes }, status: :unprocessable_entity
           return

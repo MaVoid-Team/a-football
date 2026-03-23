@@ -11,17 +11,13 @@ module Tournaments
       return failure("invalid_start_time", "Start time is invalid") if @start_time.blank?
       return failure("missing_courts", "At least one court is required") if @court_ids.empty?
 
-      pending_matches = @tournament.tournament_matches
-                 .where(status: :pending)
-                 .order(:round_number, :match_number)
+      pending_matches = schedulable_matches
+      return failure("no_schedulable_matches", "There are no ready matches left to auto-schedule") if pending_matches.empty?
 
       scheduled_matches = []
       next_time = @start_time
 
       pending_matches.each do |match|
-        next if match.schedule_locked? && !@override_locked
-        next if match.team1_id.blank? || match.team2_id.blank?
-
         scheduled = schedule_one_match(match, next_time)
         return scheduled if scheduled.failure?
 
@@ -29,10 +25,20 @@ module Tournaments
         next_time += @tournament.match_duration_minutes.minutes
       end
 
+      return failure("no_schedulable_matches", "There are no ready matches left to auto-schedule") if scheduled_matches.empty?
+
       ServiceResult.success(scheduled_matches)
     end
 
     private
+
+    def schedulable_matches
+      @tournament.tournament_matches
+                 .where(status: :pending)
+                 .order(:round_number, :match_number)
+                 .reject { |match| match.schedule_locked? && !@override_locked }
+                 .select { |match| match.team1_id.present? && match.team2_id.present? }
+    end
 
     def schedule_one_match(match, seed_time)
       max_attempts = 200

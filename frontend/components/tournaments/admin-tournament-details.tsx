@@ -124,6 +124,15 @@ export function AdminTournamentDetails({ id }: { id: string }) {
     const hasScheduledMatches = matchItems.some((match) => ["scheduled", "ongoing", "completed"].includes(match.status));
     const minimumRequired = tournament?.tournament_type === "group_knockout" ? 4 : 2;
     const canGenerateBracket = approvedCount >= minimumRequired && !bracketReady;
+    const hasBracketActivity = matchItems.some((match) => {
+        const hasScore = Boolean(match.score && Object.keys(match.score).length > 0);
+        const completedRealMatch = match.status === "completed" && Boolean(match.team1_id && match.team2_id);
+        return Boolean(match.scheduled_time) || match.status === "ongoing" || completedRealMatch || hasScore;
+    });
+    const canRegenerateBracket = approvedCount >= minimumRequired && bracketReady && !hasBracketActivity;
+    const readyMatches = matchItems.filter((match) => Boolean(match.team1_id && match.team2_id));
+    const schedulableMatches = readyMatches.filter((match) => match.status === "pending");
+    const hasSchedulableMatches = schedulableMatches.length > 0;
     const filteredRegistrations = registrationItems.filter((registration) => participantFilter === "all" || registration.status === participantFilter);
     const filteredMatches = matchItems.filter((match) => {
         if (matchStatusFilter !== "all" && match.status !== matchStatusFilter) return false;
@@ -198,12 +207,15 @@ export function AdminTournamentDetails({ id }: { id: string }) {
         }
     };
 
-    const handleGenerateBracket = async () => {
-        if (!tournament || !canGenerateBracket) return;
-        const result = await generateBracket(tournament.id);
+    const handleGenerateBracket = async (force = false) => {
+        if (!tournament) return;
+        if (!force && !canGenerateBracket) return;
+        if (force && !canRegenerateBracket) return;
+
+        const result = await generateBracket(tournament.id, force ? { force: true } : undefined);
         if (result.success && result.data) {
             setTournament(result.data);
-            toast.success(t("admin.bracketGenerated"));
+            toast.success(force ? t("admin.details.bracket.regeneratedToast") : t("admin.bracketGenerated"));
             await refreshTournamentSnapshot();
         } else {
             toast.error(result.errorMessage || t("admin.bracketFailed"));
@@ -225,9 +237,13 @@ export function AdminTournamentDetails({ id }: { id: string }) {
             team_back_to_back: "admin.scheduler.errors.team_back_to_back",
             locked_match: "admin.scheduler.errors.locked_match",
             unable_to_schedule: "admin.scheduler.errors.unable_to_schedule",
+            no_schedulable_matches: "admin.scheduler.errors.no_schedulable_matches",
+            match_not_ready: "admin.scheduler.errors.match_not_ready",
+            match_completed: "admin.scheduler.errors.match_completed",
             missing_courts: "admin.scheduler.errors.missing_courts",
             invalid_start_time: "admin.scheduler.errors.invalid_start_time",
             override_not_allowed: "admin.scheduler.errors.override_not_allowed",
+            bracket_locked: "admin.details.bracket.regenerateBlocked",
         };
         return keys[code] ? t(keys[code]) : null;
     };
@@ -253,18 +269,18 @@ export function AdminTournamentDetails({ id }: { id: string }) {
         }
     };
 
-    const handleManualSchedule = async (matchId: string) => {
-        const courtId = Number(rowCourtByMatch[matchId]);
-        const scheduledTime = rowTimeByMatch[matchId];
+    const handleManualSchedule = async (match: TournamentMatch) => {
+        const courtId = Number(rowCourtByMatch[match.id] || (match.court_id ? String(match.court_id) : ""));
+        const scheduledTime = rowTimeByMatch[match.id] || (match.scheduled_time ? match.scheduled_time.slice(0, 16) : "");
         if (!courtId || !scheduledTime) {
             toast.error(t("admin.scheduler.missingManualInputs"));
             return;
         }
 
-        const result = await scheduleMatch(matchId, {
+        const result = await scheduleMatch(match.id, {
             court_id: courtId,
             scheduled_time: scheduledTime,
-            override: !!rowOverrideByMatch[matchId],
+            override: !!rowOverrideByMatch[match.id],
         });
 
         if (result.success) {
@@ -509,17 +525,36 @@ export function AdminTournamentDetails({ id }: { id: string }) {
                                 <div className="text-sm text-muted-foreground">
                                     {t("admin.details.bracket.prerequisitesBody", { approved: approvedCount, required: minimumRequired })}
                                 </div>
+                                <div className="text-sm text-muted-foreground">
+                                    {t("admin.details.bracket.matchesCreatedHint")}
+                                </div>
                                 {!canGenerateBracket && !bracketReady && (
                                     <div className="text-sm text-amber-600">{t("admin.details.bracket.blockedReason", { required: minimumRequired })}</div>
                                 )}
                                 {!bracketReady && (
                                     <div className="flex flex-wrap gap-2">
-                                        <Button disabled={!canGenerateBracket} onClick={handleGenerateBracket}>
+                                        <Button disabled={!canGenerateBracket} onClick={() => handleGenerateBracket()}>
                                             {t("admin.generateBracket")}
                                         </Button>
                                         <Button type="button" variant="outline" onClick={() => setTab("participants")}>
                                             {t("admin.details.bracket.goToParticipants")}
                                         </Button>
+                                    </div>
+                                )}
+                                {bracketReady && (
+                                    <div className="flex flex-wrap gap-2">
+                                        <Button type="button" variant="outline" disabled={!canRegenerateBracket} onClick={() => handleGenerateBracket(true)}>
+                                            {t("admin.details.bracket.regenerate")}
+                                        </Button>
+                                        {!canRegenerateBracket && (
+                                            <div className="text-sm text-muted-foreground">
+                                                {approvedCount < minimumRequired
+                                                    ? t("admin.details.bracket.blockedReason", { required: minimumRequired })
+                                                    : hasBracketActivity
+                                                        ? t("admin.details.bracket.regenerateBlocked")
+                                                        : t("admin.details.bracket.regenerateReady")}
+                                            </div>
+                                        )}
                                     </div>
                                 )}
                             </div>
@@ -584,6 +619,10 @@ export function AdminTournamentDetails({ id }: { id: string }) {
                                         <SummaryCard label={t("admin.details.summary.approvedPlayers")} value={t("admin.details.summary.approvedPlayersValue", { count: approvedCount, min: minimumRequired })} />
                                     </div>
 
+                                    <div className="rounded-md border border-border bg-muted/30 px-4 py-3 text-sm text-muted-foreground">
+                                        {t("admin.details.scheduling.createdFromBracket")}
+                                    </div>
+
                                     <div className="space-y-2">
                                         <Label>{t("admin.scheduler.selectCourts")}</Label>
                                         <div className="flex flex-wrap gap-2">
@@ -598,7 +637,14 @@ export function AdminTournamentDetails({ id }: { id: string }) {
                                         </div>
                                     </div>
 
-                                    <Button onClick={handleAutoSchedule}>{t("admin.scheduler.runAuto")}</Button>
+                                    <div className="space-y-2">
+                                        <Button onClick={handleAutoSchedule} disabled={!hasSchedulableMatches}>
+                                            {t("admin.scheduler.runAuto")}
+                                        </Button>
+                                        {!hasSchedulableMatches && (
+                                            <p className="text-sm text-muted-foreground">{t("admin.scheduler.noSchedulableMatches")}</p>
+                                        )}
+                                    </div>
                                 </CardContent>
                             </Card>
 
@@ -679,6 +725,10 @@ export function AdminTournamentDetails({ id }: { id: string }) {
                                                         })}
                                                     </div>
 
+                                                    {(!match.team1_id || !match.team2_id) && (
+                                                        <div className="text-sm text-amber-600">{t("admin.scheduler.waitingForParticipants")}</div>
+                                                    )}
+
                                                     <div className="grid grid-cols-1 md:grid-cols-4 gap-2">
                                                         <Select
                                                             value={rowCourtByMatch[match.id] || (match.court_id ? String(match.court_id) : "")}
@@ -696,14 +746,19 @@ export function AdminTournamentDetails({ id }: { id: string }) {
                                                             type="datetime-local"
                                                             value={rowTimeByMatch[match.id] || (match.scheduled_time ? match.scheduled_time.slice(0, 16) : "")}
                                                             onChange={(e) => setRowTimeByMatch((prev) => ({ ...prev, [match.id]: e.target.value }))}
+                                                            disabled={match.status === "completed"}
                                                         />
 
-                                                        <Button type="button" variant={rowOverrideByMatch[match.id] ? "default" : "outline"} onClick={() => setRowOverrideByMatch((prev) => ({ ...prev, [match.id]: !prev[match.id] }))}>
+                                                        <Button type="button" variant={rowOverrideByMatch[match.id] ? "default" : "outline"} onClick={() => setRowOverrideByMatch((prev) => ({ ...prev, [match.id]: !prev[match.id] }))} disabled={match.status === "completed"}>
                                                             {t("admin.scheduler.override")}
                                                         </Button>
 
-                                                        <Button type="button" onClick={() => handleManualSchedule(match.id)}>
-                                                            {t("admin.scheduler.scheduleMatch")}
+                                                        <Button
+                                                            type="button"
+                                                            onClick={() => handleManualSchedule(match)}
+                                                            disabled={!match.team1_id || !match.team2_id || match.status === "completed"}
+                                                        >
+                                                            {match.status === "scheduled" ? t("admin.scheduler.rescheduleMatch") : t("admin.scheduler.scheduleMatch")}
                                                         </Button>
                                                     </div>
 
