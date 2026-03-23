@@ -10,6 +10,7 @@ class Admin < ApplicationRecord
   has_secure_password
 
   belongs_to :branch, optional: true
+  has_many :created_tournaments, class_name: "Tournament", foreign_key: :created_by_id, dependent: :nullify
 
   enum :role, { super_admin: 0, branch_admin: 1 }
 

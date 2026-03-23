@@ -16,6 +16,7 @@ import {
     PackageSearch,
     Settings,
     Star,
+    Trophy,
     Users,
     X,
 } from "lucide-react";
@@ -67,6 +68,7 @@ export function MobileSidebar({ open, onClose }: MobileSidebarProps) {
         { name: t("packages"), href: "/packages", icon: PackageSearch },
         { name: t("packageRequests"), href: "/package-requests", icon: PackageOpen },
         { name: t("events"), href: "/events", icon: CalendarRange },
+        { name: t("tournaments"), href: "/tournaments", icon: Trophy },
         { name: t("promoCodes"), href: "/promo-codes", icon: Percent },
         { name: t("blockedSlots"), href: "/blocked-slots", icon: Lock },
         { name: t("reviews"), href: "/reviews", icon: MessageSquare },

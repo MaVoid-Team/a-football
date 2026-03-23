@@ -16,6 +16,7 @@ import {
   PackageSearch,
   Settings,
   Star,
+  Trophy,
   Users,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -42,6 +43,7 @@ export function Sidebar() {
     { name: t("packages"), href: "/packages", icon: PackageSearch },
     { name: t("packageRequests"), href: "/package-requests", icon: PackageOpen },
     { name: t("events"), href: "/events", icon: CalendarRange },
+    { name: t("tournaments"), href: "/tournaments", icon: Trophy },
     { name: t("promoCodes"), href: "/promo-codes", icon: Percent },
     { name: t("blockedSlots"), href: "/blocked-slots", icon: Lock },
     { name: t("reviews"), href: "/reviews", icon: MessageSquare },

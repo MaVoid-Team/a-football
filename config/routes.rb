@@ -8,6 +8,13 @@ Rails.application.routes.draw do
     get "packages", to: "packages#index"
     get "events", to: "events#index"
     get "events/:id", to: "events#show"
+    resources :tournaments, only: %i[index show] do
+      member do
+        post :register, to: "tournament_registrations#create"
+        get :matches, to: "tournaments#matches"
+        get :bracket, to: "tournaments#bracket"
+      end
+    end
     get "courts", to: "courts#index"
     get "availability", to: "availability#index"
     post "bookings", to: "bookings#create"
@@ -35,6 +42,24 @@ Rails.application.routes.draw do
       resources :packages
       resources :package_requests, only: %i[index show update]
       resources :events
+      resources :tournaments, only: %i[index show create update] do
+        member do
+          post :start
+          post :generate_bracket
+          post :auto_schedule
+          get :bracket
+        end
+        resources :registrations, only: %i[index], controller: "tournament_registrations"
+        resources :matches, only: %i[index], controller: "tournament_matches"
+      end
+      resources :registrations, only: %i[update], controller: "tournament_registrations"
+      resources :matches, only: [] do
+        member do
+          patch :schedule, controller: "tournament_matches"
+          patch :lock, controller: "tournament_matches"
+          patch :score, controller: "tournament_matches"
+        end
+      end
       resources :bookings, only: %i[index show update]
       resources :blocked_slots, only: %i[index show create update destroy]
       resource :settings, only: %i[show create update]

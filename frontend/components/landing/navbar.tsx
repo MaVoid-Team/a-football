@@ -34,6 +34,7 @@ export function LandingNavbar() {
   const NAV_LINKS = [
     { label: t("packages"), href: "/package" },
     { label: t("events"), href: "/event" },
+    { label: t("tournaments"), href: "/tournament" },
     { label: t("bookACourt"), href: "/book" },
   ];
 

@@ -1,0 +1,19 @@
+Tournament: <%= @tournament.name %>
+Event: <%= @event %>
+
+<% if @event == "match_scored" %>
+A tournament match result has been recorded.
+
+Match ID: <%= @payload[:match_id] %>
+Winner Team ID: <%= @payload[:winner_id] %>
+<% elsif @event == "registration_status_changed" %>
+A tournament registration status has changed.
+
+Registration ID: <%= @payload[:registration_id] %>
+Player ID: <%= @payload[:player_id] %>
+New Status: <%= @payload[:status] %>
+<% else %>
+A tournament event has occurred.
+<% end %>
+
+Timestamp: <%= Time.current.iso8601 %>

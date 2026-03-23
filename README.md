@@ -7,6 +7,20 @@ A modern football court booking platform. Book your court in seconds, manage eve
 - **[API Reference](docs/API.md)** — Full REST API documentation including authentication, endpoints, parameters, and response formats.
 - **Postman Collection** — Import `docs/Court_Management_API.postman_collection.json` into Postman to test the API. Run **Admin API → Auth → Login** first to obtain a token; it will be stored automatically for subsequent requests.
 
+## Tournament Notifications
+
+- `TOURNAMENT_NOTIFICATION_CHANNELS` controls active channels. Example: `log,email`.
+- `MAILER_ENABLED=true` must be set to allow outbound email delivery.
+- SMTP settings for production:
+	- `MAILER_FROM`
+	- `MAILER_SMTP_ADDRESS`
+	- `MAILER_SMTP_PORT` (default `587`)
+	- `MAILER_SMTP_DOMAIN`
+	- `MAILER_SMTP_USERNAME`
+	- `MAILER_SMTP_PASSWORD`
+	- `MAILER_SMTP_AUTH` (default `plain`)
+	- `MAILER_SMTP_STARTTLS` (`true`/`false`, default `true`)
+
 ## Brand Identity
 
 - **Primary Color**: Electric Lemon Yellow (#EFFD5F)

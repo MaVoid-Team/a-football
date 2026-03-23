@@ -50,6 +50,21 @@ Rails.application.configure do
   # Replace the default in-process and non-durable queuing backend for Active Job.
   config.active_job.queue_adapter = :sidekiq
 
+  config.action_mailer.perform_caching = false
+  config.action_mailer.perform_deliveries = ENV.fetch("MAILER_ENABLED", "false") == "true"
+  config.action_mailer.raise_delivery_errors = true
+  config.action_mailer.delivery_method = ENV.fetch("MAILER_DELIVERY_METHOD", "smtp").to_sym
+
+  config.action_mailer.smtp_settings = {
+    address: ENV["MAILER_SMTP_ADDRESS"],
+    port: ENV.fetch("MAILER_SMTP_PORT", 587).to_i,
+    domain: ENV["MAILER_SMTP_DOMAIN"],
+    user_name: ENV["MAILER_SMTP_USERNAME"],
+    password: ENV["MAILER_SMTP_PASSWORD"],
+    authentication: (ENV["MAILER_SMTP_AUTH"] || "plain").to_sym,
+    enable_starttls_auto: ENV.fetch("MAILER_SMTP_STARTTLS", "true") == "true"
+  }.compact
+
   # Enable locale fallbacks for I18n (makes lookups for any locale fall back to
   # the I18n.default_locale when a translation cannot be found).
   config.i18n.fallbacks = true
