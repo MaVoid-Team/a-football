@@ -16,14 +16,7 @@ module Api
       end
 
       def destroy
-        token = request.headers["Authorization"]&.split(" ")&.last
-        if token
-          decoded = Auth::JsonWebToken.decode(token)
-          ttl = decoded[:exp] - Time.current.to_i
-          if ttl > 0
-            REDIS.setex("revoked_token:#{Digest::SHA256.hexdigest(token)}", ttl, "1")
-          end
-        end
+        ::Auth::TokenRevoker.revoke!(request.headers["Authorization"]&.split(" ")&.last)
         head :no_content
       rescue Auth::AuthenticationError
         head :no_content

@@ -1,25 +1,55 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useTranslations } from "next-intl";
 import { useTournamentsAPI } from "@/hooks/api/use-tournaments";
+import { usePlayerAuthContext } from "@/contexts/player-auth-context";
+import { usePlayerAccountAPI } from "@/hooks/api/use-player-account";
 import { Link } from "@/i18n/navigation";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
 import { formatDate } from "@/lib/format-date";
+import { PlayerTeam } from "@/schemas/player.schema";
 
 export function TournamentDetail({ id }: { id: string }) {
     const t = useTranslations("publicTournaments");
-    const { tournament, matches, loading, error, fetchTournament, registerTournament, fetchBracket, fetchPublicMatches } = useTournamentsAPI();
+    const { player, isAuthenticated } = usePlayerAuthContext();
+    const { fetchTeams } = usePlayerAccountAPI();
+    const {
+        tournament,
+        matches,
+        participants,
+        participation,
+        loading,
+        error,
+        fetchTournament,
+        registerTournament,
+        registerTeamTournament,
+        fetchBracket,
+        fetchPublicMatches,
+        fetchPublicParticipants,
+        fetchMyParticipation,
+    } = useTournamentsAPI();
     const [name, setName] = useState("");
     const [phone, setPhone] = useState("");
     const [email, setEmail] = useState("");
     const [skillLevel, setSkillLevel] = useState<"beginner" | "intermediate" | "advanced">("intermediate");
+    const [savedTeams, setSavedTeams] = useState<PlayerTeam[]>([]);
+    const [selectedTeamId, setSelectedTeamId] = useState<string>("new");
+    const [teamForm, setTeamForm] = useState({
+        team_name: "",
+        teammate_name: "",
+        teammate_phone: "",
+        teammate_email: "",
+        teammate_skill_level: "intermediate" as "beginner" | "intermediate" | "advanced",
+        save_team: true,
+    });
     const [bracket, setBracket] = useState<any>(null);
     const [liveMode, setLiveMode] = useState(false);
     const [lastUpdatedAt, setLastUpdatedAt] = useState<Date | null>(null);
@@ -31,6 +61,10 @@ export function TournamentDetail({ id }: { id: string }) {
             if (res.success) setBracket(res.data);
         });
         fetchPublicMatches(id, { silent });
+        fetchPublicParticipants(id, { silent });
+        if (isAuthenticated) {
+            fetchMyParticipation(id, { silent });
+        }
         setLastUpdatedAt(new Date());
     };
 
@@ -41,8 +75,22 @@ export function TournamentDetail({ id }: { id: string }) {
             if (res.success) setBracket(res.data);
         });
         fetchPublicMatches(id);
+        fetchPublicParticipants(id);
+        if (isAuthenticated) {
+            fetchMyParticipation(id);
+            fetchTeams().then(setSavedTeams).catch(() => undefined);
+        }
         setLastUpdatedAt(new Date());
-    }, [id, fetchTournament, fetchBracket, fetchPublicMatches]);
+    }, [id, isAuthenticated, fetchTournament, fetchBracket, fetchPublicMatches, fetchPublicParticipants, fetchMyParticipation]);
+
+    useEffect(() => {
+        if (player) {
+            setName(player.name);
+            setPhone(player.phone);
+            setEmail(player.email);
+            setSkillLevel(player.skill_level);
+        }
+    }, [player]);
 
     useEffect(() => {
         if (!id || !liveMode) return;
@@ -60,7 +108,7 @@ export function TournamentDetail({ id }: { id: string }) {
             clearInterval(interval);
             clearInterval(countdown);
         };
-    }, [id, liveMode]);
+    }, [id, liveMode, isAuthenticated]);
 
     const onRegister = async () => {
         if (!name.trim() || !phone.trim()) {
@@ -77,14 +125,35 @@ export function TournamentDetail({ id }: { id: string }) {
 
         if (result.success) {
             toast.success(t("registration.success"));
-            setName("");
-            setPhone("");
-            setEmail("");
             fetchTournament(id, false);
+            fetchPublicParticipants(id, { silent: true });
+            if (isAuthenticated) fetchMyParticipation(id, { silent: true });
         } else {
             toast.error(result.errorMessage || t("registration.failed"));
         }
     };
+
+    const onRegisterTeam = async () => {
+        const payload =
+            selectedTeamId !== "new"
+                ? { user_team_id: Number(selectedTeamId) }
+                : teamForm;
+
+        const result = await registerTeamTournament(id, payload);
+        if (result.success) {
+            toast.success("Team registration submitted");
+            fetchTournament(id, false);
+            fetchPublicParticipants(id, { silent: true });
+            fetchMyParticipation(id, { silent: true });
+        } else {
+            toast.error(result.errorMessage || "Failed to register team");
+        }
+    };
+
+    const selectedTeam = useMemo(
+        () => savedTeams.find((team) => String(team.id) === selectedTeamId),
+        [savedTeams, selectedTeamId]
+    );
 
     if (loading && !tournament) {
         return <div className="py-16 text-center text-muted-foreground">{t("loading")}</div>;
@@ -103,6 +172,7 @@ export function TournamentDetail({ id }: { id: string }) {
 
     const rounds = Array.isArray(bracket?.rounds) ? bracket.rounds : [];
     const registrationOpen = !!tournament.registration_open;
+    const isTeamTournament = tournament.entry_mode === "team";
 
     const matchStatusLabel = (status?: string) => {
         const keyByStatus: Record<string, string> = {
@@ -143,7 +213,7 @@ export function TournamentDetail({ id }: { id: string }) {
                     <Button variant="outline" onClick={() => refreshLiveData(false)}>
                         {t("live.refreshNow")}
                     </Button>
-                    <Button variant={liveMode ? "default" : "outline"} onClick={() => setLiveMode((v) => !v)}>
+                    <Button variant={liveMode ? "default" : "outline"} onClick={() => setLiveMode((value) => !value)}>
                         {liveMode ? t("live.stop") : t("live.start")}
                     </Button>
                     <Button asChild variant="outline">
@@ -168,48 +238,178 @@ export function TournamentDetail({ id }: { id: string }) {
                     <div>{t("statusLabel")}: {t(`status.${tournament.status}`)}</div>
                     <div>{t("startDate")}: {formatDate(tournament.start_date)}</div>
                     <div>{t("deadline")}: {formatDate(tournament.registration_deadline)}</div>
-                    <div>{t("participants")}: {tournament.approved_registrations_count ?? 0}/{tournament.max_players ?? "-"}</div>
+                    <div>{t("participants")}: {tournament.approved_registrations_count ?? 0}/{tournament.capacity_total ?? tournament.max_players ?? "-"}</div>
+                    {typeof tournament.capacity_remaining === "number" && <div>Available Slots: {tournament.capacity_remaining}</div>}
                 </CardContent>
             </Card>
+
+            {participation && (
+                <Card>
+                    <CardHeader>
+                        <CardTitle>Your Participation</CardTitle>
+                    </CardHeader>
+                    <CardContent className="flex flex-wrap items-center justify-between gap-3 text-sm">
+                        <div className="space-y-1">
+                            <div>Status: <Badge>{participation.participation_status}</Badge></div>
+                            <div>Registration: {participation.registration_status}</div>
+                            {participation.team_name && <div>Team: {participation.team_name}</div>}
+                        </div>
+                        <Link href="/account/tournaments" className="text-primary-text underline">Open My Tournaments</Link>
+                    </CardContent>
+                </Card>
+            )}
 
             <Card>
                 <CardHeader>
                     <CardTitle>{t("registration.title")}</CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-3">
+                <CardContent className="space-y-4">
                     <p className="text-xs text-muted-foreground">
                         {registrationOpen ? t("registration.openHint") : t("registration.closedHint")}
                     </p>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                        <div className="space-y-1">
-                            <Label>{t("registration.name")}</Label>
-                            <Input value={name} onChange={(e) => setName(e.target.value)} />
+
+                    {!registrationOpen && (
+                        <Badge variant="secondary">{t("registration.closed")}</Badge>
+                    )}
+
+                    {isTeamTournament ? (
+                        !isAuthenticated ? (
+                            <div className="space-y-2 text-sm">
+                                <p className="text-muted-foreground">Team tournaments require a player account so your team can be tracked.</p>
+                                <Button asChild><Link href="/account/login">Login to Join as Team</Link></Button>
+                            </div>
+                        ) : (
+                            <div className="space-y-4">
+                                <div className="space-y-2">
+                                    <Label>Saved Team</Label>
+                                    <Select value={selectedTeamId} onValueChange={setSelectedTeamId}>
+                                        <SelectTrigger>
+                                            <SelectValue placeholder="Choose a saved team or create one here" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="new">Create one-time team</SelectItem>
+                                            {savedTeams.map((team) => (
+                                                <SelectItem key={team.id} value={String(team.id)}>
+                                                    {team.name} · {team.teammate_name}
+                                                </SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+
+                                {selectedTeam && selectedTeamId !== "new" ? (
+                                    <div className="rounded-md border border-border p-3 text-sm">
+                                        <div className="font-medium">{selectedTeam.name}</div>
+                                        <div className="text-muted-foreground">{selectedTeam.teammate_name} · {selectedTeam.teammate_phone}</div>
+                                    </div>
+                                ) : (
+                                    <div className="space-y-3">
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                            <div className="space-y-1">
+                                                <Label>Team Name</Label>
+                                                <Input value={teamForm.team_name} onChange={(event) => setTeamForm((current) => ({ ...current, team_name: event.target.value }))} />
+                                            </div>
+                                            <div className="space-y-1">
+                                                <Label>Teammate Name</Label>
+                                                <Input value={teamForm.teammate_name} onChange={(event) => setTeamForm((current) => ({ ...current, teammate_name: event.target.value }))} />
+                                            </div>
+                                        </div>
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                            <div className="space-y-1">
+                                                <Label>Teammate Phone</Label>
+                                                <Input value={teamForm.teammate_phone} onChange={(event) => setTeamForm((current) => ({ ...current, teammate_phone: event.target.value }))} />
+                                            </div>
+                                            <div className="space-y-1">
+                                                <Label>Teammate Email</Label>
+                                                <Input type="email" value={teamForm.teammate_email} onChange={(event) => setTeamForm((current) => ({ ...current, teammate_email: event.target.value }))} />
+                                            </div>
+                                        </div>
+                                        <div className="space-y-1">
+                                            <Label>Teammate Skill Level</Label>
+                                            <Select value={teamForm.teammate_skill_level} onValueChange={(value: any) => setTeamForm((current) => ({ ...current, teammate_skill_level: value }))}>
+                                                <SelectTrigger>
+                                                    <SelectValue />
+                                                </SelectTrigger>
+                                                <SelectContent>
+                                                    <SelectItem value="beginner">Beginner</SelectItem>
+                                                    <SelectItem value="intermediate">Intermediate</SelectItem>
+                                                    <SelectItem value="advanced">Advanced</SelectItem>
+                                                </SelectContent>
+                                            </Select>
+                                        </div>
+                                        <div className="flex items-center gap-3">
+                                            <Checkbox
+                                                id="save_team"
+                                                checked={teamForm.save_team}
+                                                onCheckedChange={(checked) => setTeamForm((current) => ({ ...current, save_team: Boolean(checked) }))}
+                                            />
+                                            <Label htmlFor="save_team">Save this team for future tournaments</Label>
+                                        </div>
+                                    </div>
+                                )}
+
+                                <div className="flex items-center justify-between gap-3">
+                                    <Button onClick={onRegisterTeam} disabled={!registrationOpen}>Join Tournament as Team</Button>
+                                    <Link href="/account/teams" className="text-primary-text underline">Manage Saved Teams</Link>
+                                </div>
+                            </div>
+                        )
+                    ) : (
+                        <div className="space-y-3">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                <div className="space-y-1">
+                                    <Label>{t("registration.name")}</Label>
+                                    <Input value={name} onChange={(event) => setName(event.target.value)} />
+                                </div>
+                                <div className="space-y-1">
+                                    <Label>{t("registration.phone")}</Label>
+                                    <Input value={phone} onChange={(event) => setPhone(event.target.value)} />
+                                </div>
+                                <div className="space-y-1 md:col-span-2">
+                                    <Label>{t("registration.email")}</Label>
+                                    <Input type="email" value={email} onChange={(event) => setEmail(event.target.value)} />
+                                </div>
+                            </div>
+                            <div className="space-y-1">
+                                <Label>{t("registration.skill")}</Label>
+                                <Select value={skillLevel} onValueChange={(value: any) => setSkillLevel(value)}>
+                                    <SelectTrigger>
+                                        <SelectValue />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="beginner">{t("skill.beginner")}</SelectItem>
+                                        <SelectItem value="intermediate">{t("skill.intermediate")}</SelectItem>
+                                        <SelectItem value="advanced">{t("skill.advanced")}</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                            </div>
+                            <Button onClick={onRegister} disabled={!registrationOpen}>
+                                {tournament.registration_open ? t("registration.submit") : t("registration.closed")}
+                            </Button>
                         </div>
-                        <div className="space-y-1">
-                            <Label>{t("registration.phone")}</Label>
-                            <Input value={phone} onChange={(e) => setPhone(e.target.value)} />
+                    )}
+                </CardContent>
+            </Card>
+
+            <Card>
+                <CardHeader>
+                    <CardTitle>Approved Participants</CardTitle>
+                </CardHeader>
+                <CardContent>
+                    {participants.length === 0 ? (
+                        <p className="text-muted-foreground">No approved participants yet.</p>
+                    ) : (
+                        <div className="space-y-2">
+                            {participants.map((participant) => (
+                                <div key={participant.id} className="rounded-md border border-border p-3 text-sm">
+                                    <div className="font-medium">{participant.name}</div>
+                                    {participant.members && participant.members.length > 0 && (
+                                        <div className="text-muted-foreground">{participant.members.join(" · ")}</div>
+                                    )}
+                                </div>
+                            ))}
                         </div>
-                        <div className="space-y-1 md:col-span-2">
-                            <Label>{t("registration.email")}</Label>
-                            <Input type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
-                        </div>
-                    </div>
-                    <div className="space-y-1">
-                        <Label>{t("registration.skill")}</Label>
-                        <Select value={skillLevel} onValueChange={(v: any) => setSkillLevel(v)}>
-                            <SelectTrigger>
-                                <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent>
-                                <SelectItem value="beginner">{t("skill.beginner")}</SelectItem>
-                                <SelectItem value="intermediate">{t("skill.intermediate")}</SelectItem>
-                                <SelectItem value="advanced">{t("skill.advanced")}</SelectItem>
-                            </SelectContent>
-                        </Select>
-                    </div>
-                    <Button onClick={onRegister} disabled={!tournament.registration_open}>
-                        {tournament.registration_open ? t("registration.submit") : t("registration.closed")}
-                    </Button>
+                    )}
                 </CardContent>
             </Card>
 
@@ -251,7 +451,10 @@ export function TournamentDetail({ id }: { id: string }) {
                         <div className="space-y-2">
                             {matches.map((match) => (
                                 <div key={match.id} className="rounded-md border border-border p-3 text-sm flex items-center justify-between gap-3">
-                                    <div>{t("live.matchLine", { round: match.round_number, match: match.match_number })}</div>
+                                    <div>
+                                        <div>{t("live.matchLine", { round: match.round_number, match: match.match_number })}</div>
+                                        <div className="text-muted-foreground">{match.team1_name || "TBD"} vs {match.team2_name || "TBD"}</div>
+                                    </div>
                                     <Badge variant="outline">{matchStatusLabel(match.status)}</Badge>
                                 </div>
                             ))}

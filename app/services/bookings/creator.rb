@@ -2,9 +2,10 @@ module Bookings
   class Creator
     SLOT_INTERVAL = 30.minutes
 
-    def initialize(params:, branch:)
+    def initialize(params:, branch:, user: nil)
       @params = params
       @branch = branch
+      @user = user
     end
 
     def call
@@ -102,9 +103,10 @@ module Bookings
         booking = Booking.create!(
           branch:          @branch,
           court:           court,
+          user:            @user,
           promo_code:      promo_code,
-          user_name:       @params[:user_name],
-          user_phone:      @params[:user_phone],
+          user_name:       @params[:user_name].presence || @user&.name,
+          user_phone:      @params[:user_phone].presence || @user&.phone,
           date:            date,
           start_time:      parsed_slots.first[:start_time],
           end_time:        parsed_slots.last[:end_time],

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_03_23_190000) do
+ActiveRecord::Schema[8.1].define(version: 2026_03_23_193000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gist"
   enable_extension "pg_catalog.plpgsql"
@@ -59,6 +59,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_23_190000) do
     t.integer "status", default: 0, null: false
     t.decimal "total_price", precision: 10, scale: 2, null: false
     t.datetime "updated_at", null: false
+    t.bigint "user_id"
     t.string "user_name", null: false
     t.string "user_phone", null: false
     t.index ["branch_id"], name: "index_bookings_on_branch_id"
@@ -66,6 +67,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_23_190000) do
     t.index ["court_id", "date"], name: "index_bookings_on_court_id_and_date"
     t.index ["court_id"], name: "index_bookings_on_court_id"
     t.index ["status"], name: "index_bookings_on_status"
+    t.index ["user_id"], name: "index_bookings_on_user_id"
     t.exclusion_constraint "court_id WITH =, date WITH =, tsrange(('2000-01-01'::date + start_time), ('2000-01-01'::date + end_time)) WITH &&", where: "status = 0", using: :gist, name: "no_overlapping_confirmed_bookings"
   end
 
@@ -209,6 +211,46 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_23_190000) do
     t.index ["tournament_id"], name: "index_tournament_players_on_tournament_id"
   end
 
+  create_table "user_notifications", force: :cascade do |t|
+    t.text "body", null: false
+    t.datetime "created_at", null: false
+    t.jsonb "data", default: {}, null: false
+    t.string "link_url"
+    t.string "notification_type", null: false
+    t.datetime "read_at"
+    t.string "title", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "user_id", null: false
+    t.index ["user_id", "created_at"], name: "index_user_notifications_on_user_id_and_created_at"
+    t.index ["user_id", "read_at"], name: "index_user_notifications_on_user_id_and_read_at"
+    t.index ["user_id"], name: "index_user_notifications_on_user_id"
+  end
+
+  create_table "user_teams", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "name", null: false
+    t.string "teammate_email"
+    t.string "teammate_name", null: false
+    t.string "teammate_phone", null: false
+    t.integer "teammate_skill_level", default: 1, null: false
+    t.datetime "updated_at", null: false
+    t.bigint "user_id", null: false
+    t.index ["user_id", "name"], name: "index_user_teams_on_user_id_and_name"
+    t.index ["user_id"], name: "index_user_teams_on_user_id"
+  end
+
+  create_table "users", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "email", null: false
+    t.string "name", null: false
+    t.string "password_digest", null: false
+    t.string "phone", null: false
+    t.integer "skill_level", default: 1, null: false
+    t.datetime "updated_at", null: false
+    t.index ["email"], name: "index_users_on_email", unique: true
+    t.index ["phone"], name: "index_users_on_phone", unique: true
+  end
+
   create_table "tournament_registrations", force: :cascade do |t|
     t.bigint "approved_by_id"
     t.datetime "created_at", null: false
@@ -273,6 +315,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_23_190000) do
   add_foreign_key "blocked_slots", "courts"
   add_foreign_key "bookings", "branches"
   add_foreign_key "bookings", "courts"
+  add_foreign_key "bookings", "users"
   add_foreign_key "courts", "branches"
   add_foreign_key "event_bookings", "events"
   add_foreign_key "events", "branches"
@@ -287,6 +330,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_23_190000) do
   add_foreign_key "tournament_matches", "tournament_teams", column: "winner_id"
   add_foreign_key "tournament_matches", "tournaments"
   add_foreign_key "tournament_players", "tournaments"
+  add_foreign_key "tournament_players", "users"
   add_foreign_key "tournament_registrations", "admins", column: "approved_by_id"
   add_foreign_key "tournament_registrations", "tournament_players", column: "player_id"
   add_foreign_key "tournament_registrations", "tournament_teams", column: "team_id"
@@ -296,4 +340,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_23_190000) do
   add_foreign_key "tournament_teams", "tournaments"
   add_foreign_key "tournaments", "admins", column: "created_by_id"
   add_foreign_key "tournaments", "branches"
+  add_foreign_key "user_notifications", "users"
+  add_foreign_key "user_teams", "users"
 end

@@ -30,6 +30,8 @@ export const bookingSchema = z.object({
     admin_notes: z.string().nullable().optional(),
     promo_code_id: z.string().nullable().optional(),
     promo_code_code: z.string().nullable().optional(),
+    branch_name: z.string().nullable().optional(),
+    court_name: z.string().nullable().optional(),
     booking_slots: z.array(bookingSlotSchema).optional(),
     payment_screenshot_url: z.string().nullable().optional(),
     created_at: z.string(),

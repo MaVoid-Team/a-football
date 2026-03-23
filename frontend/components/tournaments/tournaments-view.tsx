@@ -17,18 +17,18 @@ export function TournamentsView() {
     const { tournaments, loading, error, fetchPublicTournaments } = useTournamentsAPI();
     const { branches, fetchPublicBranches } = useBranchesAPI();
     const [selectedBranch, setSelectedBranch] = useState<string>("all");
+    const [selectedStatus, setSelectedStatus] = useState<string>("all");
 
     useEffect(() => {
         fetchPublicBranches();
     }, [fetchPublicBranches]);
 
     useEffect(() => {
-        if (selectedBranch === "all") {
-            fetchPublicTournaments();
-        } else {
-            fetchPublicTournaments({ branch_id: Number(selectedBranch) });
-        }
-    }, [fetchPublicTournaments, selectedBranch]);
+        fetchPublicTournaments({
+            ...(selectedBranch !== "all" ? { branch_id: Number(selectedBranch) } : {}),
+            ...(selectedStatus !== "all" ? { status: selectedStatus } : {}),
+        });
+    }, [fetchPublicTournaments, selectedBranch, selectedStatus]);
 
     return (
         <div className="w-full max-w-6xl mx-auto space-y-8">
@@ -38,8 +38,8 @@ export function TournamentsView() {
                 <p className="text-sm text-muted-foreground">{t("listHint")}</p>
             </div>
 
-            {branches.length > 1 && (
-                <div className="flex justify-center">
+            <div className="flex flex-col md:flex-row justify-center gap-3">
+                {branches.length > 1 && (
                     <Select value={selectedBranch} onValueChange={setSelectedBranch}>
                         <SelectTrigger className="w-[260px]">
                             <SelectValue placeholder={t("allBranches")} />
@@ -53,8 +53,19 @@ export function TournamentsView() {
                             ))}
                         </SelectContent>
                     </Select>
-                </div>
-            )}
+                )}
+                <Select value={selectedStatus} onValueChange={setSelectedStatus}>
+                    <SelectTrigger className="w-[220px]">
+                        <SelectValue placeholder={t("statusLabel")} />
+                    </SelectTrigger>
+                    <SelectContent>
+                        <SelectItem value="all">All statuses</SelectItem>
+                        <SelectItem value="open">{t("status.open")}</SelectItem>
+                        <SelectItem value="ongoing">{t("status.ongoing")}</SelectItem>
+                        <SelectItem value="completed">{t("status.completed")}</SelectItem>
+                    </SelectContent>
+                </Select>
+            </div>
 
             {error && (
                 <Card className="border-destructive/30">
@@ -97,7 +108,10 @@ export function TournamentsView() {
                                 <div className="text-sm space-y-1">
                                     <div>{t("startDate")}: {formatDate(tour.start_date)}</div>
                                     <div>{t("deadline")}: {formatDate(tour.registration_deadline)}</div>
-                                    <div>{t("participants")}: {tour.approved_registrations_count ?? 0}/{tour.max_players ?? "-"}</div>
+                                    <div>{t("participants")}: {tour.approved_registrations_count ?? 0}/{tour.capacity_total ?? tour.max_players ?? "-"}</div>
+                                    {typeof tour.capacity_remaining === "number" && (
+                                        <div>Available Slots: {tour.capacity_remaining}</div>
+                                    )}
                                 </div>
                                 <div className="flex flex-wrap gap-2 text-xs">
                                     <Badge variant={tour.registration_open ? "default" : "secondary"}>

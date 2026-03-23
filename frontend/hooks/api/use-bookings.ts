@@ -66,6 +66,8 @@ export function useBookingsAPI() {
         setError(null);
         try {
             const { branch_id, ...bookingData } = data;
+            const playerToken =
+                typeof window !== "undefined" ? localStorage.getItem("player_auth_token") : null;
 
             if (paymentScreenshot) {
                 const formData = new FormData();
@@ -85,11 +87,18 @@ export function useBookingsAPI() {
                 formData.append("booking[payment_screenshot]", paymentScreenshot);
 
                 const response = await api.post("/api/bookings", formData, {
-                    headers: { "Content-Type": "multipart/form-data" },
+                    headers: {
+                        "Content-Type": "multipart/form-data",
+                        ...(playerToken ? { Authorization: `Bearer ${playerToken}` } : {}),
+                    },
                 });
                 return { success: true, data: response.data };
             } else {
-                const response = await api.post("/api/bookings", { branch_id, booking: bookingData });
+                const response = await api.post(
+                    "/api/bookings",
+                    { branch_id, booking: bookingData },
+                    playerToken ? { headers: { Authorization: `Bearer ${playerToken}` } } : undefined
+                );
                 return { success: true, data: response.data };
             }
         } catch (err: any) {

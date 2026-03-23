@@ -1,5 +1,6 @@
 class TournamentPlayer < ApplicationRecord
   belongs_to :tournament
+  belongs_to :user, optional: true
 
   has_many :registration_records,
            class_name: "TournamentRegistration",
@@ -11,6 +12,7 @@ class TournamentPlayer < ApplicationRecord
 
   validates :name, :phone, presence: true
   validates :phone, uniqueness: { scope: :tournament_id }
+  validates :user_id, uniqueness: { scope: :tournament_id }, allow_nil: true
   validates :email,
             format: { with: URI::MailTo::EMAIL_REGEXP, message: "is invalid" },
             allow_blank: true

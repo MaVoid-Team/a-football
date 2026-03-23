@@ -12,12 +12,53 @@ class TournamentRegistration < ApplicationRecord
   scope :for_status, ->(status) { status.present? ? where(status: status) : all }
 
   def approve!(admin, notes: nil)
-    update!(status: :approved, approved_by: admin, notes: notes)
-    player.update!(status: :approved) if player.pending?
+    apply_status!(status: :approved, admin: admin, notes: notes, team_status: :active)
   end
 
   def reject!(admin, notes: nil)
-    update!(status: :rejected, approved_by: admin, notes: notes)
-    player.update!(status: :rejected) if player.pending?
+    apply_status!(status: :rejected, admin: admin, notes: notes, team_status: :pending)
+  end
+
+  def cancel!(admin, notes: nil, refund_status: nil)
+    apply_status!(
+      status: :cancelled,
+      admin: admin,
+      notes: notes,
+      refund_status: refund_status || self.refund_status,
+      team_status: :pending
+    )
+  end
+
+  def affected_registrations
+    if team_id.present?
+      tournament.tournament_registrations.where(team_id: team_id).includes(:player, :team, tournament: :branch)
+    else
+      TournamentRegistration.where(id: id).includes(:player, :team, tournament: :branch)
+    end
+  end
+
+  private
+
+  def apply_status!(status:, admin:, notes:, team_status:, refund_status: nil)
+    updated_ids = []
+
+    self.class.transaction do
+      affected_registrations.lock.each do |registration|
+        attrs = {
+          status: status,
+          approved_by: admin,
+          notes: notes
+        }
+        attrs[:refund_status] = refund_status if refund_status.present?
+
+        registration.update!(attrs)
+        registration.player.update!(status: status)
+        updated_ids << registration.id
+      end
+
+      team&.update!(status: team_status) if team.present?
+    end
+
+    TournamentRegistration.where(id: updated_ids).includes(:player, :team, tournament: :branch).to_a
   end
 end

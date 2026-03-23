@@ -2,6 +2,7 @@ FactoryBot.define do
   factory :booking do
     branch
     court
+    user { nil }
     user_name { Faker::Name.name }
     user_phone { Faker::PhoneNumber.phone_number }
     date { Date.tomorrow }

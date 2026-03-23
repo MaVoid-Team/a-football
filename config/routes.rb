@@ -2,6 +2,21 @@ require "sidekiq/web"
 
 Rails.application.routes.draw do
   namespace :api do
+    namespace :auth do
+      post "register", to: "registrations#create"
+      post "login", to: "sessions#create"
+      delete "logout", to: "sessions#destroy"
+    end
+
+    namespace :me do
+      resource :profile, only: %i[show update], controller: "profiles"
+      resources :teams, only: %i[index create update destroy]
+      resources :notifications, only: %i[index update]
+      resources :bookings, only: %i[index]
+      resources :matches, only: %i[index]
+      resources :tournaments, only: %i[index show]
+    end
+
     get "branches", to: "branches#index"
     get "branches/:id", to: "branches#show"
     get "packages/:id", to: "packages#show"
@@ -11,8 +26,10 @@ Rails.application.routes.draw do
     resources :tournaments, only: %i[index show] do
       member do
         post :register, to: "tournament_registrations#create"
+        post :register_team, to: "tournament_team_registrations#create"
         get :matches, to: "tournaments#matches"
         get :bracket, to: "tournaments#bracket"
+        get :participants, to: "tournaments#participants"
       end
     end
     get "courts", to: "courts#index"

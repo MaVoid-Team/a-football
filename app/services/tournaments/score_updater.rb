@@ -17,6 +17,7 @@ module Tournaments
           status: :completed
         )
 
+        update_team_progression!
         advance_winner_if_knockout
       end
 
@@ -49,6 +50,15 @@ module Tournaments
           advance_in_knockout_tree
         end
       end
+    end
+
+    def update_team_progression!
+      loser_id = ([@match.team1_id, @match.team2_id] - [@winner_id]).compact.first
+      return if loser_id.blank?
+      return unless @match.tournament.knockout? || (@match.tournament.group_knockout? && @match.round_number > 1)
+
+      TournamentTeam.find_by(id: loser_id)&.update!(status: :eliminated)
+      TournamentTeam.find_by(id: @winner_id)&.update!(status: :active)
     end
 
     def advance_in_knockout_tree

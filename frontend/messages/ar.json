@@ -1213,6 +1213,17 @@
       "deleted": "تمام! اتمسح"
     }
   },
+  "playerAccount": {
+    "title": "حساب اللاعب",
+    "login": "دخول اللاعب",
+    "register": "إنشاء حساب لاعب",
+    "profile": "الملف الشخصي",
+    "tournaments": "بطولاتي",
+    "matches": "مبارياتي",
+    "bookings": "حجوزاتي",
+    "notifications": "الإشعارات",
+    "teams": "فِرَقي"
+  },
   "courts": {
     "page": {
       "title": "الملاعب",

@@ -9,6 +9,7 @@ class Booking < ApplicationRecord
 
   belongs_to :branch
   belongs_to :court
+  belongs_to :user, optional: true
   belongs_to :promo_code, optional: true
   has_many :payments, dependent: :destroy
   has_many :reviews, dependent: :destroy

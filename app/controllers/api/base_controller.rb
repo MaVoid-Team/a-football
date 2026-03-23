@@ -10,6 +10,29 @@ module Api
 
     private
 
+    def current_user
+      return @current_user if defined?(@current_user)
+
+      token = extract_token
+      @current_user =
+        begin
+          return @current_user = nil if token.blank? || token_revoked?(token)
+
+          decoded = Auth::JsonWebToken.decode(token)
+          decoded[:user_id].present? ? User.find_by(id: decoded[:user_id]) : nil
+        rescue Auth::AuthenticationError
+          nil
+        end
+    end
+
+    def extract_token
+      request.headers["Authorization"]&.split(" ")&.last
+    end
+
+    def token_revoked?(token)
+      REDIS.get("revoked_token:#{Digest::SHA256.hexdigest(token)}").present?
+    end
+
     def not_found(exception)
       render json: { error: exception.message }, status: :not_found
     end

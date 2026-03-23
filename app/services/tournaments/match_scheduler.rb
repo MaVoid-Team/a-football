@@ -26,6 +26,8 @@ module Tournaments
         status: :scheduled
       )
 
+      Users::NotificationPublisher.match_scheduled(@match)
+
       ServiceResult.success(@match)
     rescue ActiveRecord::RecordInvalid => e
       ServiceResult.failure(e.record.errors.full_messages, error_codes: ["schedule_invalid"])

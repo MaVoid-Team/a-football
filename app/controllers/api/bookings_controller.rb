@@ -2,7 +2,7 @@ module Api
   class BookingsController < BaseController
     def create
       branch = Branch.find(params[:branch_id])
-      result = Bookings::Creator.new(params: booking_params, branch: branch).call
+      result = Bookings::Creator.new(params: booking_params, branch: branch, user: current_user).call
 
       if result.success?
         booking = result.data

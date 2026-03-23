@@ -5,7 +5,7 @@ import { Link, usePathname } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
 import { animate, createScope } from "animejs";
 import { cn } from "@/lib/utils";
-import { UserActions } from "@/components/shared/user-actions";
+import { PublicAccountActions } from "@/components/player/public-account-actions";
 import { LanguageToggle } from "@/components/landing/language-toggle";
 import { ThemeToggle } from "@/components/shared/theme-toggle";
 import { Menu, X } from "lucide-react";
@@ -155,7 +155,7 @@ export function LandingNavbar() {
             <ThemeToggle />
           </div>
           <div className="nav-cta opacity-0 hidden md:block">
-            <UserActions showDashboardLink />
+            <PublicAccountActions />
           </div>
           {/* Mobile menu button */}
           <button
@@ -200,7 +200,7 @@ export function LandingNavbar() {
           ))}
           {/* User actions in mobile menu */}
           <div className="pt-3 mt-1 border-t border-border/40">
-            <UserActions showDashboardLink />
+            <PublicAccountActions />
           </div>
           {/* Language toggle and theme toggle in mobile menu */}
           <div className="pt-3 mt-1 border-t border-border/40 flex items-center justify-between">

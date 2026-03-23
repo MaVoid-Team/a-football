@@ -38,5 +38,40 @@ module Api
         }
       }, status: :ok
     end
+
+    def participants
+      tournament = Tournament.visible_publicly.find(params[:id])
+      render json: { data: serialized_participants(tournament) }, status: :ok
+    end
+
+    private
+
+    def serialized_participants(tournament)
+      if tournament.max_teams.present?
+        tournament.tournament_teams.active.includes(:player1, :player2).map do |team|
+          {
+            id: team.id.to_s,
+            type: "tournament_participants",
+            attributes: {
+              name: team.name,
+              kind: "team",
+              members: [team.player1&.name, team.player2&.name].compact
+            }
+          }
+        end
+      else
+        tournament.tournament_registrations.approved.includes(:player).map do |registration|
+          {
+            id: registration.id.to_s,
+            type: "tournament_participants",
+            attributes: {
+              name: registration.player&.name,
+              kind: "player",
+              members: [registration.player&.name].compact
+            }
+          }
+        end
+      end
+    end
   end
 end

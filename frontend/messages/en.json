@@ -1271,6 +1271,17 @@
       "deleted": "Branch deleted successfully"
     }
   },
+  "playerAccount": {
+    "title": "Player Account",
+    "login": "Player Login",
+    "register": "Create Player Account",
+    "profile": "Profile",
+    "tournaments": "My Tournaments",
+    "matches": "My Matches",
+    "bookings": "My Bookings",
+    "notifications": "Notifications",
+    "teams": "My Teams"
+  },
   "courts": {
     "page": {
       "title": "Courts",

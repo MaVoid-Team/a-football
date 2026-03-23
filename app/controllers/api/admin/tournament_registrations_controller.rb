@@ -19,29 +19,38 @@ module Api
         authorize registration.tournament, :update?
 
         action = update_params[:status]
+        updated_registrations = []
         case action
         when "approved"
-          registration.approve!(current_admin, notes: update_params[:notes])
+          updated_registrations = registration.approve!(current_admin, notes: update_params[:notes])
         when "rejected"
-          registration.reject!(current_admin, notes: update_params[:notes])
+          updated_registrations = registration.reject!(current_admin, notes: update_params[:notes])
         when "cancelled"
-          registration.update!(status: :cancelled, notes: update_params[:notes], refund_status: update_params[:refund_status] || registration.refund_status)
-          registration.player.update!(status: :cancelled)
+          updated_registrations = registration.cancel!(
+            current_admin,
+            notes: update_params[:notes],
+            refund_status: update_params[:refund_status] || registration.refund_status
+          )
         else
           render json: { errors: ["Invalid status action"], error_codes: ["invalid_status_action"] }, status: :unprocessable_entity
           return
         end
 
-        if update_params[:refund_status].present? && action != "cancelled"
-          registration.update!(refund_status: update_params[:refund_status])
+        updated_registrations.each do |updated_registration|
+          if update_params[:refund_status].present? && action != "cancelled"
+            updated_registration.update!(refund_status: update_params[:refund_status])
+          end
+
+          Tournaments::NotificationDispatcher.dispatch(
+            event: :registration_status_changed,
+            tournament: updated_registration.tournament,
+            payload: notification_payload(updated_registration)
+          )
+
+          Users::NotificationPublisher.registration_status_changed(updated_registration)
         end
 
-        Tournaments::NotificationDispatcher.dispatch(
-          event: :registration_status_changed,
-          tournament: registration.tournament,
-          payload: notification_payload(registration)
-        )
-
+        registration.reload
         render json: TournamentRegistrationSerializer.new(registration).serializable_hash, status: :ok
       end
 

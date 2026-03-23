@@ -13,6 +13,7 @@ import { useAvailabilityAPI } from "@/hooks/api/use-availability";
 import { useBookingsAPI } from "@/hooks/api/use-bookings";
 import { useSettingsAPI } from "@/hooks/api/use-settings";
 import { useBranchesAPI } from "@/hooks/api/use-branches";
+import { usePlayerAuthContext } from "@/contexts/player-auth-context";
 import { bookingFormSchema, BookingFormData, Booking } from "@/schemas/booking.schema";
 import { Court } from "@/schemas/court.schema";
 import { Branch } from "@/schemas/branch.schema";
@@ -32,6 +33,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { formatCurrency } from "@/lib/format-currency";
+import { Link } from "@/i18n/navigation";
 
 interface Slot {
     start_time: string;
@@ -113,6 +115,7 @@ const mapBookingErrorFromMessage = (error: string, t: (key: string) => string) =
 
 export function BookingView() {
     const t = useTranslations("publicBook");
+    const { player, isAuthenticated } = usePlayerAuthContext();
 
     const { branches, fetchPublicBranches, loading: branchesLoading } = useBranchesAPI();
     const { courts, fetchPublicCourts, loading: courtsLoading, error: courtsError } = useCourtsAPI();
@@ -160,6 +163,12 @@ export function BookingView() {
     useEffect(() => {
         fetchPublicBranches();
     }, [fetchPublicBranches]);
+
+    useEffect(() => {
+        if (!player) return;
+        form.setValue("user_name", player.name);
+        form.setValue("user_phone", player.phone);
+    }, [player, form]);
 
     useEffect(() => {
         if (selectedBranch) {
@@ -346,6 +355,11 @@ export function BookingView() {
             <div className="flex flex-col items-center text-center space-y-2 mb-8">
                 <h1 className="text-3xl md:text-4xl font-bold tracking-tight">{t("title")}</h1>
                 <p className="text-muted-foreground text-base">{t("subtitle")}</p>
+                {isAuthenticated && (
+                    <Link href="/account/bookings" className="text-sm text-primary-text underline">
+                        Open My Bookings
+                    </Link>
+                )}
             </div>
 
             <FormProvider {...form}>

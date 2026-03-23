@@ -5,7 +5,7 @@ module Api
 
       result = Tournaments::RegistrationService.new(
         tournament: tournament,
-        registration_params: player_params
+        registration_params: registration_payload
       ).call
 
       if result.failure?
@@ -23,6 +23,19 @@ module Api
 
     def player_params
       params.require(:registration).permit(:name, :phone, :email, :skill_level)
+    end
+
+    def registration_payload
+      payload = player_params.to_h
+      return payload unless current_user.present?
+
+      payload.merge(
+        user_id: current_user.id,
+        name: payload["name"].presence || current_user.name,
+        phone: payload["phone"].presence || current_user.phone,
+        email: payload["email"].presence || current_user.email,
+        skill_level: payload["skill_level"].presence || current_user.skill_level
+      )
     end
 
     def dispatch_registration_notification(tournament, registration)

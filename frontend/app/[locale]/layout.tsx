@@ -7,6 +7,7 @@ import { locales } from "@/i18n/config";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { ThemeProvider } from "@/contexts/theme-context";
 import { AuthProvider } from "@/contexts/auth-context";
+import { PlayerAuthProvider } from "@/contexts/player-auth-context";
 import { Toaster } from "sonner";
 
 const geistSans = Geist({
@@ -57,10 +58,12 @@ export default async function LocaleLayout({
         <NextIntlClientProvider messages={messages}>
           <ThemeProvider>
             <AuthProvider>
-              <TooltipProvider>
-                {children}
-              </TooltipProvider>
-              <Toaster position="bottom-right" theme="dark" richColors />
+              <PlayerAuthProvider>
+                <TooltipProvider>
+                  {children}
+                </TooltipProvider>
+                <Toaster position="bottom-right" theme="dark" richColors />
+              </PlayerAuthProvider>
             </AuthProvider>
           </ThemeProvider>
         </NextIntlClientProvider>

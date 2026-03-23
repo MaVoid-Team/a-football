@@ -22,6 +22,9 @@ export const tournamentSchema = z.object({
     bracket_data: z.record(z.string(), z.any()).optional(),
     approved_registrations_count: z.number().optional(),
     registration_open: z.boolean().optional(),
+    entry_mode: z.enum(["player", "team"]).optional(),
+    capacity_total: z.number().nullable().optional(),
+    capacity_remaining: z.number().nullable().optional(),
     created_at: z.string().optional(),
     updated_at: z.string().optional(),
 });
@@ -76,6 +79,15 @@ export const adminTournamentRegistrationSchema = z.object({
 
 export type AdminTournamentRegistration = z.infer<typeof adminTournamentRegistrationSchema>;
 
+export const tournamentParticipantSchema = z.object({
+    id: z.string(),
+    name: z.string().nullable().optional(),
+    kind: z.enum(["player", "team"]),
+    members: z.array(z.string()).optional(),
+});
+
+export type TournamentParticipant = z.infer<typeof tournamentParticipantSchema>;
+
 export const tournamentMatchSchema = z.object({
     id: z.string(),
     tournament_id: z.number(),
@@ -88,6 +100,8 @@ export const tournamentMatchSchema = z.object({
     winner_id: z.number().nullable().optional(),
     winner_name: z.string().nullable().optional(),
     court_id: z.number().nullable().optional(),
+    court_name: z.string().nullable().optional(),
+    tournament_name: z.string().nullable().optional(),
     status: z.enum(["pending", "scheduled", "ongoing", "completed"]),
     scheduled_time: z.string().nullable().optional(),
     score: z.record(z.string(), z.any()).optional(),

@@ -16,6 +16,7 @@ RSpec.describe "Api::Tournaments", type: :request do
   describe "POST /api/tournaments/:id/register" do
     let(:branch) { create(:branch, active: true) }
     let(:tournament) { create(:tournament, branch: branch, max_players: 2, registration_deadline: 1.day.from_now, status: :open) }
+    let(:user) { create(:user, name: "Tracked User", phone: "+201001234567", email: "player.one@example.com") }
 
     let(:params) do
       {
@@ -116,6 +117,19 @@ RSpec.describe "Api::Tournaments", type: :request do
       created_player = tournament.tournament_players.order(:id).last
       expect(created_player.user_id).to be_nil
     end
+
+    it "links the authenticated player to the tournament player snapshot" do
+      post "/api/tournaments/#{tournament.id}/register",
+           params: { registration: { skill_level: "advanced" } },
+           headers: user_auth_headers(user)
+
+      expect(response).to have_http_status(:created)
+      created_player = tournament.tournament_players.order(:id).last
+      expect(created_player.user_id).to eq(user.id)
+      expect(created_player.name).to eq(user.name)
+      expect(created_player.phone).to eq(user.phone)
+      expect(created_player.email).to eq(user.email)
+    end
   end
 
   describe "GET /api/tournaments/:id/bracket" do
@@ -172,6 +186,23 @@ RSpec.describe "Api::Tournaments", type: :request do
       expect(body["data"].length).to eq(10)
       expect(response.headers["X-Per-Page"]).to eq("10")
       expect(response.headers["X-Page"]).to eq("2")
+    end
+  end
+
+  describe "GET /api/tournaments/:id/participants" do
+    let(:branch) { create(:branch, active: true) }
+
+    it "returns approved public participants" do
+      tournament = create(:tournament, branch: branch, status: :open)
+      player = create(:tournament_player, tournament: tournament, status: :approved, name: "Visible Player")
+      create(:tournament_registration, tournament: tournament, player: player, status: :approved)
+
+      get "/api/tournaments/#{tournament.id}/participants"
+
+      expect(response).to have_http_status(:ok)
+      body = JSON.parse(response.body)
+      expect(body.dig("data", 0, "attributes", "name")).to eq("Visible Player")
+      expect(body.dig("data", 0, "attributes", "kind")).to eq("player")
     end
   end
 end

@@ -17,4 +17,12 @@ class TournamentMatchSerializer
   attribute :winner_name do |match|
     match.winner&.name
   end
+
+  attribute :court_name do |match|
+    match.court&.name
+  end
+
+  attribute :tournament_name do |match|
+    match.tournament&.name
+  end
 end

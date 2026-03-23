@@ -26,6 +26,14 @@ class BookingSerializer
     booking.promo_code&.code
   end
 
+  attribute :branch_name do |booking|
+    booking.branch&.name
+  end
+
+  attribute :court_name do |booking|
+    booking.court&.name
+  end
+
   attribute :booking_slots do |booking|
     booking.booking_slots.map do |slot|
       {

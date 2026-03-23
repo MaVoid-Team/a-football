@@ -10,16 +10,20 @@ import {
     TournamentRegistrationData,
     AdminTournamentRegistration,
     TournamentMatch,
+    TournamentParticipant,
     TournamentAutoScheduleData,
     TournamentMatchScheduleData,
     TournamentMatchLockData,
 } from "@/schemas/tournament.schema";
+import { PlayerParticipation } from "@/schemas/player.schema";
 
 export function useTournamentsAPI() {
     const [tournaments, setTournaments] = useState<Tournament[]>([]);
     const [tournament, setTournament] = useState<Tournament | null>(null);
     const [registrations, setRegistrations] = useState<AdminTournamentRegistration[]>([]);
     const [matches, setMatches] = useState<TournamentMatch[]>([]);
+    const [participants, setParticipants] = useState<TournamentParticipant[]>([]);
+    const [participation, setParticipation] = useState<PlayerParticipation | null>(null);
     const [pagination, setPagination] = useState<PaginationMeta | null>(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -35,6 +39,11 @@ export function useTournamentsAPI() {
     });
 
     const flattenRegistration = (resource: any): AdminTournamentRegistration => ({
+        id: resource.id,
+        ...resource.attributes,
+    });
+
+    const flattenParticipant = (resource: any): TournamentParticipant => ({
         id: resource.id,
         ...resource.attributes,
     });
@@ -58,7 +67,15 @@ export function useTournamentsAPI() {
         return fallback;
     };
 
-    const fetchPublicTournaments = useCallback(async (params?: { branch_id?: number; status?: string; page?: number; per_page?: number }, options?: { silent?: boolean }) => {
+    const playerAuthHeaders = () => {
+        const token = typeof window !== "undefined" ? localStorage.getItem("player_auth_token") : null;
+        return token ? { Authorization: `Bearer ${token}` } : undefined;
+    };
+
+    const fetchPublicTournaments = useCallback(async (
+        params?: { branch_id?: number; status?: string; page?: number; per_page?: number },
+        options?: { silent?: boolean }
+    ) => {
         if (!options?.silent) setLoading(true);
         setError(null);
         try {
@@ -165,10 +182,49 @@ export function useTournamentsAPI() {
         setLoading(true);
         setError(null);
         try {
-            const response = await api.post(`/api/tournaments/${id}/register`, { registration: payload });
+            const response = await api.post(
+                `/api/tournaments/${id}/register`,
+                { registration: payload },
+                playerAuthHeaders() ? { headers: playerAuthHeaders() } : undefined
+            );
             return { success: true, data: response.data?.data };
         } catch (err: any) {
             const message = getApiErrorMessage(err, "Failed to register");
+            setError(message);
+            return {
+                success: false,
+                error: err,
+                errorMessage: message,
+                errorCodes: err.response?.data?.error_codes || [],
+            };
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const registerTeamTournament = async (
+        id: string,
+        payload: {
+            user_team_id?: number;
+            team_name?: string;
+            teammate_name?: string;
+            teammate_phone?: string;
+            teammate_email?: string;
+            teammate_skill_level?: "beginner" | "intermediate" | "advanced";
+            save_team?: boolean;
+        }
+    ) => {
+        setLoading(true);
+        setError(null);
+        try {
+            const response = await api.post(
+                `/api/tournaments/${id}/register_team`,
+                { team_registration: payload },
+                playerAuthHeaders() ? { headers: playerAuthHeaders() } : undefined
+            );
+            return { success: true, data: response.data?.data };
+        } catch (err: any) {
+            const message = getApiErrorMessage(err, "Failed to register team");
             setError(message);
             return {
                 success: false,
@@ -214,6 +270,48 @@ export function useTournamentsAPI() {
             setError(message);
             setMatches([]);
             return { success: false, error: err, errorMessage: message, data: [] as TournamentMatch[] };
+        } finally {
+            if (!options?.silent) setLoading(false);
+        }
+    }, []);
+
+    const fetchPublicParticipants = useCallback(async (tournamentId: string, options?: { silent?: boolean }) => {
+        if (!options?.silent) setLoading(true);
+        setError(null);
+        try {
+            const response = await api.get(`/api/tournaments/${tournamentId}/participants`);
+            const data = response.data?.data?.map(flattenParticipant) || [];
+            setParticipants(data);
+            return { success: true, data };
+        } catch (err: any) {
+            const message = getApiErrorMessage(err, "Failed to fetch participants");
+            setError(message);
+            setParticipants([]);
+            return { success: false, error: err, errorMessage: message, data: [] as TournamentParticipant[] };
+        } finally {
+            if (!options?.silent) setLoading(false);
+        }
+    }, []);
+
+    const fetchMyParticipation = useCallback(async (tournamentId: string, options?: { silent?: boolean }) => {
+        if (!options?.silent) setLoading(true);
+        setError(null);
+        try {
+            const headers = playerAuthHeaders();
+            if (!headers) {
+                setParticipation(null);
+                return { success: false, errorMessage: "Authentication required" };
+            }
+
+            const response = await api.get(`/api/me/tournaments/${tournamentId}`, { headers });
+            const data = { id: response.data.data.id, ...response.data.data.attributes } as PlayerParticipation;
+            setParticipation(data);
+            return { success: true, data };
+        } catch (err: any) {
+            const message = getApiErrorMessage(err, "Failed to fetch participation");
+            setError(message);
+            setParticipation(null);
+            return { success: false, error: err, errorMessage: message };
         } finally {
             if (!options?.silent) setLoading(false);
         }
@@ -347,6 +445,8 @@ export function useTournamentsAPI() {
         tournament,
         registrations,
         matches,
+        participants,
+        participation,
         pagination,
         loading,
         error,
@@ -357,8 +457,11 @@ export function useTournamentsAPI() {
         updateTournament,
         generateBracket,
         registerTournament,
+        registerTeamTournament,
         fetchBracket,
         fetchPublicMatches,
+        fetchPublicParticipants,
+        fetchMyParticipation,
         fetchAdminMatches,
         fetchAdminRegistrations,
         updateRegistration,

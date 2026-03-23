@@ -114,5 +114,28 @@ RSpec.describe "Api::Admin::TournamentRegistrations", type: :request do
       expect(registration.refund_status).to eq("eligible")
       expect(player.status).to eq("cancelled")
     end
+
+    it "cascades approval for team registrations" do
+      captain_user = create(:user)
+      teammate_user = create(:user, email: "mate@example.com", phone: "+201099999999")
+      captain = create(:tournament_player, tournament: tournament, user: captain_user, status: :pending)
+      teammate = create(:tournament_player, tournament: tournament, user: teammate_user, status: :pending)
+      team = create(:tournament_team, tournament: tournament, player1: captain, player2: teammate, status: :pending)
+      captain_registration = create(:tournament_registration, tournament: tournament, player: captain, team: team, status: :pending)
+      teammate_registration = create(:tournament_registration, tournament: tournament, player: teammate, team: team, status: :pending)
+
+      expect(Tournaments::NotificationDispatcher).to receive(:dispatch).twice
+
+      patch "/api/admin/registrations/#{captain_registration.id}",
+            params: { registration: { status: "approved", notes: "team approved" } },
+            headers: headers
+
+      expect(response).to have_http_status(:ok)
+      expect(captain_registration.reload.status).to eq("approved")
+      expect(teammate_registration.reload.status).to eq("approved")
+      expect(team.reload.status).to eq("active")
+      expect(captain.reload.status).to eq("approved")
+      expect(teammate.reload.status).to eq("approved")
+    end
   end
 end
