@@ -33,6 +33,19 @@ RSpec.describe "Api::Admin::CRM", type: :request do
     )
   end
 
+  let!(:warm_player) do
+    create(
+      :user,
+      name: "Warm User",
+      phone: "+201000000003",
+      total_bookings: 2,
+      total_matches: 1,
+      total_tournaments: 0,
+      last_activity_date: 15.days.ago,
+      tags: []
+    )
+  end
+
   let!(:segment) do
     create(
       :segment,
@@ -124,6 +137,17 @@ RSpec.describe "Api::Admin::CRM", type: :request do
       expect(names).to include("Ali")
       expect(names).not_to include("Guest One")
     end
+
+    it "filters by warm status" do
+      get "/api/admin/crm/players", params: { status: "warm" }, headers: headers
+
+      expect(response).to have_http_status(:ok)
+      body = JSON.parse(response.body)
+      names = body["data"].map { |row| row["name"] }
+      expect(names).to include("Warm User")
+      expect(names).not_to include("Ali")
+      expect(names).not_to include("Guest One")
+    end
   end
 
   describe "GET /api/admin/crm/players/:id" do
@@ -136,6 +160,52 @@ RSpec.describe "Api::Admin::CRM", type: :request do
       expect(body.dig("data", "name")).to eq("Ali")
       expect(body.dig("data", "activities")).to be_an(Array)
       expect(body.dig("data", "tags")).to include("vip")
+    end
+
+    it "filters activities by activity_type and includes actor admin name" do
+      create(
+        :activity_log,
+        branch: branch,
+        actor_admin: admin,
+        player: user_player,
+        activity_type: "match_played",
+        metadata: { match_id: 9 }
+      )
+
+      get "/api/admin/crm/players/User-#{user_player.id}", params: { activity_type: "booking" }, headers: headers
+
+      expect(response).to have_http_status(:ok)
+      body = JSON.parse(response.body)
+      activities = body.dig("data", "activities")
+      expect(activities).not_to be_empty
+      expect(activities.all? { |activity| activity["activity_type"] == "booking" }).to be(true)
+      expect(activities.first["actor_admin_name"]).to eq(admin.name)
+    end
+
+    it "returns paginated activity metadata" do
+      5.times do |i|
+        create(
+          :activity_log,
+          branch: branch,
+          actor_admin: admin,
+          player: user_player,
+          activity_type: "booking",
+          metadata: { booking_id: 100 + i }
+        )
+      end
+
+      get "/api/admin/crm/players/User-#{user_player.id}", params: { activity_page: 1, activity_per_page: 3 }, headers: headers
+
+      expect(response).to have_http_status(:ok)
+      body = JSON.parse(response.body)
+      activities = body.dig("data", "activities")
+      meta = body.dig("data", "activities_meta")
+
+      expect(activities.length).to eq(3)
+      expect(meta["page"]).to eq(1)
+      expect(meta["per_page"]).to eq(3)
+      expect(meta["total_count"]).to be >= 6
+      expect(meta["has_more"]).to eq(true)
     end
   end
 

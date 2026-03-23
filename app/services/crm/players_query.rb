@@ -53,6 +53,12 @@ module Crm
       case status
       when "active"
         records.select { |record| record[:last_activity_date].present? && record[:last_activity_date] >= 7.days.ago }
+      when "warm"
+        records.select do |record|
+          record[:last_activity_date].present? &&
+            record[:last_activity_date] < 7.days.ago &&
+            record[:last_activity_date] > 30.days.ago
+        end
       when "inactive"
         records.select { |record| record[:last_activity_date].blank? || record[:last_activity_date] <= 30.days.ago }
       else

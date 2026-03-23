@@ -16,10 +16,24 @@ module Api
         def show
           player_type, player = find_player!(params[:id])
 
-          activities = scoped_activity_logs
-                       .where(player_type: player_type, player_id: player.id)
+          activity_scope = scoped_activity_logs.where(player_type: player_type, player_id: player.id)
+          if params[:activity_type].present?
+            activity_scope = activity_scope.where(activity_type: params[:activity_type].to_s)
+          end
+
+          activity_page = params[:activity_page].to_i
+          activity_per_page = params[:activity_per_page].to_i
+          activity_page = 1 if activity_page <= 0
+          activity_per_page = 20 if activity_per_page <= 0
+          activity_per_page = 100 if activity_per_page > 100
+
+          total_activities = activity_scope.count
+          total_activity_pages = (total_activities.to_f / activity_per_page).ceil
+
+          activities = activity_scope
                        .recent_first
-                       .limit(100)
+                       .offset((activity_page - 1) * activity_per_page)
+                       .limit(activity_per_page)
                        .map do |activity|
             {
               id: activity.id,
@@ -27,6 +41,7 @@ module Api
               reference_type: activity.reference_type,
               reference_id: activity.reference_id,
               metadata: activity.metadata,
+              actor_admin_name: activity.actor_admin&.name,
               created_at: activity.created_at
             }
           end
@@ -45,6 +60,13 @@ module Api
               total_matches: player.total_matches.to_i,
               total_tournaments: player.total_tournaments.to_i,
               tags: player.tags || [],
+              activities_meta: {
+                page: activity_page,
+                per_page: activity_per_page,
+                total_count: total_activities,
+                total_pages: total_activity_pages,
+                has_more: activity_page < total_activity_pages
+              },
               activities: activities
             }
           }, status: :ok
