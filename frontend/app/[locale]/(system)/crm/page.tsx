@@ -23,12 +23,18 @@ export default function CrmDashboardPage() {
           <h1 className="text-2xl font-bold tracking-tight text-foreground">{t("dashboard.title")}</h1>
           <p className="text-sm text-muted-foreground mt-1">{t("dashboard.subtitle")}</p>
         </div>
-        <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+        <div className="grid grid-cols-1 gap-2 sm:grid-cols-4">
           <Button asChild variant="outline" className="w-full">
             <Link href="/crm/players">{t("actions.openPlayers")}</Link>
           </Button>
           <Button asChild className="w-full">
             <Link href="/crm/templates">{t("actions.openTemplates")}</Link>
+          </Button>
+          <Button asChild variant="secondary" className="w-full">
+            <Link href="/crm/actions">{t("actions.openActionCenter")}</Link>
+          </Button>
+          <Button asChild variant="outline" className="w-full">
+            <Link href="/crm/automations">{t("actions.openAutomations")}</Link>
           </Button>
         </div>
       </div>
@@ -61,6 +67,33 @@ export default function CrmDashboardPage() {
           </CardContent>
         </Card>
       </div>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>{t("dashboard.insightsTitle")}</CardTitle>
+          <CardDescription>{t("dashboard.insightsHint")}</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            {(dashboard?.insight_cards || []).map((insight) => (
+              <div key={insight.key} className="rounded-lg border border-border p-3">
+                <p className="text-2xl font-bold">{insight.count}</p>
+                <p className="mt-1 text-sm text-muted-foreground">{insight.message}</p>
+                {insight.action_path && (
+                  <Button asChild size="sm" variant="outline" className="mt-3">
+                    <Link href={insight.action_path}>{t("dashboard.takeAction")}</Link>
+                  </Button>
+                )}
+              </div>
+            ))}
+            {!dashboard?.insight_cards?.length && (
+              <div className="rounded-lg border border-dashed p-3 text-sm text-muted-foreground">
+                {t("dashboard.noInsights")}
+              </div>
+            )}
+          </div>
+        </CardContent>
+      </Card>
 
       <div className="grid gap-4 lg:grid-cols-2">
         <Card>

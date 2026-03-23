@@ -6,6 +6,11 @@ module Crm
       "match_played" => :total_matches
     }.freeze
 
+    RELIABILITY_COUNTER_FIELDS = {
+      "no_show" => :no_show_count,
+      "cancel" => :cancellation_count
+    }.freeze
+
     def initialize(player:, activity_type:, activity_time: Time.current, add_tags: [])
       @player = player
       @activity_type = activity_type.to_s
@@ -19,6 +24,9 @@ module Crm
       attrs = { last_activity_date: @activity_time }
       counter_field = COUNTER_FIELDS[@activity_type]
       attrs[counter_field] = @player.public_send(counter_field).to_i + 1 if counter_field.present?
+
+      reliability_field = RELIABILITY_COUNTER_FIELDS[@activity_type]
+      attrs[reliability_field] = @player.public_send(reliability_field).to_i + 1 if reliability_field.present?
 
       if @add_tags.any?
         attrs[:tags] = (@player.tags + @add_tags).uniq

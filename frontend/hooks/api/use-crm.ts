@@ -4,9 +4,12 @@ import { useCallback, useState } from "react";
 import api from "@/lib/axios";
 import { buildQueryString } from "@/lib/build-query-string";
 import {
+  CrmActionItem,
+  CrmAutomationRule,
   CrmDashboardData,
   CrmMessageTemplate,
   CrmPlayerProfile,
+  CrmScoringSetting,
   CrmPlayerSummary,
   CrmSegment,
 } from "@/schemas/crm.schema";
@@ -30,6 +33,9 @@ export function useCrmAPI() {
   const [player, setPlayer] = useState<CrmPlayerProfile | null>(null);
   const [segments, setSegments] = useState<CrmSegment[]>([]);
   const [templates, setTemplates] = useState<CrmMessageTemplate[]>([]);
+  const [automationRules, setAutomationRules] = useState<CrmAutomationRule[]>([]);
+  const [actionItems, setActionItems] = useState<CrmActionItem[]>([]);
+  const [scoringSetting, setScoringSetting] = useState<CrmScoringSetting | null>(null);
   const [pagination, setPagination] = useState<PaginationMeta | null>(null);
 
   const parsePagination = (headers: any): PaginationMeta => ({
@@ -140,6 +146,34 @@ export function useCrmAPI() {
     }
   }, []);
 
+  const createSegment = useCallback(async (payload: Partial<CrmSegment>) => {
+    setLoading(true);
+    setError(null);
+    try {
+      await api.post("/api/admin/crm/segments", { segment: payload });
+      return { success: true };
+    } catch (err: any) {
+      setError(err.response?.data?.errors?.[0] || "Failed to create segment");
+      return { success: false, error: err };
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  const updateSegment = useCallback(async (id: number, payload: Partial<CrmSegment>) => {
+    setLoading(true);
+    setError(null);
+    try {
+      await api.patch(`/api/admin/crm/segments/${id}`, { segment: payload });
+      return { success: true };
+    } catch (err: any) {
+      setError(err.response?.data?.errors?.[0] || "Failed to update segment");
+      return { success: false, error: err };
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
   const fetchTemplates = useCallback(async () => {
     setLoading(true);
     setError(null);
@@ -200,6 +234,144 @@ export function useCrmAPI() {
     }
   }, []);
 
+  const fetchAutomationRules = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await api.get<{ data: CrmAutomationRule[] }>("/api/admin/crm/automation_rules");
+      setAutomationRules(response.data.data || []);
+      return { success: true, data: response.data.data || [] };
+    } catch (err: any) {
+      setError(err.response?.data?.errors?.[0] || "Failed to fetch automation rules");
+      return { success: false, error: err };
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  const createAutomationRule = useCallback(async (payload: Partial<CrmAutomationRule>) => {
+    setLoading(true);
+    setError(null);
+    try {
+      await api.post("/api/admin/crm/automation_rules", { automation_rule: payload });
+      return { success: true };
+    } catch (err: any) {
+      setError(err.response?.data?.errors?.[0] || "Failed to create automation rule");
+      return { success: false, error: err };
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  const updateAutomationRule = useCallback(async (id: number, payload: Partial<CrmAutomationRule>) => {
+    setLoading(true);
+    setError(null);
+    try {
+      await api.patch(`/api/admin/crm/automation_rules/${id}`, { automation_rule: payload });
+      return { success: true };
+    } catch (err: any) {
+      setError(err.response?.data?.errors?.[0] || "Failed to update automation rule");
+      return { success: false, error: err };
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  const fetchActionItems = useCallback(async (params?: { status?: string; player_type?: string; player_id?: number }) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const query = buildQueryString(params as Record<string, string | number | boolean | null | undefined>);
+      const response = await api.get<{ data: CrmActionItem[] }>(`/api/admin/crm/action_items${query}`);
+      setActionItems(response.data.data || []);
+      return { success: true, data: response.data.data || [] };
+    } catch (err: any) {
+      setError(err.response?.data?.errors?.[0] || "Failed to fetch action items");
+      return { success: false, error: err };
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  const updateActionItemStatus = useCallback(async (id: number, status: "completed" | "ignored") => {
+    setLoading(true);
+    setError(null);
+    try {
+      await api.patch(`/api/admin/crm/action_items/${id}`, { status });
+      return { success: true };
+    } catch (err: any) {
+      setError(err.response?.data?.errors?.[0] || "Failed to update action item");
+      return { success: false, error: err };
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  const generateActionItemWhatsappLink = useCallback(async (id: number, templateId?: number) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await api.post<{ data: { whatsapp_link: string } }>(`/api/admin/crm/action_items/${id}/whatsapp_link`, {
+        template_id: templateId,
+      });
+      return { success: true, data: response.data.data };
+    } catch (err: any) {
+      setError(err.response?.data?.errors?.[0] || "Failed to generate action WhatsApp link");
+      return { success: false, error: err };
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  const generateBulkWhatsappLinks = useCallback(async (segmentId: number, templateId: number) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await api.post<{ data: Array<{ player_key: string; whatsapp_link: string; message: string }> }>(
+        "/api/admin/crm/action_items/bulk_whatsapp_links",
+        {
+          segment_id: segmentId,
+          template_id: templateId,
+        },
+      );
+      return { success: true, data: response.data.data || [] };
+    } catch (err: any) {
+      setError(err.response?.data?.errors?.[0] || "Failed to generate bulk WhatsApp links");
+      return { success: false, error: err };
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  const fetchScoringSetting = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await api.get<{ data: CrmScoringSetting }>("/api/admin/crm/scoring_settings");
+      setScoringSetting(response.data.data);
+      return { success: true, data: response.data.data };
+    } catch (err: any) {
+      setError(err.response?.data?.errors?.[0] || "Failed to fetch scoring settings");
+      return { success: false, error: err };
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  const updateScoringSetting = useCallback(async (payload: Partial<CrmScoringSetting>) => {
+    setLoading(true);
+    setError(null);
+    try {
+      await api.patch("/api/admin/crm/scoring_settings", { scoring_setting: payload });
+      return { success: true };
+    } catch (err: any) {
+      setError(err.response?.data?.errors?.[0] || "Failed to update scoring settings");
+      return { success: false, error: err };
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
   return {
     loading,
     error,
@@ -208,6 +380,9 @@ export function useCrmAPI() {
     player,
     segments,
     templates,
+    automationRules,
+    actionItems,
+    scoringSetting,
     pagination,
     fetchDashboard,
     fetchPlayers,
@@ -215,9 +390,20 @@ export function useCrmAPI() {
     fetchPlayer,
     updatePlayerTag,
     fetchSegments,
+    createSegment,
+    updateSegment,
     fetchTemplates,
     createTemplate,
     updateTemplate,
     generateWhatsappLink,
+    fetchAutomationRules,
+    createAutomationRule,
+    updateAutomationRule,
+    fetchActionItems,
+    updateActionItemStatus,
+    generateActionItemWhatsappLink,
+    generateBulkWhatsappLinks,
+    fetchScoringSetting,
+    updateScoringSetting,
   };
 }

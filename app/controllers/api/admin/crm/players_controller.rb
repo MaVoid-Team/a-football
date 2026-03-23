@@ -15,6 +15,8 @@ module Api
 
         def show
           player_type, player = find_player!(params[:id])
+          score = PlayerScore.find_by(player_type: player_type, player_id: player.id)
+          flags = BehaviorFlag.for_player(player_type, player.id).active_only.pluck(:flag_type)
 
           activity_scope = scoped_activity_logs.where(player_type: player_type, player_id: player.id)
           if params[:activity_type].present?
@@ -59,6 +61,16 @@ module Api
               total_bookings: player.total_bookings.to_i,
               total_matches: player.total_matches.to_i,
               total_tournaments: player.total_tournaments.to_i,
+              no_show_count: player.no_show_count.to_i,
+              cancellation_count: player.cancellation_count.to_i,
+              player_score: score&.total_score.to_i,
+              score_breakdown: {
+                engagement_score: score&.engagement_score.to_i,
+                activity_score: score&.activity_score.to_i,
+                frequency_score: score&.frequency_score.to_i,
+                reliability_score: score&.reliability_score.to_i
+              },
+              behavior_flags: flags,
               tags: player.tags || [],
               activities_meta: {
                 page: activity_page,

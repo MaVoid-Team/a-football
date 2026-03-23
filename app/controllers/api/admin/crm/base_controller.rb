@@ -25,6 +25,14 @@ module Api
           current_admin.super_admin? ? ActivityLog.all : ActivityLog.where(branch_id: current_admin.branch_id)
         end
 
+        def scoped_automation_rules
+          current_admin.super_admin? ? AutomationRule.all : AutomationRule.for_branch(current_admin.branch_id)
+        end
+
+        def scoped_action_items
+          current_admin.super_admin? ? ActionItem.all : ActionItem.for_branch(current_admin.branch_id)
+        end
+
         def find_player!(compound_id)
           player_type, player_id = compound_id.to_s.split("-", 2)
           raise ActiveRecord::RecordNotFound, "Invalid CRM player id" if player_type.blank? || player_id.blank?

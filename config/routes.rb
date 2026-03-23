@@ -96,9 +96,19 @@ Rails.application.routes.draw do
             patch :tags, to: "players#update_tags"
           end
         end
-        resources :segments, only: %i[index] do
+        resources :segments, only: %i[index create update] do
           member do
             get :players
+          end
+        end
+        resources :automation_rules, only: %i[index create update]
+        resource :scoring_settings, only: %i[show update], controller: "scoring_settings"
+        resources :action_items, only: %i[index update] do
+          member do
+            post :whatsapp_link
+          end
+          collection do
+            post :bulk_whatsapp_links
           end
         end
         resources :message_templates, only: %i[index create update]

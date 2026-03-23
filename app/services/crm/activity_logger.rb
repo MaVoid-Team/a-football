@@ -30,6 +30,11 @@ module Crm
         add_tags: @add_tags
       ).call
 
+      resolved_branch_id = resolve_branch_id
+      Crm::SegmentMembershipSync.new(player: @player, branch_id: resolved_branch_id).call
+      Crm::PlayerScoreUpdater.new(player: @player, branch_id: resolved_branch_id).call
+      Crm::AutomationRuleEvaluator.new(player: @player, branch_id: resolved_branch_id, event_activity_type: @activity_type).call
+
       log
     rescue StandardError => e
       Rails.logger.error("[CRM][ActivityLogger] #{e.class}: #{e.message}")

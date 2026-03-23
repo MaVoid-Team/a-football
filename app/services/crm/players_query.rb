@@ -21,6 +21,9 @@ module Crm
     private
 
     def serialize_player(player_type, player)
+      score = PlayerScore.find_by(player_type: player_type, player_id: player.id)
+      flags = BehaviorFlag.for_player(player_type, player.id).active_only.pluck(:flag_type)
+
       {
         key: "#{player_type}-#{player.id}",
         player_type: player_type,
@@ -33,6 +36,10 @@ module Crm
         total_bookings: player.total_bookings.to_i,
         total_matches: player.total_matches.to_i,
         total_tournaments: player.total_tournaments.to_i,
+        no_show_count: player.no_show_count.to_i,
+        cancellation_count: player.cancellation_count.to_i,
+        player_score: score&.total_score.to_i,
+        behavior_flags: flags,
         tags: player.tags || []
       }
     end
@@ -90,12 +97,21 @@ module Crm
       segment = Segment.active_only.find_by(id: segment_id)
       return [] if segment.blank?
 
-      records.select do |record|
-        player = record[:player_type].constantize.find_by(id: record[:player_id])
-        next false if player.blank?
+      membership_keys = SegmentMembership
+                        .for_segment(segment.id)
+                        .pluck(:player_type, :player_id)
+                        .map { |player_type, player_id| "#{player_type}-#{player_id}" }
 
-        Crm::SegmentEvaluator.new(segment: segment, player: player).match?
+      if membership_keys.empty?
+        return records.select do |record|
+          player = record[:player_type].constantize.find_by(id: record[:player_id])
+          next false if player.blank?
+
+          Crm::ConditionMatcher.new(player: player, conditions: segment.conditions).match?
+        end
       end
+
+      records.select { |record| membership_keys.include?(record[:key]) }
     end
 
     def sort_records(records)

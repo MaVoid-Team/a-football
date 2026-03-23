@@ -245,6 +245,173 @@ RSpec.describe "Api::Admin::CRM", type: :request do
     end
   end
 
+  describe "POST /api/admin/crm/segments" do
+    it "creates a dynamic segment" do
+      post "/api/admin/crm/segments",
+           params: {
+             segment: {
+               name: "no_show_risk",
+               auto_update: true,
+               active: true,
+               conditions: {
+                 "operator" => "all",
+                 "rules" => [
+                   { "field" => "no_show_count", "op" => "gte", "value" => 1 }
+                 ]
+               }
+             }
+           },
+           headers: headers
+
+      expect(response).to have_http_status(:created)
+      body = JSON.parse(response.body)
+      expect(body.dig("data", "name")).to eq("no_show_risk")
+      expect(body.dig("data", "auto_update")).to eq(true)
+    end
+  end
+
+  describe "GET and POST /api/admin/crm/automation_rules" do
+    it "creates and lists automation rules" do
+      post "/api/admin/crm/automation_rules",
+           params: {
+             automation_rule: {
+               name: "Inactive follow-up",
+               trigger_type: "inactivity",
+               action_type: "suggest_whatsapp",
+               template_id: template.id,
+               is_active: true,
+               conditions: {
+                 "last_activity_days" => ">7"
+               }
+             }
+           },
+           headers: headers
+
+      expect(response).to have_http_status(:created)
+
+      get "/api/admin/crm/automation_rules", headers: headers
+      expect(response).to have_http_status(:ok)
+      body = JSON.parse(response.body)
+      expect(body["data"].map { |row| row["name"] }).to include("Inactive follow-up")
+    end
+  end
+
+  describe "Action Center APIs" do
+    let!(:automation_rule) do
+      create(
+        :automation_rule,
+        name: "No-show action",
+        trigger_type: "no_show_detected",
+        action_type: "suggest_whatsapp",
+        branch: branch,
+        template: template,
+        created_by_admin: admin,
+        conditions: {
+          "operator" => "all",
+          "rules" => [
+            { "field" => "no_show_count", "op" => "gte", "value" => 1 }
+          ]
+        }
+      )
+    end
+
+    let!(:action_item) do
+      create(
+        :action_item,
+        player_type: "User",
+        player_id: user_player.id,
+        automation_rule: automation_rule,
+        suggested_template: template,
+        branch: branch,
+        reason: "Player inactive for 10 days",
+        status: "pending"
+      )
+    end
+
+    it "lists pending actions" do
+      get "/api/admin/crm/action_items", params: { status: "pending" }, headers: headers
+
+      expect(response).to have_http_status(:ok)
+      body = JSON.parse(response.body)
+      expect(body["data"].map { |row| row["id"] }).to include(action_item.id)
+    end
+
+    it "marks action as completed" do
+      patch "/api/admin/crm/action_items/#{action_item.id}", params: { status: "completed" }, headers: headers
+
+      expect(response).to have_http_status(:ok)
+      expect(action_item.reload.status).to eq("completed")
+    end
+
+    it "generates whatsapp link for action item" do
+      post "/api/admin/crm/action_items/#{action_item.id}/whatsapp_link", headers: headers
+
+      expect(response).to have_http_status(:ok)
+      body = JSON.parse(response.body)
+      expect(body.dig("data", "whatsapp_link")).to start_with("https://wa.me/")
+    end
+
+    it "generates bulk whatsapp links by segment" do
+      create(
+        :segment_membership,
+        segment: segment,
+        player_type: "User",
+        player_id: user_player.id,
+        branch: branch,
+        matched_at: Time.current
+      )
+
+      post "/api/admin/crm/action_items/bulk_whatsapp_links",
+           params: {
+             segment_id: segment.id,
+             template_id: template.id
+           },
+           headers: headers
+
+      expect(response).to have_http_status(:ok)
+      body = JSON.parse(response.body)
+      expect(body["data"]).to be_an(Array)
+      expect(body["meta"]["segment_id"]).to eq(segment.id)
+    end
+  end
+
+  describe "GET and PATCH /api/admin/crm/scoring_settings" do
+    it "returns scoring settings for the current branch" do
+      CrmScoringSetting.create!(
+        branch: branch,
+        activity_weight: 35,
+        frequency_weight: 25,
+        engagement_weight: 25,
+        reliability_weight: 15
+      )
+
+      get "/api/admin/crm/scoring_settings", headers: headers
+
+      expect(response).to have_http_status(:ok)
+      body = JSON.parse(response.body)
+      expect(body.dig("data", "branch_id")).to eq(branch.id)
+      expect(body.dig("data", "activity_weight")).to eq(35)
+    end
+
+    it "updates scoring settings" do
+      patch "/api/admin/crm/scoring_settings",
+            params: {
+              scoring_setting: {
+                activity_weight: 40,
+                frequency_weight: 20,
+                engagement_weight: 20,
+                reliability_weight: 20
+              }
+            },
+            headers: headers
+
+      expect(response).to have_http_status(:ok)
+      body = JSON.parse(response.body)
+      expect(body.dig("data", "activity_weight")).to eq(40)
+      expect(CrmScoringSetting.find_by(branch_id: branch.id)&.frequency_weight).to eq(20)
+    end
+  end
+
   describe "GET and POST /api/admin/crm/message_templates" do
     it "lists templates" do
       get "/api/admin/crm/message_templates", headers: headers

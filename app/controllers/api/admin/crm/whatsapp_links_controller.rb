@@ -15,7 +15,11 @@ module Api
             content: template.content,
             variables: {
               "name" => player.name,
-              "club_name" => branch_name.to_s
+              "club_name" => branch_name.to_s,
+              "last_played_days" => last_played_days(player),
+              "total_matches" => player.total_matches.to_i,
+              "next_available_slot" => params[:next_available_slot].to_s,
+              "tournament_name" => params[:tournament_name].to_s
             }
           ).call
 
@@ -29,6 +33,14 @@ module Api
               whatsapp_link: link
             }
           }, status: :ok
+        end
+
+        private
+
+        def last_played_days(player)
+          return "N/A" if player.last_activity_date.blank?
+
+          ((Time.current - player.last_activity_date) / 1.day).floor.to_s
         end
       end
     end

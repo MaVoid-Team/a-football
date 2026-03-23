@@ -172,12 +172,27 @@ export default function CrmPlayerProfilePage() {
         </Button>
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-6">
         <Card><CardContent className="pt-6"><p className="text-sm text-muted-foreground">{t("players.bookings")}</p><p className="text-2xl font-bold">{player?.total_bookings || 0}</p></CardContent></Card>
         <Card><CardContent className="pt-6"><p className="text-sm text-muted-foreground">{t("players.matches")}</p><p className="text-2xl font-bold">{player?.total_matches || 0}</p></CardContent></Card>
         <Card><CardContent className="pt-6"><p className="text-sm text-muted-foreground">{t("players.tournaments")}</p><p className="text-2xl font-bold">{player?.total_tournaments || 0}</p></CardContent></Card>
         <Card><CardContent className="pt-6"><p className="text-sm text-muted-foreground">{t("players.lastActivity")}</p><p className="text-sm font-medium">{formatDate(player?.last_activity_date, "PP")}</p></CardContent></Card>
+        <Card><CardContent className="pt-6"><p className="text-sm text-muted-foreground">{t("players.score")}</p><p className="text-2xl font-bold">{player?.player_score ?? 0}</p></CardContent></Card>
+        <Card><CardContent className="pt-6"><p className="text-sm text-muted-foreground">{t("players.noShows")}</p><p className="text-2xl font-bold">{player?.no_show_count || 0}</p><p className="text-xs text-muted-foreground mt-1">{t("players.cancellations")}: {player?.cancellation_count || 0}</p></CardContent></Card>
       </div>
+
+      {Boolean(player?.behavior_flags?.length) && (
+        <Card>
+          <CardHeader>
+            <CardTitle>{t("players.behaviorFlags")}</CardTitle>
+          </CardHeader>
+          <CardContent className="flex flex-wrap gap-2">
+            {(player?.behavior_flags || []).map((flag) => (
+              <Badge key={flag} variant="outline">{flag}</Badge>
+            ))}
+          </CardContent>
+        </Card>
+      )}
 
       <Card>
         <CardHeader>

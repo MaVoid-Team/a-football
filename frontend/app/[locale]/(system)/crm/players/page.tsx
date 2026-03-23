@@ -26,8 +26,10 @@ export default function CrmPlayersPage() {
     fetchPlayers,
     fetchSegmentPlayers,
     fetchSegments,
+    createSegment,
     fetchTemplates,
     generateWhatsappLink,
+    generateBulkWhatsappLinks,
   } = useCrmAPI();
 
   const [searchInput, setSearchInput] = useState("");
@@ -39,6 +41,13 @@ export default function CrmPlayersPage() {
   const [templateId, setTemplateId] = useState("all");
   const [isApplying, setIsApplying] = useState(false);
   const [messagingPlayerKey, setMessagingPlayerKey] = useState<string | null>(null);
+  const [segmentName, setSegmentName] = useState("");
+  const [segmentField, setSegmentField] = useState("last_activity_days");
+  const [segmentOp, setSegmentOp] = useState("gte");
+  const [segmentValue, setSegmentValue] = useState("7");
+  const [isCreatingSegment, setIsCreatingSegment] = useState(false);
+  const [bulkLinks, setBulkLinks] = useState<Array<{ player_key: string; whatsapp_link: string; message: string }>>([]);
+  const [isGeneratingBulk, setIsGeneratingBulk] = useState(false);
   const [filters, setFilters] = useState<{
     search?: string;
     tags?: string;
@@ -163,6 +172,58 @@ export default function CrmPlayersPage() {
     setMessagingPlayerKey(null);
   };
 
+  const onCreateSegment = async () => {
+    if (!segmentName.trim()) {
+      toast.error(t("players.segmentNameRequired"));
+      return;
+    }
+
+    setIsCreatingSegment(true);
+    const result = await createSegment({
+      name: segmentName.trim(),
+      active: true,
+      auto_update: true,
+      conditions: {
+        operator: "all",
+        rules: [{ field: segmentField, op: segmentOp, value: Number(segmentValue) || segmentValue }],
+      },
+    });
+
+    if (!result.success) {
+      toast.error(t("players.segmentCreateFailed"));
+      setIsCreatingSegment(false);
+      return;
+    }
+
+    await fetchSegments();
+    setSegmentName("");
+    toast.success(t("players.segmentCreated"));
+    setIsCreatingSegment(false);
+  };
+
+  const onGenerateBulkLinks = async () => {
+    if (segmentIdInput === "all") {
+      toast.error(t("players.selectSegmentForBulk"));
+      return;
+    }
+    if (!activeTemplateId) {
+      toast.error(t("players.selectTemplateFirst"));
+      return;
+    }
+
+    setIsGeneratingBulk(true);
+    const result = await generateBulkWhatsappLinks(Number(segmentIdInput), activeTemplateId);
+    if (!result.success || !result.data) {
+      toast.error(t("players.bulkGenerateFailed"));
+      setIsGeneratingBulk(false);
+      return;
+    }
+
+    setBulkLinks(result.data);
+    toast.success(t("players.bulkGenerated", { count: result.data.length }));
+    setIsGeneratingBulk(false);
+  };
+
   return (
     <div className="space-y-6 animate-in fade-in-50 duration-500">
       <div>
@@ -234,6 +295,44 @@ export default function CrmPlayersPage() {
         </CardContent>
       </Card>
 
+      <Card>
+        <CardHeader>
+          <CardTitle>{t("players.segmentBuilder")}</CardTitle>
+        </CardHeader>
+        <CardContent className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-5">
+          <Input
+            placeholder={t("players.segmentNamePlaceholder")}
+            value={segmentName}
+            onChange={(e) => setSegmentName(e.target.value)}
+          />
+          <Select value={segmentField} onValueChange={setSegmentField}>
+            <SelectTrigger><SelectValue /></SelectTrigger>
+            <SelectContent>
+              <SelectItem value="last_activity_days">last_activity_days</SelectItem>
+              <SelectItem value="total_bookings">total_bookings</SelectItem>
+              <SelectItem value="total_tournaments">total_tournaments</SelectItem>
+              <SelectItem value="no_show_count">no_show_count</SelectItem>
+              <SelectItem value="tags">tags</SelectItem>
+            </SelectContent>
+          </Select>
+          <Select value={segmentOp} onValueChange={setSegmentOp}>
+            <SelectTrigger><SelectValue /></SelectTrigger>
+            <SelectContent>
+              <SelectItem value="gte">gte</SelectItem>
+              <SelectItem value="lte">lte</SelectItem>
+              <SelectItem value="gt">gt</SelectItem>
+              <SelectItem value="lt">lt</SelectItem>
+              <SelectItem value="eq">eq</SelectItem>
+              <SelectItem value="includes">includes</SelectItem>
+            </SelectContent>
+          </Select>
+          <Input value={segmentValue} onChange={(e) => setSegmentValue(e.target.value)} placeholder={t("players.segmentValue")} />
+          <Button disabled={isCreatingSegment} onClick={onCreateSegment}>
+            {isCreatingSegment ? t("players.creatingSegment") : t("players.createSegment")}
+          </Button>
+        </CardContent>
+      </Card>
+
       {selectedSegment && (
         <Card>
           <CardHeader className="pb-3">
@@ -263,6 +362,12 @@ export default function CrmPlayersPage() {
                   <div className="flex flex-wrap gap-1">
                     <Badge variant="outline">{player.player_type}</Badge>
                     {player.skill_level && <Badge variant="outline">{player.skill_level}</Badge>}
+                    {typeof player.player_score === "number" && (
+                      <Badge variant="secondary">{t("players.score")}: {player.player_score}</Badge>
+                    )}
+                    {(player.behavior_flags || []).map((flag) => (
+                      <Badge key={flag} variant="outline">{flag}</Badge>
+                    ))}
                   </div>
                 </div>
 
@@ -270,6 +375,7 @@ export default function CrmPlayersPage() {
                   <p>{t("players.bookings")}: {player.total_bookings}</p>
                   <p>{t("players.matches")}: {player.total_matches}</p>
                   <p>{t("players.tournaments")}: {player.total_tournaments}</p>
+                  <p>{t("players.noShows")}: {player.no_show_count || 0}</p>
                 </div>
 
                 <div className="flex max-w-full flex-wrap gap-1">
@@ -320,6 +426,29 @@ export default function CrmPlayersPage() {
                 setPage(1);
               }}
             />
+          )}
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>{t("players.bulkActions")}</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          <Button disabled={isGeneratingBulk} onClick={onGenerateBulkLinks}>
+            {isGeneratingBulk ? t("players.generatingBulk") : t("players.generateBulkWhatsapp")}
+          </Button>
+          {bulkLinks.length > 0 && (
+            <div className="space-y-2">
+              {bulkLinks.slice(0, 20).map((item) => (
+                <div key={item.player_key} className="rounded-md border border-border p-2 text-xs">
+                  <p className="font-medium">{item.player_key}</p>
+                  <a href={item.whatsapp_link} target="_blank" rel="noreferrer" className="text-primary underline">
+                    {t("players.openGeneratedLink")}
+                  </a>
+                </div>
+              ))}
+            </div>
           )}
         </CardContent>
       </Card>
