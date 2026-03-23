@@ -65,7 +65,7 @@ export default function BookingsPage() {
     const handleUpdatePayment = async (id: string, status: "pending" | "paid" | "refunded") => {
         const res = await updatePaymentStatus(id, status);
         if (res.success) {
-            toast.success(t("toasts.paymentStatusUpdated", { status }));
+            toast.success(t("toasts.paymentStatusUpdated", { status: t(`status.${status}`) }));
             loadData();
         }
         return res;

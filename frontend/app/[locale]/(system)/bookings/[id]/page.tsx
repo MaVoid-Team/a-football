@@ -195,7 +195,7 @@ export default function BookingDetailsPage() {
             <Row label={t("detail.court")} value={courtName} />
             <Row label={t("detail.date")} value={formatDate(booking.date, "PPPP")} />
             <Row label={t("detail.time")} value={`${formatTime(booking.start_time)} - ${formatTime(booking.end_time)}`} />
-            <Row label={t("detail.hours")} value={`${booking.hours ?? 0}h`} />
+            <Row label={t("detail.hours")} value={`${booking.hours ?? 0}${t("detail.hoursSuffix")}`} />
             <Row label={t("detail.createdAt")} value={formatDate(booking.created_at, "PPpp")} />
           </CardContent>
         </Card>

@@ -168,6 +168,7 @@
   },
   "dashboard": {
     "welcomeBack": "Welcome back, {name}!",
+    "defaultAdminName": "Admin",
     "scopeAllBranches": "across all branches",
     "scopeYourBranch": "at your branch",
     "happeningRecently": "Here is what's happening {scope} recently.",
@@ -195,8 +196,10 @@
       "title": "Recent Activity",
       "description": "Automated system suggestions and alerts.",
       "highDemandOnCourt": "High demand on {court}",
+      "sampleCourtName": "Court 1",
       "createPremiumPackage": "Consider creating a premium package.",
       "newAdminOnboarded": "New admin onboarded",
+      "sampleTimeAgo": "2 hours",
       "userJoinedAgo": "{email} joined {time} ago."
     }
   },
@@ -736,6 +739,7 @@
       "userHeader": "User",
       "locationHeader": "Location",
       "scheduleHeader": "Schedule",
+      "hoursSuffix": "h",
       "priceHeader": "Price",
       "paymentTypeHeader": "Payment Type",
       "paymentTypeFull": "Full",
@@ -745,6 +749,7 @@
       "notesHeader": "Notes",
       "statusHeader": "Status",
       "actionsHeader": "Actions",
+      "viewDetails": "View Details",
       "unknown": "Unknown",
       "noNotes": "No notes",
       "openMenu": "Open menu",
@@ -788,6 +793,7 @@
       "date": "Date",
       "time": "Time",
       "hours": "Hours",
+      "hoursSuffix": "h",
       "createdAt": "Created At",
       "screenshotTitle": "Payment Screenshot",
       "adminNotesTitle": "Admin Notes",

@@ -168,6 +168,7 @@
   },
   "dashboard": {
     "welcomeBack": "أهلاً يا {name}!",
+    "defaultAdminName": "الأدمن",
     "scopeAllBranches": "في كل الفروع",
     "scopeYourBranch": "في فرعك",
     "happeningRecently": "اللي حصل {scope} الفترة دي",
@@ -195,8 +196,10 @@
       "title": "آخر الأخبار",
       "description": "تنبيهات واقتراحات",
       "highDemandOnCourt": "طلب عالي على {court}",
+      "sampleCourtName": "الملعب 1",
       "createPremiumPackage": "ممكن تعمل باكدج Premium",
       "newAdminOnboarded": "في أدمن جديد دخل",
+      "sampleTimeAgo": "ساعتين",
       "userJoinedAgo": "{email} دخل من {time}"
     }
   },
@@ -736,6 +739,7 @@
       "userHeader": "العميل",
       "locationHeader": "المكان",
       "scheduleHeader": "الميعاد",
+      "hoursSuffix": "س",
       "priceHeader": "السعر",
       "paymentTypeHeader": "نوع الدفع",
       "paymentTypeFull": "كامل",
@@ -745,6 +749,7 @@
       "notesHeader": "ملاحظات",
       "statusHeader": "الحالة",
       "actionsHeader": "أكشنز",
+      "viewDetails": "التفاصيل",
       "unknown": "مش معروف",
       "noNotes": "مفيش",
       "openMenu": "افتح",
@@ -788,6 +793,7 @@
       "date": "التاريخ",
       "time": "الوقت",
       "hours": "عدد الساعات",
+      "hoursSuffix": "س",
       "createdAt": "اتعمل في",
       "screenshotTitle": "إيصال الدفع",
       "adminNotesTitle": "ملاحظات الأدمن",
@@ -809,7 +815,7 @@
       "exportAllFiltered": "صدّر الكل (Excel)"
     },
     "toasts": {
-      "paymentStatusUpdated": "تمام! الحاله بقت: {status}",
+      "paymentStatusUpdated": "تمام! الحالة بقت: {status}",
       "paymentStatusUpdateFailed": "مقدرناش نحدث حالة الدفع",
       "cancelled": "تمام! اتلغى",
       "adminNotesSaved": "تمام! الملاحظات اتحفظت",

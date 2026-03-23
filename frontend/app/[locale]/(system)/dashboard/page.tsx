@@ -18,7 +18,7 @@ export default function DashboardPage() {
         fetchStatistics({ days: 30 }); // Default to last 30 days
     }, [fetchStatistics]);
 
-    const adminName = admin?.email?.split("@")[0] || "Admin";
+    const adminName = admin?.email?.split("@")[0] || t("defaultAdminName");
     const scope = admin?.role === "super_admin" ? t("scopeAllBranches") : t("scopeYourBranch");
 
     return (
@@ -169,13 +169,13 @@ export default function DashboardPage() {
                         <div className="space-y-4 border-l-2 border-primary/20 pl-4 py-2">
                             <div className="relative">
                                 <span className="absolute -left-[21px] top-1 h-2 w-2 rounded-full bg-primary" />
-                                <p className="text-sm font-medium">{t("recentActivity.highDemandOnCourt", { court: "Court 1" })}</p>
+                                <p className="text-sm font-medium">{t("recentActivity.highDemandOnCourt", { court: t("recentActivity.sampleCourtName") })}</p>
                                 <p className="text-xs text-muted-foreground">{t("recentActivity.createPremiumPackage")}</p>
                             </div>
                             <div className="relative">
                                 <span className="absolute -left-[21px] top-1 h-2 w-2 rounded-full bg-muted-foreground" />
                                 <p className="text-sm font-medium">{t("recentActivity.newAdminOnboarded")}</p>
-                                <p className="text-xs text-muted-foreground">{t("recentActivity.userJoinedAgo", { email: "john@courts.com", time: "2 hours" })}</p>
+                                <p className="text-xs text-muted-foreground">{t("recentActivity.userJoinedAgo", { email: "john@courts.com", time: t("recentActivity.sampleTimeAgo") })}</p>
                             </div>
                         </div>
                     </CardContent>

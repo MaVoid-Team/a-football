@@ -75,7 +75,7 @@ export function BookingTable({ bookings, branches, courts, isLoading, onUpdatePa
                 <div className="flex flex-col">
                     <span className="text-sm font-medium">{formatDate(b.date, "PP")}</span>
                     <span className="text-xs text-muted-foreground">
-                        {formatTime(b.start_time)} - {formatTime(b.end_time)} ({b.hours}h)
+                        {formatTime(b.start_time)} - {formatTime(b.end_time)} ({b.hours}{t("table.hoursSuffix")})
                     </span>
                 </div>
             ),
@@ -89,36 +89,6 @@ export function BookingTable({ bookings, branches, courts, isLoading, onUpdatePa
                         <span className="text-xs text-green-600 dark:text-green-400">
                             -{formatCurrency(b.discount_amount)}
                         </span>
-                    )}
-                </div>
-            ),
-        },
-        {
-            header: t("table.paymentTypeHeader"),
-            cell: (b: Booking) => (
-                <Badge variant={b.payment_option === "deposit" ? "outline" : "secondary"} className="text-[10px]">
-                    {b.payment_option === "deposit" ? t("table.paymentTypeDeposit") : t("table.paymentTypeFull")}
-                </Badge>
-            ),
-        },
-        {
-            header: t("table.dueNowHeader"),
-            cell: (b: Booking) => <span className="font-medium">{formatCurrency(b.amount_due_now || b.total_price || 0)}</span>,
-        },
-        {
-            header: t("table.remainingHeader"),
-            cell: (b: Booking) => <span>{formatCurrency(b.amount_remaining || 0)}</span>,
-        },
-        {
-            header: t("table.notesHeader"),
-            cell: (b: Booking) => (
-                <div className="max-w-[220px]">
-                    {b.notes ? (
-                        <p className="text-sm text-muted-foreground truncate" title={b.notes}>
-                            {b.notes}
-                        </p>
-                    ) : (
-                        <p className="text-sm text-muted-foreground/50 italic">{t("table.noNotes")}</p>
                     )}
                 </div>
             ),
