@@ -21,7 +21,7 @@ RSpec.describe Tournaments::AutoScheduler, type: :service do
     let(:court_one) { create(:court, branch: branch) }
     let(:court_two) { create(:court, branch: branch) }
 
-    it "schedules all playable matches" do
+    it "schedules playable matches in parallel time slots when courts are available" do
       result = described_class.new(
         tournament: tournament,
         start_time: 2.days.from_now,
@@ -33,6 +33,7 @@ RSpec.describe Tournaments::AutoScheduler, type: :service do
       match2.reload
       expect(match1.scheduled_time).to be_present
       expect(match2.scheduled_time).to be_present
+      expect(match1.scheduled_time.to_i).to eq(match2.scheduled_time.to_i)
     end
 
     it "skips locked matches when override_locked is false" do
@@ -81,6 +82,31 @@ RSpec.describe Tournaments::AutoScheduler, type: :service do
       match2.reload
       expect(match1.scheduled_time.to_i).to eq(original_time.to_i)
       expect(match2.scheduled_time).to be_present
+    end
+
+    it "can schedule ready matches from different rounds in the same slot" do
+      match2.update!(team1: nil, team2: nil)
+      cross_round_match = create(
+        :tournament_match,
+        tournament: tournament,
+        round_number: 2,
+        match_number: 1,
+        team1: team3,
+        team2: team4
+      )
+
+      result = described_class.new(
+        tournament: tournament,
+        start_time: 2.days.from_now.change(min: 0),
+        court_ids: [court_one.id, court_two.id]
+      ).call
+
+      expect(result).to be_success
+      match1.reload
+      cross_round_match.reload
+      expect(match1.scheduled_time).to be_present
+      expect(cross_round_match.scheduled_time).to be_present
+      expect(match1.scheduled_time.to_i).to eq(cross_round_match.scheduled_time.to_i)
     end
 
     it "fails when no courts are provided" do

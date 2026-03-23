@@ -74,7 +74,7 @@ RSpec.describe "Api::Admin::TournamentMatches", type: :request do
       expect(body["error_codes"]).to include("override_not_allowed")
     end
 
-    it "prevents back-to-back scheduling for same team" do
+    it "allows immediate back-to-back scheduling for same team when times do not overlap" do
       time = 3.days.from_now.change(min: 0)
       semi1.update!(court: court, scheduled_time: time, status: :scheduled)
 
@@ -89,6 +89,27 @@ RSpec.describe "Api::Admin::TournamentMatches", type: :request do
 
       patch "/api/admin/matches/#{another_match.id}/schedule",
             params: { match: { court_id: court.id, scheduled_time: time + tournament.match_duration_minutes.minutes } },
+            headers: headers
+
+      expect(response).to have_http_status(:ok)
+    end
+
+    it "prevents scheduling overlapping matches for the same team" do
+      other_court = create(:court, branch: branch)
+      time = 3.days.from_now.change(min: 0)
+      semi1.update!(court: court, scheduled_time: time, status: :scheduled)
+
+      another_match = create(
+        :tournament_match,
+        tournament: tournament,
+        round_number: 1,
+        match_number: 3,
+        team1: team1,
+        team2: team3
+      )
+
+      patch "/api/admin/matches/#{another_match.id}/schedule",
+            params: { match: { court_id: other_court.id, scheduled_time: time } },
             headers: headers
 
       expect(response).to have_http_status(:unprocessable_entity)
@@ -148,7 +169,7 @@ RSpec.describe "Api::Admin::TournamentMatches", type: :request do
     let!(:court_one) { create(:court, branch: branch) }
     let!(:court_two) { create(:court, branch: branch) }
 
-    it "auto schedules playable matches" do
+    it "auto schedules playable matches in the same time slot across courts" do
       post "/api/admin/tournaments/#{tournament.id}/auto_schedule",
            params: {
              schedule: {
@@ -165,6 +186,7 @@ RSpec.describe "Api::Admin::TournamentMatches", type: :request do
       expect(semi2.scheduled_time).to be_present
       expect([court_one.id, court_two.id]).to include(semi1.court_id)
       expect([court_one.id, court_two.id]).to include(semi2.court_id)
+      expect(semi1.scheduled_time.to_i).to eq(semi2.scheduled_time.to_i)
     end
 
     it "skips locked matches unless override_locked is enabled" do

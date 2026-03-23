@@ -11,21 +11,25 @@ module Tournaments
       return failure("invalid_start_time", "Start time is invalid") if @start_time.blank?
       return failure("missing_courts", "At least one court is required") if @court_ids.empty?
 
-      pending_matches = schedulable_matches
-      return failure("no_schedulable_matches", "There are no ready matches left to auto-schedule") if pending_matches.empty?
+      remaining_ids = schedulable_matches.map(&:id)
+      return failure("no_schedulable_matches", "There are no ready matches left to auto-schedule") if remaining_ids.empty?
 
       scheduled_matches = []
-      next_time = @start_time
+      slot_time = @start_time
+      max_slots = 200
 
-      pending_matches.each do |match|
-        scheduled = schedule_one_match(match, next_time)
-        return scheduled if scheduled.failure?
+      max_slots.times do
+        break if remaining_ids.empty?
 
-        scheduled_matches << scheduled.data
-        next_time += @tournament.match_duration_minutes.minutes
+        scheduled_in_slot = schedule_slot(remaining_ids, slot_time)
+        scheduled_matches.concat(scheduled_in_slot)
+
+        remaining_ids -= scheduled_in_slot.map(&:id)
+        slot_time += duration.minutes
       end
 
       return failure("no_schedulable_matches", "There are no ready matches left to auto-schedule") if scheduled_matches.empty?
+      return failure("unable_to_schedule", "Unable to schedule all matches with given constraints") if remaining_ids.any?
 
       ServiceResult.success(scheduled_matches)
     end
@@ -40,33 +44,62 @@ module Tournaments
                  .select { |match| match.team1_id.present? && match.team2_id.present? }
     end
 
-    def schedule_one_match(match, seed_time)
-      max_attempts = 200
-      attempt = 0
-      time_cursor = seed_time
+    def schedule_slot(remaining_ids, slot_time)
+      scheduled = []
 
-      while attempt < max_attempts
-        @court_ids.each do |court_id|
-          result = MatchScheduler.new(
-            match: match,
-            court_id: court_id,
-            scheduled_time: time_cursor,
-            manual_override: false,
-            override_locked: @override_locked
-          ).call
+      @court_ids.each do |court_id|
+        match = next_schedulable_match(remaining_ids, slot_time, court_id)
+        next if match.blank?
 
-          return result if result.success?
-        end
+        result = MatchScheduler.new(
+          match: match,
+          court_id: court_id,
+          scheduled_time: slot_time,
+          manual_override: false,
+          override_locked: @override_locked
+        ).call
 
-        time_cursor += @tournament.match_duration_minutes.minutes
-        attempt += 1
+        scheduled << result.data if result.success?
       end
 
-      failure("unable_to_schedule", "Unable to schedule all matches with given constraints")
+      scheduled
+    end
+
+    def next_schedulable_match(remaining_ids, slot_time, court_id)
+      # Keep deterministic ordering but allow matches from any round to be selected.
+      candidate_matches(remaining_ids).find do |match|
+        schedulable_at_slot?(match, slot_time, court_id)
+      end
+    end
+
+    def candidate_matches(remaining_ids)
+      TournamentMatch.where(id: remaining_ids)
+                     .where(status: :pending)
+                     .order(:round_number, :match_number)
+    end
+
+    def schedulable_at_slot?(match, slot_time, court_id)
+      return false if match.team1_id.blank? || match.team2_id.blank?
+      return false if match.schedule_locked? && !@override_locked
+
+      result = MatchScheduler.new(
+        match: match,
+        court_id: court_id,
+        scheduled_time: slot_time,
+        manual_override: false,
+        override_locked: @override_locked,
+        dry_run: true
+      ).call
+
+      result.success?
     end
 
     def failure(code, message)
       ServiceResult.failure(message, error_codes: [code])
+    end
+
+    def duration
+      @tournament.match_duration_minutes || 60
     end
   end
 end

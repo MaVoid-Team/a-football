@@ -1,12 +1,13 @@
 module Tournaments
   class MatchScheduler
-    def initialize(match:, court_id:, scheduled_time:, manual_override: false, override_locked: false)
+    def initialize(match:, court_id:, scheduled_time:, manual_override: false, override_locked: false, dry_run: false)
       @match = match
       @tournament = match.tournament
       @court_id = court_id.to_i
       @scheduled_time = Time.zone.parse(scheduled_time.to_s)
       @manual_override = manual_override
       @override_locked = override_locked
+      @dry_run = dry_run
     end
 
     def call
@@ -19,8 +20,10 @@ module Tournaments
         return failure("invalid_court", "Court does not belong to tournament branch") unless valid_branch_court?
         return failure("blocked_slot", "Court is blocked for that time") if blocked_slot?
         return failure("court_conflict", "Court has another match at this time") if court_conflict?
-        return failure("team_back_to_back", "Team cannot play back-to-back matches") if back_to_back_conflict?
+        return failure("team_back_to_back", "Team already has a match at this time") if team_overlap_conflict?
       end
+
+      return ServiceResult.success(@match) if @dry_run
 
       @match.update!(
         court_id: @court_id,
@@ -56,7 +59,7 @@ module Tournaments
                      .any? { |m| overlaps?(m.scheduled_time, @scheduled_time) }
     end
 
-    def back_to_back_conflict?
+    def team_overlap_conflict?
       team_ids = [@match.team1_id, @match.team2_id].compact
       return false if team_ids.empty?
 
@@ -66,14 +69,7 @@ module Tournaments
                  .where("team1_id IN (:ids) OR team2_id IN (:ids)", ids: team_ids)
                  .any? do |existing|
         existing_start = existing.scheduled_time
-        existing_end = existing_start + duration.minutes
-        candidate_end = @scheduled_time + duration.minutes
-
-        overlap = @scheduled_time < existing_end && candidate_end > existing_start
-        too_close_after = @scheduled_time >= existing_end && (@scheduled_time - existing_end) < duration.minutes
-        too_close_before = existing_start >= candidate_end && (existing_start - candidate_end) < duration.minutes
-
-        overlap || too_close_after || too_close_before
+        overlaps?(existing_start, @scheduled_time)
       end
     end
 

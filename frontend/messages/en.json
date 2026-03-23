@@ -775,7 +775,7 @@
         "unlock": "Unlock",
         "waitingForParticipants": "This match is waiting for both participants to be decided.",
         "missingAutoInputs": "Please choose start time and at least one court.",
-        "autoScheduled": "Auto scheduling completed.",
+        "autoScheduled": "Auto scheduling completed with parallel court slots when available.",
         "autoScheduleFailed": "Auto scheduling failed.",
         "missingManualInputs": "Please choose a court and schedule time.",
         "manualScheduled": "Match scheduled successfully.",
@@ -790,7 +790,7 @@
           "invalid_court": "Selected court does not belong to this branch.",
           "blocked_slot": "Selected time overlaps a blocked slot.",
           "court_conflict": "Selected court already has another match at this time.",
-          "team_back_to_back": "This team cannot play back-to-back matches.",
+          "team_back_to_back": "This team already has another match at the selected time.",
           "locked_match": "Match is locked. Use manual override or unlock first.",
           "unable_to_schedule": "Auto scheduler could not find valid time slots.",
           "no_schedulable_matches": "There are no ready pending matches left to auto-schedule.",
@@ -878,7 +878,7 @@
           "blockedTitle": "Scheduling is locked until the bracket is ready.",
           "blockedBody": "Generate the bracket first, then come back here to run auto-scheduling or update match assignments.",
           "goToBracket": "Go to Bracket",
-          "createdFromBracket": "Matches are created from the bracket automatically. Use this tab to schedule or reschedule the matches that are already in the bracket.",
+          "createdFromBracket": "Matches are created from the bracket automatically. Auto-schedule fills multiple courts in the same time slot when possible.",
           "matchesTitle": "Match scheduling",
           "groupFallback": "Group"
         }

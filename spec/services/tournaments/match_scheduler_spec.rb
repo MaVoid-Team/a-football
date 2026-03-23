@@ -79,7 +79,7 @@ RSpec.describe Tournaments::MatchScheduler, type: :service do
       expect(result.error_codes).to include("blocked_slot")
     end
 
-    it "fails for back-to-back same team" do
+    it "allows immediate back-to-back matches for the same team" do
       scheduled_time = 2.days.from_now.change(min: 0)
       create(
         :tournament_match,
@@ -97,6 +97,30 @@ RSpec.describe Tournaments::MatchScheduler, type: :service do
         match: match,
         court_id: court.id,
         scheduled_time: scheduled_time + 60.minutes
+      ).call
+
+      expect(result).to be_success
+    end
+
+    it "fails when same team is scheduled at overlapping time" do
+      other_court = create(:court, branch: branch)
+      scheduled_time = 2.days.from_now.change(min: 0)
+      create(
+        :tournament_match,
+        tournament: tournament,
+        round_number: 1,
+        match_number: 2,
+        team1: team1,
+        team2: team3,
+        court: other_court,
+        scheduled_time: scheduled_time,
+        status: :scheduled
+      )
+
+      result = described_class.new(
+        match: match,
+        court_id: court.id,
+        scheduled_time: scheduled_time
       ).call
 
       expect(result).to be_failure
