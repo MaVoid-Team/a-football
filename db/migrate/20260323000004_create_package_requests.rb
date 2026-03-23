@@ -13,7 +13,6 @@ class CreatePackageRequests < ActiveRecord::Migration[8.0]
     end
 
     add_index :package_requests, :status
-    add_index :package_requests, :branch_id
     add_index :package_requests, :created_at
   end
 end
