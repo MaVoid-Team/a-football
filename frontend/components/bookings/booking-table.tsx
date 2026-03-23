@@ -15,7 +15,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { MoreHorizontal, Banknote, Ban, Eye } from "lucide-react";
+import { MoreHorizontal, Banknote, Ban, Eye, AlertTriangle } from "lucide-react";
 import { formatDate } from "@/lib/format-date";
 import { formatTime } from "@/lib/format-time";
 import { formatCurrency } from "@/lib/format-currency";
@@ -26,7 +26,7 @@ interface BookingTableProps {
     branches: Branch[];
     courts: Court[];
     isLoading: boolean;
-    onUpdatePayment: (id: string, status: "pending" | "paid" | "refunded") => Promise<{ success: boolean; error?: any }>;
+    onUpdatePayment: (id: string, status: "pending" | "paid" | "failed" | "refunded") => Promise<{ success: boolean; error?: any }>;
     onCancel: (id: string) => Promise<void>;
 }
 
@@ -83,16 +83,10 @@ export function BookingTable({ bookings, branches, courts, isLoading, onUpdatePa
         {
             header: t("table.priceHeader"),
             cell: (b: Booking) => {
-                const paidNow = Number(b.amount_due_now ?? b.total_price ?? 0);
                 const total = Number(b.total_price ?? 0);
                 return (
                 <div className="flex flex-col">
-                    <span className="font-semibold">{formatCurrency(paidNow)}</span>
-                    {paidNow < total && (
-                        <span className="text-xs text-muted-foreground">
-                            {t("table.totalAmount")}: {formatCurrency(total)}
-                        </span>
-                    )}
+                    <span className="font-semibold">{formatCurrency(total)}</span>
                     {Number(b.discount_amount ?? 0) > 0 && (
                         <span className="text-xs text-green-600 dark:text-green-400">
                             -{formatCurrency(b.discount_amount)}
@@ -100,6 +94,25 @@ export function BookingTable({ bookings, branches, courts, isLoading, onUpdatePa
                     )}
                 </div>
                 );
+            },
+        },
+        {
+            header: t("table.paymentTypeHeader"),
+            cell: (b: Booking) => (
+                <Badge variant={b.payment_option === "deposit" ? "outline" : "secondary"} className="text-[10px]">
+                    {b.payment_option === "deposit" ? t("table.paymentTypeDeposit") : t("table.paymentTypeFull")}
+                </Badge>
+            ),
+        },
+        {
+            header: t("table.dueNowHeader"),
+            cell: (b: Booking) => <span className="font-medium">{formatCurrency(b.amount_due_now || b.total_price || 0)}</span>,
+        },
+        {
+            header: t("table.remainingHeader"),
+            cell: (b: Booking) => {
+                const remaining = Number(b.amount_remaining || 0);
+                return <span className={remaining > 0 ? "text-amber-600 dark:text-amber-400" : ""}>{formatCurrency(remaining)}</span>;
             },
         },
         {
@@ -136,6 +149,9 @@ export function BookingTable({ bookings, branches, courts, isLoading, onUpdatePa
                             <DropdownMenuSeparator />
                             <DropdownMenuItem onClick={() => onUpdatePayment(b.id, "paid")} disabled={b.payment_status === "paid"}>
                                 <Banknote className="mr-2 h-4 w-4" /> {t("table.markAsPaid")}
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => onUpdatePayment(b.id, "failed")} disabled={b.payment_status === "failed"}>
+                                <AlertTriangle className="mr-2 h-4 w-4 text-destructive" /> {t("table.markAsFailed")}
                             </DropdownMenuItem>
                             <DropdownMenuItem onClick={() => onUpdatePayment(b.id, "refunded")} disabled={b.payment_status === "refunded"}>
                                 <Banknote className="mr-2 h-4 w-4 text-destructive" /> {t("table.markAsRefunded")}

@@ -381,6 +381,17 @@
     "confirmBooking": "Confirm Booking",
     "bookingSuccess": "You're all set! Court booked successfully!",
     "bookingFailed": "Something went wrong. Please try again.",
+    "errors": {
+      "slotsRequired": "Please select at least one available time slot.",
+      "invalidSlotTimeFormat": "One or more selected slots have invalid time format.",
+      "slotEndBeforeStart": "One or more selected slots have an invalid time range.",
+      "branchInactive": "This branch is currently unavailable for booking.",
+      "courtNotFound": "The selected court was not found.",
+      "courtInactive": "This court is currently unavailable for booking.",
+      "invalidDateFormat": "Invalid booking date. Please select a valid date.",
+      "bookingInPast": "You cannot create a booking in the past.",
+      "validationFailed": "Booking data is invalid. Please review your details."
+    },
     "slotRules": {
       "helper": "Minimum booking is 1 hour: select at least 2 adjacent 30-minute slots. You can add more slots, but they must stay adjacent.",
       "minimumHour": "Minimum booking is 1 hour. Please select at least 2 adjacent slots.",
@@ -761,6 +772,7 @@
       "noNotes": "No notes",
       "openMenu": "Open menu",
       "markAsPaid": "Mark as Paid",
+      "markAsFailed": "Mark as Failed",
       "markAsRefunded": "Mark as Refunded",
       "cancelTitle": "Cancel Booking",
       "cancelDescription": "Cancel booking for {userName}? This cannot be undone.",

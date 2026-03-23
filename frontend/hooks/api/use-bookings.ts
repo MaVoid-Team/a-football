@@ -116,7 +116,7 @@ export function useBookingsAPI() {
         }
     };
 
-    const updatePaymentStatus = async (id: string, payment_status: "pending" | "paid" | "refunded") => {
+    const updatePaymentStatus = async (id: string, payment_status: "pending" | "paid" | "failed" | "refunded") => {
         return updateBooking(id, { payment_status });
     };
 

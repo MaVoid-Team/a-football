@@ -82,7 +82,7 @@ export default function BookingsPage() {
         goToPage(1);
     };
 
-    const handleUpdatePayment = async (id: string, status: "pending" | "paid" | "refunded") => {
+    const handleUpdatePayment = async (id: string, status: "pending" | "paid" | "failed" | "refunded") => {
         const res = await updatePaymentStatus(id, status);
         if (res.success) {
             toast.success(t("toasts.paymentStatusUpdated", { status: t(`status.${status}`) }));
@@ -142,7 +142,7 @@ export default function BookingsPage() {
 
     return (
         <div className="space-y-6 animate-in fade-in-50 duration-500">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div className="space-y-4">
                 <div>
                     <h1 className="text-2xl font-bold tracking-tight text-foreground">{t("page.title")}</h1>
                     <p className="text-sm text-muted-foreground mt-1">
@@ -150,112 +150,117 @@ export default function BookingsPage() {
                     </p>
                 </div>
 
-                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full sm:w-auto">
-                    <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                            <Button variant="outline" className="gap-2 w-full sm:w-auto">
-                                <Download className="h-4 w-4" />
-                                {t("page.exportButton")}
-                            </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                            <DropdownMenuItem onClick={handleExportExcel}>
-                                <FileSpreadsheet className="mr-2 h-4 w-4" />
-                                {t("export.currentPageExcel")}
-                            </DropdownMenuItem>
-                            <DropdownMenuItem onClick={handleExportCSV}>
-                                <FileSpreadsheet className="mr-2 h-4 w-4" />
-                                {t("export.currentPageCSV")}
-                            </DropdownMenuItem>
-                            <DropdownMenuItem onClick={handleExportAll}>
-                                <Download className="mr-2 h-4 w-4" />
-                                {t("export.exportAllFiltered")}
-                            </DropdownMenuItem>
-                        </DropdownMenuContent>
-                    </DropdownMenu>
+                <div className="bg-card border border-border rounded-xl p-3 sm:p-4 space-y-2 sm:space-y-3">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)_auto] gap-2 sm:gap-3 items-end">
+                        <div className="w-full">
+                            <Label className="text-sm text-muted-foreground mb-1 block">{t("page.statusFilter")}</Label>
+                            <Select value={filterStatus} onValueChange={(v) => { setFilterStatus(v); goToPage(1); }}>
+                                <SelectTrigger className="w-full" data-testid="status-filter">
+                                    <SelectValue placeholder={t("page.allStatuses")} />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="all">{t("page.allStatuses")}</SelectItem>
+                                    <SelectItem value="confirmed">{t("status.confirmed")}</SelectItem>
+                                    <SelectItem value="cancelled">{t("status.cancelled")}</SelectItem>
+                                </SelectContent>
+                            </Select>
+                        </div>
 
-                    <div className="flex items-center gap-2 w-full sm:w-auto">
-                        <Label className="text-sm text-muted-foreground whitespace-nowrap">{t("page.statusFilter")}</Label>
-                        <Select value={filterStatus} onValueChange={(v) => { setFilterStatus(v); goToPage(1); }}>
-                            <SelectTrigger className="w-full sm:w-[140px]" data-testid="status-filter">
-                                <SelectValue placeholder={t("page.allStatuses")} />
-                            </SelectTrigger>
-                            <SelectContent>
-                                <SelectItem value="all">{t("page.allStatuses")}</SelectItem>
-                                <SelectItem value="confirmed">{t("status.confirmed")}</SelectItem>
-                                <SelectItem value="cancelled">{t("status.cancelled")}</SelectItem>
-                            </SelectContent>
-                        </Select>
-                    </div>
-                    <div className="flex items-center gap-2 w-full sm:w-auto">
-                        <Label className="text-sm text-muted-foreground whitespace-nowrap">{t("page.branchFilter")}</Label>
-                        <Select value={filterBranchId} onValueChange={(v) => {
-                            setFilterBranchId(v);
-                            setFilterCourtId("all");
-                            goToPage(1);
-                        }}>
-                            <SelectTrigger className="w-full sm:w-[160px]" data-testid="branch-filter">
-                                <SelectValue placeholder={t("page.allBranches")} />
-                            </SelectTrigger>
-                            <SelectContent>
-                                <SelectItem value="all">{t("page.allBranches")}</SelectItem>
-                                {branches.map(b => (
-                                    <SelectItem key={b.id} value={b.id.toString()}>{b.name}</SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
-                    </div>
-
-                    <div className="flex items-center gap-2 w-full sm:w-auto">
-                        <Label className="text-sm text-muted-foreground whitespace-nowrap">{t("page.courtFilter")}</Label>
-                        <Select value={filterCourtId} onValueChange={(v) => { setFilterCourtId(v); goToPage(1); }}>
-                            <SelectTrigger className="w-full sm:w-[160px]" data-testid="court-filter">
-                                <SelectValue placeholder={t("page.allCourts")} />
-                            </SelectTrigger>
-                            <SelectContent>
-                                <SelectItem value="all">{t("page.allCourts")}</SelectItem>
-                                {filteredCourts.map((court) => (
-                                    <SelectItem key={court.id} value={court.id.toString()}>{court.name}</SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
-                    </div>
-
-                    <div className="flex items-center gap-2 w-full sm:w-auto">
-                        <Label className="text-sm text-muted-foreground whitespace-nowrap">{t("page.paymentStatusFilter")}</Label>
-                        <Select value={filterPaymentStatus} onValueChange={(v) => { setFilterPaymentStatus(v); goToPage(1); }}>
-                            <SelectTrigger className="w-full sm:w-[170px]" data-testid="payment-status-filter">
-                                <SelectValue placeholder={t("page.allPaymentStatuses")} />
-                            </SelectTrigger>
-                            <SelectContent>
-                                <SelectItem value="all">{t("page.allPaymentStatuses")}</SelectItem>
-                                <SelectItem value="pending">{t("status.pending")}</SelectItem>
-                                <SelectItem value="paid">{t("status.paid")}</SelectItem>
-                                <SelectItem value="failed">{t("status.failed")}</SelectItem>
-                                <SelectItem value="refunded">{t("status.refunded")}</SelectItem>
-                            </SelectContent>
-                        </Select>
-                    </div>
-
-                    <div className="flex items-center gap-2 w-full sm:w-auto">
-                        <Label htmlFor="date-filter" className="text-sm text-muted-foreground whitespace-nowrap">{t("page.dateFilter")}</Label>
-                        <Input
-                            id="date-filter"
-                            type="date"
-                            className="w-full sm:w-[165px]"
-                            value={filterDate}
-                            onChange={(e) => {
-                                setFilterDate(e.target.value);
+                        <div className="w-full">
+                            <Label className="text-sm text-muted-foreground mb-1 block">{t("page.branchFilter")}</Label>
+                            <Select value={filterBranchId} onValueChange={(v) => {
+                                setFilterBranchId(v);
+                                setFilterCourtId("all");
                                 goToPage(1);
-                            }}
-                            data-testid="date-filter"
-                        />
+                            }}>
+                                <SelectTrigger className="w-full" data-testid="branch-filter">
+                                    <SelectValue placeholder={t("page.allBranches")} />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="all">{t("page.allBranches")}</SelectItem>
+                                    {branches.map(b => (
+                                        <SelectItem key={b.id} value={b.id.toString()}>{b.name}</SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                        </div>
+
+                        <div className="w-full">
+                            <Label className="text-sm text-muted-foreground mb-1 block">{t("page.courtFilter")}</Label>
+                            <Select value={filterCourtId} onValueChange={(v) => { setFilterCourtId(v); goToPage(1); }}>
+                                <SelectTrigger className="w-full" data-testid="court-filter">
+                                    <SelectValue placeholder={t("page.allCourts")} />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="all">{t("page.allCourts")}</SelectItem>
+                                    {filteredCourts.map((court) => (
+                                        <SelectItem key={court.id} value={court.id.toString()}>{court.name}</SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                        </div>
+
+                        <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                                <Button variant="outline" className="gap-2 w-full xl:w-auto">
+                                    <Download className="h-4 w-4" />
+                                    {t("page.exportButton")}
+                                </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end">
+                                <DropdownMenuItem onClick={handleExportExcel}>
+                                    <FileSpreadsheet className="mr-2 h-4 w-4" />
+                                    {t("export.currentPageExcel")}
+                                </DropdownMenuItem>
+                                <DropdownMenuItem onClick={handleExportCSV}>
+                                    <FileSpreadsheet className="mr-2 h-4 w-4" />
+                                    {t("export.currentPageCSV")}
+                                </DropdownMenuItem>
+                                <DropdownMenuItem onClick={handleExportAll}>
+                                    <Download className="mr-2 h-4 w-4" />
+                                    {t("export.exportAllFiltered")}
+                                </DropdownMenuItem>
+                            </DropdownMenuContent>
+                        </DropdownMenu>
                     </div>
 
-                    <Button type="button" variant="ghost" className="w-full sm:w-auto" onClick={clearFilters}>
-                        <FilterX className="h-4 w-4 mr-2" />
-                        {t("page.clearFilters")}
-                    </Button>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_auto] gap-2 sm:gap-3 items-end">
+                        <div className="w-full">
+                            <Label className="text-sm text-muted-foreground mb-1 block">{t("page.paymentStatusFilter")}</Label>
+                            <Select value={filterPaymentStatus} onValueChange={(v) => { setFilterPaymentStatus(v); goToPage(1); }}>
+                                <SelectTrigger className="w-full" data-testid="payment-status-filter">
+                                    <SelectValue placeholder={t("page.allPaymentStatuses")} />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="all">{t("page.allPaymentStatuses")}</SelectItem>
+                                    <SelectItem value="pending">{t("status.pending")}</SelectItem>
+                                    <SelectItem value="paid">{t("status.paid")}</SelectItem>
+                                    <SelectItem value="failed">{t("status.failed")}</SelectItem>
+                                    <SelectItem value="refunded">{t("status.refunded")}</SelectItem>
+                                </SelectContent>
+                            </Select>
+                        </div>
+
+                        <div className="w-full">
+                            <Label htmlFor="date-filter" className="text-sm text-muted-foreground mb-1 block">{t("page.dateFilter")}</Label>
+                            <Input
+                                id="date-filter"
+                                type="date"
+                                className="w-full"
+                                value={filterDate}
+                                onChange={(e) => {
+                                    setFilterDate(e.target.value);
+                                    goToPage(1);
+                                }}
+                                data-testid="date-filter"
+                            />
+                        </div>
+
+                        <Button type="button" variant="ghost" className="w-full xl:w-auto" onClick={clearFilters}>
+                            <FilterX className="h-4 w-4 mr-2" />
+                            {t("page.clearFilters")}
+                        </Button>
+                    </div>
                 </div>
             </div>
 

@@ -61,6 +61,8 @@ const areSlotsAdjacent = (slots: Slot[]) => {
 
 const mapBookingErrorByCode = (errorCode: string, t: (key: string) => string) => {
     switch (errorCode) {
+        case "booking_slots_required":
+            return t("errors.slotsRequired");
         case "minimum_booking_duration":
             return t("slotRules.minimumHour");
         case "slots_not_adjacent":
@@ -68,6 +70,10 @@ const mapBookingErrorByCode = (errorCode: string, t: (key: string) => string) =>
         case "slot_duration_not_half_hour":
         case "booking_range_invalid_interval":
             return t("slotRules.exactHalfHour");
+        case "invalid_slot_time_format":
+            return t("errors.invalidSlotTimeFormat");
+        case "slot_end_before_start":
+            return t("errors.slotEndBeforeStart");
         case "promo_code_invalid":
             return t("promoErrors.invalid");
         case "promo_code_not_applicable":
@@ -76,8 +82,20 @@ const mapBookingErrorByCode = (errorCode: string, t: (key: string) => string) =>
             return t("slotRules.unavailable");
         case "deposit_unavailable_for_branch":
             return t("deposit.unavailable");
+        case "branch_inactive":
+            return t("errors.branchInactive");
+        case "court_not_found":
+            return t("errors.courtNotFound");
+        case "court_inactive":
+            return t("errors.courtInactive");
+        case "invalid_date_format":
+            return t("errors.invalidDateFormat");
+        case "booking_in_past":
+            return t("errors.bookingInPast");
+        case "booking_validation_failed":
+            return t("errors.validationFailed");
         default:
-            return "";
+            return t("bookingFailed");
     }
 };
 
@@ -90,7 +108,7 @@ const mapBookingErrorFromMessage = (error: string, t: (key: string) => string) =
     if (error.includes("Promo code is not applicable")) return t("promoErrors.notApplicable");
     if (error.includes("Time slot is not available")) return t("slotRules.unavailable");
     if (error.includes("Deposit payment is not available for this branch")) return t("deposit.unavailable");
-    return error;
+    return t("bookingFailed");
 };
 
 export function BookingView() {

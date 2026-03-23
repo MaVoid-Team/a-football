@@ -71,7 +71,7 @@ export default function BookingDetailsPage() {
     }
   };
 
-  const handlePaymentStatus = async (status: "pending" | "paid" | "refunded") => {
+  const handlePaymentStatus = async (status: "pending" | "paid" | "failed" | "refunded") => {
     if (!booking) return;
     const result = await updatePaymentStatus(booking.id, status);
     if (result.success) {
@@ -162,6 +162,9 @@ export default function BookingDetailsPage() {
             </Button>
             <Button variant="outline" className="w-full" onClick={() => handlePaymentStatus("paid")} disabled={booking.payment_status === "paid"}>
               {t("status.paid")}
+            </Button>
+            <Button variant="outline" className="w-full" onClick={() => handlePaymentStatus("failed")} disabled={booking.payment_status === "failed"}>
+              {t("status.failed")}
             </Button>
             <Button variant="outline" className="w-full" onClick={() => handlePaymentStatus("refunded")} disabled={booking.payment_status === "refunded"}>
               {t("status.refunded")}

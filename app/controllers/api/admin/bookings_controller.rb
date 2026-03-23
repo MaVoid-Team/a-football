@@ -56,8 +56,8 @@ module Api
           payment_status_value = Booking.payment_statuses[params[:payment_status].to_s]
           parts << "payment_status = #{payment_status_value}" unless payment_status_value.nil?
         end
-        parts << "date >= #{params[:from_date]}" if params[:from_date].present?
-        parts << "date <= #{params[:to_date]}" if params[:to_date].present?
+        parts << "date >= #{params[:from_date].to_s.inspect}" if params[:from_date].present?
+        parts << "date <= #{params[:to_date].to_s.inspect}" if params[:to_date].present?
         build_meilisearch_filter(parts)
       end
 

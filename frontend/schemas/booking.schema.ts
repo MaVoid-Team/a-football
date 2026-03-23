@@ -58,7 +58,7 @@ export const bookingFormSchema = z.object({
 export type BookingFormData = z.infer<typeof bookingFormSchema>;
 
 export const bookingUpdateSchema = z.object({
-    payment_status: z.enum(["pending", "paid", "refunded"]).optional(),
+    payment_status: z.enum(["pending", "paid", "failed", "refunded"]).optional(),
     admin_notes: z.string().optional(),
 });
 
