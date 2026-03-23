@@ -2,6 +2,7 @@
 
 import { useState, useCallback } from "react";
 import api from "@/lib/axios";
+import playerApi from "@/lib/player-api";
 import { PaginationMeta } from "@/schemas/api.schema";
 import { buildQueryString } from "@/lib/build-query-string";
 import {
@@ -295,23 +296,25 @@ export function useTournamentsAPI() {
 
     const fetchMyParticipation = useCallback(async (tournamentId: string, options?: { silent?: boolean }) => {
         if (!options?.silent) setLoading(true);
-        setError(null);
         try {
-            const headers = playerAuthHeaders();
-            if (!headers) {
+            if (!playerAuthHeaders()) {
                 setParticipation(null);
-                return { success: false, errorMessage: "Authentication required" };
+                return { success: false, errorMessage: "Authentication required", notFound: false };
             }
 
-            const response = await api.get(`/api/me/tournaments/${tournamentId}`, { headers });
+            const response = await playerApi.get(`/api/me/tournaments/${tournamentId}`);
             const data = { id: response.data.data.id, ...response.data.data.attributes } as PlayerParticipation;
             setParticipation(data);
             return { success: true, data };
         } catch (err: any) {
+            setParticipation(null);
+            if (err.response?.status === 404) {
+                return { success: false, notFound: true };
+            }
+
             const message = getApiErrorMessage(err, "Failed to fetch participation");
             setError(message);
-            setParticipation(null);
-            return { success: false, error: err, errorMessage: message };
+            return { success: false, error: err, errorMessage: message, notFound: false };
         } finally {
             if (!options?.silent) setLoading(false);
         }

@@ -17,7 +17,12 @@ export function BookingsPanel() {
     }, []);
 
     return (
-        <AccountShell title="My Bookings" description="Your confirmed and cancelled court reservations live here.">
+        <AccountShell
+            title="My Bookings"
+            description="Your confirmed and cancelled court reservations live here."
+            backHref="/book"
+            backLabel="Back to Booking"
+        >
             <div className="space-y-4">
                 {bookings.length === 0 ? (
                     <Card><CardContent className="py-12 text-center text-muted-foreground">No bookings yet.</CardContent></Card>

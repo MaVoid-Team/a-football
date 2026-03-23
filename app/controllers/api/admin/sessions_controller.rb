@@ -5,7 +5,7 @@ module Api
         admin = ::Admin.find_by(email: params[:email])
 
         if admin&.authenticate(params[:password])
-          token = Auth::JsonWebToken.encode(admin_id: admin.id)
+          token = ::Auth::JsonWebToken.encode(admin_id: admin.id)
           render json: {
             token: token,
             admin: AdminSerializer.new(admin).serializable_hash
@@ -18,7 +18,7 @@ module Api
       def destroy
         ::Auth::TokenRevoker.revoke!(request.headers["Authorization"]&.split(" ")&.last)
         head :no_content
-      rescue Auth::AuthenticationError
+      rescue ::Auth::AuthenticationError
         head :no_content
       end
     end

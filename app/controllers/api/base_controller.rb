@@ -18,9 +18,9 @@ module Api
         begin
           return @current_user = nil if token.blank? || token_revoked?(token)
 
-          decoded = Auth::JsonWebToken.decode(token)
+          decoded = ::Auth::JsonWebToken.decode(token)
           decoded[:user_id].present? ? User.find_by(id: decoded[:user_id]) : nil
-        rescue Auth::AuthenticationError
+        rescue ::Auth::AuthenticationError
           nil
         end
     end

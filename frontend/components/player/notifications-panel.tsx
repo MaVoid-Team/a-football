@@ -21,7 +21,12 @@ export function NotificationsPanel() {
     }, []);
 
     return (
-        <AccountShell title="Notifications" description="Important status changes and scheduling updates stay here until you read them.">
+        <AccountShell
+            title="Notifications"
+            description="Important status changes and scheduling updates stay here until you read them."
+            backHref="/account/tournaments"
+            backLabel="Back to My Tournaments"
+        >
             <div className="space-y-4">
                 {notifications.length === 0 ? (
                     <Card><CardContent className="py-12 text-center text-muted-foreground">No notifications yet.</CardContent></Card>

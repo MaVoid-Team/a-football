@@ -64,7 +64,12 @@ export function ProfilePanel() {
     };
 
     return (
-        <AccountShell title="Profile" description="Keep your player details ready for bookings and tournament joins.">
+        <AccountShell
+            title="Profile"
+            description="Keep your player details ready for bookings and tournament joins."
+            backHref="/account/tournaments"
+            backLabel="Back to My Tournaments"
+        >
             <Card>
                 <CardHeader>
                     <CardTitle>Basic Info</CardTitle>

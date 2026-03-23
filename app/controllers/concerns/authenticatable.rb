@@ -9,14 +9,14 @@ module Authenticatable
 
   def authenticate_admin!
     token = extract_token
-    raise Auth::AuthenticationError, "Missing or invalid token" if token.blank?
-    raise Auth::AuthenticationError, "Token has been revoked" if token_revoked?(token)
+    raise ::Auth::AuthenticationError, "Missing or invalid token" if token.blank?
+    raise ::Auth::AuthenticationError, "Token has been revoked" if token_revoked?(token)
 
-    decoded = Auth::JsonWebToken.decode(token)
+    decoded = ::Auth::JsonWebToken.decode(token)
     @current_admin = Admin.find(decoded[:admin_id])
   rescue ActiveRecord::RecordNotFound
     render json: { error: "Admin not found" }, status: :unauthorized
-  rescue Auth::AuthenticationError => e
+  rescue ::Auth::AuthenticationError => e
     render json: { error: e.message }, status: :unauthorized
   end
 

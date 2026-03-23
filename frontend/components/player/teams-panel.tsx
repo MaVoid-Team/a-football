@@ -45,7 +45,12 @@ export function TeamsPanel() {
     };
 
     return (
-        <AccountShell title="My Teams" description="Save reusable 2-player team setups so team tournament joins stay quick.">
+        <AccountShell
+            title="My Teams"
+            description="Save reusable 2-player team setups so team tournament joins stay quick."
+            backHref="/account/tournaments"
+            backLabel="Back to My Tournaments"
+        >
             <div className="space-y-6">
                 <Card>
                     <CardHeader>

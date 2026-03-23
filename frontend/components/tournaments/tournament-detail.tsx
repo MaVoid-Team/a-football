@@ -187,7 +187,7 @@ export function TournamentDetail({ id }: { id: string }) {
     };
 
     return (
-        <div className="w-full max-w-5xl mx-auto space-y-6">
+        <div className="w-full max-w-5xl mx-auto space-y-5 md:space-y-6">
             <Button asChild variant="ghost" className="px-0">
                 <Link href="/tournament">{t("backToList")}</Link>
             </Button>
@@ -201,12 +201,12 @@ export function TournamentDetail({ id }: { id: string }) {
                 </ul>
             </div>
 
-            <div className="flex flex-wrap items-center justify-between gap-3 rounded-md border border-border p-3">
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3 rounded-md border border-border p-3">
                 <div className="text-sm text-muted-foreground">
                     {t("live.lastUpdated")}: {lastUpdatedAt ? lastUpdatedAt.toLocaleTimeString() : t("live.never")}
                     {liveMode && <span className="ms-2">({t("live.nextRefresh", { seconds: secondsUntilRefresh })})</span>}
                 </div>
-                <div className="flex items-center gap-2">
+                <div className="flex flex-col sm:flex-row sm:flex-wrap items-stretch sm:items-center gap-2">
                     <Badge variant={liveMode ? "default" : "secondary"}>
                         {liveMode ? t("live.modeOn") : t("live.modeOff")}
                     </Badge>
@@ -230,7 +230,7 @@ export function TournamentDetail({ id }: { id: string }) {
 
             <Card>
                 <CardHeader>
-                    <CardTitle className="text-3xl">{tournament.name}</CardTitle>
+                    <CardTitle className="text-2xl md:text-3xl">{tournament.name}</CardTitle>
                     <p className="text-muted-foreground">{tournament.description || t("noDescription")}</p>
                 </CardHeader>
                 <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
@@ -348,8 +348,8 @@ export function TournamentDetail({ id }: { id: string }) {
                                     </div>
                                 )}
 
-                                <div className="flex items-center justify-between gap-3">
-                                    <Button onClick={onRegisterTeam} disabled={!registrationOpen}>Join Tournament as Team</Button>
+                                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                                    <Button onClick={onRegisterTeam} disabled={!registrationOpen} className="w-full sm:w-auto">Join Tournament as Team</Button>
                                     <Link href="/account/teams" className="text-primary-text underline">Manage Saved Teams</Link>
                                 </div>
                             </div>
@@ -383,7 +383,7 @@ export function TournamentDetail({ id }: { id: string }) {
                                     </SelectContent>
                                 </Select>
                             </div>
-                            <Button onClick={onRegister} disabled={!registrationOpen}>
+                            <Button onClick={onRegister} disabled={!registrationOpen} className="w-full sm:w-auto">
                                 {tournament.registration_open ? t("registration.submit") : t("registration.closed")}
                             </Button>
                         </div>
@@ -450,7 +450,7 @@ export function TournamentDetail({ id }: { id: string }) {
                     ) : (
                         <div className="space-y-2">
                             {matches.map((match) => (
-                                <div key={match.id} className="rounded-md border border-border p-3 text-sm flex items-center justify-between gap-3">
+                                <div key={match.id} className="rounded-md border border-border p-3 text-sm flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                                     <div>
                                         <div>{t("live.matchLine", { round: match.round_number, match: match.match_number })}</div>
                                         <div className="text-muted-foreground">{match.team1_name || "TBD"} vs {match.team2_name || "TBD"}</div>

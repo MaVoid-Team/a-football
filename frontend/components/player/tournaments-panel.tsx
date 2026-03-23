@@ -17,7 +17,12 @@ export function TournamentsPanel() {
     }, []);
 
     return (
-        <AccountShell title="My Tournaments" description="Track every registration, approval, and tournament run from one place.">
+        <AccountShell
+            title="My Tournaments"
+            description="Track every registration, approval, and tournament run from one place."
+            backHref="/tournament"
+            backLabel="Back to Tournaments"
+        >
             <div className="space-y-4">
                 {items.length === 0 ? (
                     <Card><CardContent className="py-12 text-center text-muted-foreground">No tournament activity yet.</CardContent></Card>

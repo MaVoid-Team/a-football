@@ -54,7 +54,12 @@ export function MatchesPanel() {
     );
 
     return (
-        <AccountShell title="My Matches" description="See upcoming fixtures and revisit completed results.">
+        <AccountShell
+            title="My Matches"
+            description="See upcoming fixtures and revisit completed results."
+            backHref="/account/tournaments"
+            backLabel="Back to My Tournaments"
+        >
             <div className="space-y-6">
                 <section className="space-y-3">
                     <h2 className="text-xl font-semibold">Upcoming</h2>

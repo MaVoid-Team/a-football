@@ -31,17 +31,17 @@ export function TournamentsView() {
     }, [fetchPublicTournaments, selectedBranch, selectedStatus]);
 
     return (
-        <div className="w-full max-w-6xl mx-auto space-y-8">
+        <div className="w-full max-w-6xl mx-auto space-y-6 md:space-y-8">
             <div className="space-y-2 text-center">
-                <h1 className="text-4xl font-bold tracking-tight">{t("title")}</h1>
-                <p className="text-muted-foreground text-lg">{t("subtitle")}</p>
+                <h1 className="text-3xl md:text-4xl font-bold tracking-tight">{t("title")}</h1>
+                <p className="text-muted-foreground text-base md:text-lg">{t("subtitle")}</p>
                 <p className="text-sm text-muted-foreground">{t("listHint")}</p>
             </div>
 
             <div className="flex flex-col md:flex-row justify-center gap-3">
                 {branches.length > 1 && (
                     <Select value={selectedBranch} onValueChange={setSelectedBranch}>
-                        <SelectTrigger className="w-[260px]">
+                        <SelectTrigger className="w-full md:w-[260px]">
                             <SelectValue placeholder={t("allBranches")} />
                         </SelectTrigger>
                         <SelectContent>
@@ -55,7 +55,7 @@ export function TournamentsView() {
                     </Select>
                 )}
                 <Select value={selectedStatus} onValueChange={setSelectedStatus}>
-                    <SelectTrigger className="w-[220px]">
+                    <SelectTrigger className="w-full md:w-[220px]">
                         <SelectValue placeholder={t("statusLabel")} />
                     </SelectTrigger>
                     <SelectContent>
@@ -74,7 +74,7 @@ export function TournamentsView() {
             )}
 
             {loading && tournaments.length === 0 ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 md:gap-6">
                     {Array.from({ length: 6 }).map((_, idx) => (
                         <Card key={idx}>
                             <CardHeader>
@@ -93,12 +93,12 @@ export function TournamentsView() {
                     <CardContent className="py-12 text-center text-muted-foreground">{t("empty")}</CardContent>
                 </Card>
             ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 md:gap-6">
                     {tournaments.map((tour) => (
                         <Card key={tour.id} className="flex flex-col">
                             <CardHeader>
-                                <div className="flex items-center justify-between gap-2">
-                                    <CardTitle className="line-clamp-1">{tour.name}</CardTitle>
+                                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                                    <CardTitle className="line-clamp-2 text-xl">{tour.name}</CardTitle>
                                     <Badge variant="outline">{t(`status.${tour.status}`)}</Badge>
                                 </div>
                                 <CardDescription>{t(`type.${tour.tournament_type}`)}</CardDescription>
