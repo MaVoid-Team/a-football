@@ -77,9 +77,12 @@ Rails.application.routes.draw do
           patch :score, controller: "tournament_matches"
         end
       end
-      resources :bookings, only: %i[index show update] do
+      resources :bookings, only: %i[index show update destroy] do
         member do
           patch :mark_no_show
+        end
+        collection do
+          delete :batch_destroy
         end
       end
       resources :blocked_slots, only: %i[index show create update destroy]

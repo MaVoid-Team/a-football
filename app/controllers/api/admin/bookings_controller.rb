@@ -61,6 +61,34 @@ module Api
         render json: BookingSerializer.new(booking, params: { url_options: default_url_options }).serializable_hash, status: :ok
       end
 
+      def destroy
+        booking = Booking.find(params[:id])
+        authorize booking
+
+        booking.destroy!
+        head :no_content
+      end
+
+      def batch_destroy
+        booking_ids = params[:booking_ids] || []
+        
+        bookings = Booking.where(id: booking_ids)
+        bookings.each do |booking|
+          authorize booking
+        end
+
+        destroyed_count = 0
+        bookings.each do |booking|
+          booking.destroy!
+          destroyed_count += 1
+        end
+
+        render json: { 
+          message: "Successfully deleted #{destroyed_count} booking(s)",
+          deleted_count: destroyed_count
+        }, status: :ok
+      end
+
       private
 
       def booking_update_params

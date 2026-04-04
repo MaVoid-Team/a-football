@@ -15,7 +15,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { MoreHorizontal, Banknote, Ban, Eye, AlertTriangle } from "lucide-react";
+import { MoreHorizontal, Banknote, Ban, Eye, AlertTriangle, Trash2 } from "lucide-react";
 import { formatDate } from "@/lib/format-date";
 import { formatTime } from "@/lib/format-time";
 import { formatCurrency } from "@/lib/format-currency";
@@ -29,9 +29,10 @@ interface BookingTableProps {
     onUpdatePayment: (id: string, status: "pending" | "paid" | "failed" | "refunded") => Promise<{ success: boolean; error?: any }>;
     onCancel: (id: string) => Promise<void>;
     onMarkNoShow: (id: string) => Promise<void>;
+    onDelete: (id: string) => Promise<void>;
 }
 
-export function BookingTable({ bookings, branches, courts, isLoading, onUpdatePayment, onCancel, onMarkNoShow }: BookingTableProps) {
+export function BookingTable({ bookings, branches, courts, isLoading, onUpdatePayment, onCancel, onMarkNoShow, onDelete }: BookingTableProps) {
     const t = useTranslations("bookings");
 
     const getBranchName = (branchId: number) => {
@@ -160,8 +161,23 @@ export function BookingTable({ bookings, branches, courts, isLoading, onUpdatePa
                             <DropdownMenuItem onClick={() => onMarkNoShow(b.id)}>
                                 <AlertTriangle className="mr-2 h-4 w-4 text-amber-500" /> {t("table.markAsNoShow")}
                             </DropdownMenuItem>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem onClick={() => onDelete(b.id)} className="text-destructive">
+                                <Trash2 className="mr-2 h-4 w-4" /> {t("table.delete")}
+                            </DropdownMenuItem>
                         </DropdownMenuContent>
                     </DropdownMenu>
+
+                    <ConfirmDialog
+                        title={t("table.deleteTitle")}
+                        description={t("table.deleteDescription", { userName: b.user_name })}
+                        onConfirm={() => onDelete(b.id)}
+                        triggerButton={
+                            <Button variant="ghost" size="icon" className="text-destructive">
+                                <Trash2 className="h-4 w-4" />
+                            </Button>
+                        }
+                    />
 
                     <ConfirmDialog
                         title={t("table.cancelTitle")}

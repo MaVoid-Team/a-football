@@ -44,6 +44,7 @@ export default function BookingsPage() {
         updatePaymentStatus,
         cancelBooking,
         markNoShow,
+        deleteBooking,
     } = useBookingsAPI();
 
     const { branches, fetchBranches } = useBranchesAPI();
@@ -107,6 +108,16 @@ export default function BookingsPage() {
             loadData();
         } else {
             toast.error(t("toasts.markNoShowFailed"));
+        }
+    };
+
+    const handleDelete = async (id: string) => {
+        const res = await deleteBooking(id);
+        if (res.success) {
+            toast.success(t("toasts.deleted"));
+            loadData();
+        } else {
+            toast.error(t("toasts.deleteFailed"));
         }
     };
 
@@ -284,6 +295,7 @@ export default function BookingsPage() {
                     onUpdatePayment={handleUpdatePayment}
                     onCancel={handleCancel}
                     onMarkNoShow={handleMarkNoShow}
+                    onDelete={handleDelete}
                 />
 
                 {meta && (

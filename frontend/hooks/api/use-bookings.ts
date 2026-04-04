@@ -159,6 +159,36 @@ export function useBookingsAPI() {
         }
     };
 
+    const deleteBooking = async (id: string) => {
+        setLoading(true);
+        setError(null);
+        try {
+            await api.delete(`/api/admin/bookings/${id}`);
+            return { success: true };
+        } catch (err: any) {
+            setError(err.response?.data?.error || "Failed to delete booking");
+            return { success: false, error: err };
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const batchDeleteBookings = async (bookingIds: string[]) => {
+        setLoading(true);
+        setError(null);
+        try {
+            const response = await api.delete("/api/admin/bookings/batch_destroy", {
+                data: { booking_ids: bookingIds }
+            });
+            return { success: true, data: response.data };
+        } catch (err: any) {
+            setError(err.response?.data?.error || "Failed to delete bookings");
+            return { success: false, error: err };
+        } finally {
+            setLoading(false);
+        }
+    };
+
     return {
         bookings,
         booking,
@@ -172,5 +202,7 @@ export function useBookingsAPI() {
         updatePaymentStatus,
         cancelBooking,
         markNoShow,
+        deleteBooking,
+        batchDeleteBookings,
     };
 }
