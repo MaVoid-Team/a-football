@@ -33,7 +33,12 @@ module Api
 
         def whatsapp_link
           item = scoped_action_items.find(params[:id])
-          template = item.suggested_template || scoped_templates.active_only.find(params[:template_id])
+          template = resolve_template(item)
+          if template.blank?
+            render json: { errors: ["No active message template available"] }, status: :unprocessable_entity
+            return
+          end
+
           player_type, player = find_player!("#{item.player_type}-#{item.player_id}")
 
           branch_name = Branch.find_by(id: item.branch_id || current_admin.branch_id)&.name
@@ -122,6 +127,16 @@ module Api
           return "N/A" if player.last_activity_date.blank?
 
           ((Time.current - player.last_activity_date) / 1.day).floor.to_s
+        end
+
+        def resolve_template(item)
+          return item.suggested_template if item.suggested_template.present?
+
+          if params[:template_id].present?
+            return scoped_templates.active_only.find_by(id: params[:template_id])
+          end
+
+          scoped_templates.active_only.order(:id).first
         end
       end
     end
