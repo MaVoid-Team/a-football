@@ -35,6 +35,7 @@ export default function BookingsPage() {
     const [filterStatus, setFilterStatus] = useState<string>("all");
     const [filterPaymentStatus, setFilterPaymentStatus] = useState<string>("all");
     const [filterDate, setFilterDate] = useState<string>("");
+    const [selectedBookings, setSelectedBookings] = useState<string[]>([]);
 
     const {
         bookings,
@@ -45,6 +46,7 @@ export default function BookingsPage() {
         cancelBooking,
         markNoShow,
         deleteBooking,
+        batchDeleteBookings,
     } = useBookingsAPI();
 
     const { branches, fetchBranches } = useBranchesAPI();
@@ -118,6 +120,17 @@ export default function BookingsPage() {
             loadData();
         } else {
             toast.error(t("toasts.deleteFailed"));
+        }
+    };
+
+    const handleBatchDelete = async (bookingIds: string[]) => {
+        const res = await batchDeleteBookings(bookingIds);
+        if (res.success) {
+            toast.success(t("toasts.batchDeleted", { count: bookingIds.length }));
+            loadData();
+            setSelectedBookings([]);
+        } else {
+            toast.error(t("toasts.batchDeleteFailed"));
         }
     };
 
@@ -296,6 +309,9 @@ export default function BookingsPage() {
                     onCancel={handleCancel}
                     onMarkNoShow={handleMarkNoShow}
                     onDelete={handleDelete}
+                    selectedBookings={selectedBookings}
+                    onSelectionChange={setSelectedBookings}
+                    onBatchDelete={handleBatchDelete}
                 />
 
                 {meta && (

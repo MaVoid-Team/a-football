@@ -324,6 +324,22 @@
       "success": "أهلاً! دخلت بنجاح"
     }
   },
+  "playerLogin": {
+    "title": "Let's Play!",
+    "subtitle": "Sign in to track tournaments, matches, and bookings",
+    "emailLabel": "Email",
+    "emailPlaceholder": "example@email.com",
+    "passwordLabel": "Password",
+    "passwordPlaceholder": "••••••••",
+    "signIn": "ادخل",
+    "signingIn": "ثانية...",
+    "welcomeBack": "أهلاً بيك تاني!",
+    "loginFailed": "فشل تسجيل الدخول. جرب تاني.",
+    "noAccount": "لسه معندكش حساب؟",
+    "createAccount": "سجل دلوقتي",
+    "adminLogin": "دخول الأدمن",
+    "or": "أو"
+  },
   "promoInput": {
     "label": "كود خصم (اختياري)",
     "placeholder": "اكتب الكود",
@@ -823,7 +839,10 @@
           "createdFromBracket": "المباريات بتتعمل تلقائيًا من الجدول. الجدولة التلقائية توزع المباريات بالتوازي على أكثر من ملعب في نفس الوقت لما يكون متاح.",
           "matchesTitle": "جدولة المباريات",
           "groupFallback": "مجموعة"
-        }
+        },
+        "deleteConfirm": "متأكد تمسح البطولة دي؟ هتمسح كل التسجيلات والمباريات وبيانات الجدول.",
+        "deleted": "تمام! البطولة اتمسحت.",
+        "deleteFailed": "مقدرناش نمسح البطولة."
       }
     }
   },
@@ -1111,6 +1130,13 @@
       "markAsFailed": "فشل الدفع",
       "markAsRefunded": "اترجع",
       "markAsNoShow": "تسجيل عدم حضور",
+      "delete": "امسح",
+      "deleteTitle": "امسح الحجز؟",
+      "deleteDescription": "متأكد تمسح حجز {userName}؟ متقدرش ترجعه.",
+      "batchDeleteTitle": "امسح الحجوزات المختارة؟",
+      "batchDeleteDescription": "متأكد تمسح {count} حجز؟ متقدرش ترجعهم.",
+      "deleteSelected": "امسح المختار ({count})",
+      "selected": "مختار",
       "cancelTitle": "ألغي الحجز؟",
       "cancelDescription": "هتلغي حجز {userName}؟ متأكد؟",
       "screenshotHeader": "الإيصال",
@@ -1176,6 +1202,10 @@
       "cancelled": "تمام! اتلغى",
       "markedNoShow": "تم تسجيل اللاعب كعدم حضور",
       "markNoShowFailed": "فشل تسجيل عدم الحضور",
+      "deleted": "تمام! الحجز اتمسح",
+      "deleteFailed": "فشل مسح الحجز",
+      "batchDeleted": "تمام! اتمسحوا {count} حجز",
+      "batchDeleteFailed": "فشل مسح الحجوزات",
       "adminNotesSaved": "تمام! الملاحظات اتحفظت",
       "adminNotesSaveFailed": "مقدرناش نحفظ ملاحظات الأدمن",
       "excelExported": "تمام! اتصدّر Excel",
@@ -1237,7 +1267,71 @@
     "matches": "مبارياتي",
     "bookings": "حجوزاتي",
     "notifications": "الإشعارات",
-    "teams": "فِرَقي"
+    "teams": "فِرَقي",
+    "shell": {
+      "back": "رجوع",
+      "menu": "القائمة",
+      "playerAccount": "حساب اللاعب",
+      "loading": "جاري تحميل حسابك..."
+    },
+    "tournamentsPanel": {
+      "title": "بطولاتي",
+      "description": "تابع كل تسجيلاتك وموافقاتك ومسابقاتك من مكان واحد.",
+      "backToTournaments": "العودة للبطولات",
+      "noActivity": "لا يوجد نشاط في البطولات بعد.",
+      "branchUnavailable": "الفرع غير متاح",
+      "type": "النوع",
+      "status": "الحالة",
+      "team": "الفريق",
+      "viewTournament": "عرض البطولة"
+    },
+    "bookingsPanel": {
+      "title": "حجوزاتي",
+      "description": "تجد هنا حجوزاتك المؤكدة والملغية.",
+      "backToBooking": "العودة للحجز",
+      "noBookings": "لا توجد حجوزات بعد.",
+      "branch": "الفرع",
+      "court": "الملعب",
+      "time": "الوقت",
+      "total": "الإجمالي",
+      "bookAnother": "احجز ملعب آخر"
+    },
+    "matchesPanel": {
+      "title": "مبارياتي",
+      "description": "شوف المباريات الجاية وافحص النتايج اللي فاتت.",
+      "backToTournaments": "العودة لبطولاتي",
+      "upcoming": "الجاية",
+      "past": "الفاتت",
+      "noUpcoming": "مفيش مباريات جاية لحد دلوقتي.",
+      "noPast": "مفيش مباريات خلصت لحد دلوقتي.",
+      "tournamentMatch": "مباراة بطولة",
+      "vs": "ضد",
+      "tbd": "محددش",
+      "court": "الملعب",
+      "unassigned": "محددش",
+      "scheduledTime": "الوقت",
+      "notScheduled": "لسه مجدولتش",
+      "score": "النتيجة",
+      "openLiveBracket": "شوف الجدول المباشر"
+    },
+    "profilePanel": {
+      "title": "الملف الشخصي",
+      "description": "حافظ على بياناتك جاهزة للحجز والبطولات.",
+      "backToTournaments": "العودة لبطولاتي",
+      "basicInfo": "المعلومات الأساسية",
+      "name": "الاسم",
+      "phone": "الموبايل",
+      "email": "الإيميل",
+      "skillLevel": "المستوى",
+      "skillBeginner": "مبتدئ",
+      "skillIntermediate": "متوسط",
+      "skillAdvanced": "متقدم",
+      "newPassword": "باسورد جديد",
+      "saving": "بنحفظ...",
+      "saveChanges": "احفظ التغييرات",
+      "profileUpdated": "تم تحديث الملف الشخصي",
+      "profileUpdateFailed": "فشل تحديث الملف الشخصي"
+    }
   },
   "courts": {
     "page": {
@@ -1634,9 +1728,112 @@
       "requiredHint": "الاسم ورقم واتساب ومحتوى الرسالة حقول مطلوبة.",
       "createFailed": "فشل إنشاء القالب.",
       "updateFailed": "فشل تحديث القالب."
+    },
+    "onboarding": {
+      "title": "دليل البدء في CRM",
+      "subtitle": "اتبع قائمة المهام دي عشان تتعلم إزاي تستخدم إدارة علاقات العملاء بفعالية",
+      "completedCount": "مكتمل",
+      "completed": {
+        "title": "كده خلاص جاهز!",
+        "description": "خلصت دليل الـ CRM. ابدأ تواصل مع اللاعبين دلوقتي!"
+      },
+      "sections": {
+        "whatIsCrm": {
+          "title": "إيه هو CRM؟",
+          "items": {
+            "understand": {
+              "title": "افهم الغرض من CRM",
+              "description": "CRM (إدارة علاقات العملاء) بيساعدك تتبع سلوك اللاعبين، تعرف فرص التواصل، وتواصل بفعالية عبر واتساب. بيحلل الحجوزات والمباريات والبطولات عشان يقترحلك مين تكلمهم وإمتى."
+            }
+          }
+        },
+        "players": {
+          "title": "١. تصفح وإدارة اللاعبين",
+          "items": {
+            "browse": {
+              "title": "شوف قاعدة بيانات اللاعبين",
+              "description": "ادخل على قسم اللاعبين عشان تشوف كل اللاعبين المسجلين. شوف بيانات التواصل، تاريخ الحجوزات، مشاركة المباريات، وحالة النشاط.",
+              "linkText": "افتح اللاعبين"
+            },
+            "filter": {
+              "title": "فلتر بالحالة والشريحة",
+              "description": "استخدم الفلاتر عشان تلاقي اللاعبين النشطين أو الدافئين أو غير النشطين. طبق فلاتر الشرائح عشان تستهدف مجموعات معينة من اللاعبين.",
+              "linkText": "جرب الفلاتر"
+            },
+            "tag": {
+              "title": "ضيف وسوم للاعبين",
+              "description": "ضيف وسوم مخصصة زي 'VIP'، 'منتظم'، 'مبتدئ' عشان تنظم اللاعبين. الوسوم بتساعدك تلاقي وترسل رسائل لمجموعات معينة بسرعة.",
+              "linkText": "وسم اللاعبين"
+            },
+            "whatsapp": {
+              "title": "ابعت رسايل واتساب",
+              "description": "اختار لاعب واختار قالب رسالة عشان تولد لينك واتساب. ده بيفتح واتساب برسالة مكتوبة مسبقاً ومخصصة.",
+              "linkText": "راسل اللاعبين"
+            }
+          }
+        },
+        "templates": {
+          "title": "٢. إنشاء قوالب الرسايل",
+          "items": {
+            "create": {
+              "title": "اعمل أول قالب",
+              "description": "روح على القوالب واعمل رسايل واتساب جاهزة للاستخدام. ضيف رقم واتساب بتاعك، اسم القالب، ومحتوى الرسالة.",
+              "linkText": "اعمل قالب"
+            },
+            "variables": {
+              "title": "استخدم متغيرات ديناميكية",
+              "description": "خلي الرسايل شخصية بمتغيرات زي [name]، [last_played_days]، [tournament_name]، و [club_name]. دول بيتبدلوا ببيانات اللاعب الفعلية.",
+              "linkText": "شوف القوالب"
+            }
+          }
+        },
+        "actions": {
+          "title": "٣. مركز الإجراءات",
+          "items": {
+            "view": {
+              "title": "شوف الإجراءات المقترحة",
+              "description": "مركز الإجراءات بيوريك جهات الاتصال المقترحة بناءً على سلوك اللاعب. شوف ليه اللاعب يحتاج اهتمام وقوالب الرسايل المقترحة.",
+              "linkText": "افتح مركز الإجراءات"
+            },
+            "complete": {
+              "title": "أكمل أو تجاهل الإجراءات",
+              "description": "افتح واتساب مباشرة من الإجراء، بعدين علمه كمكتمل أو متجاهل عشان تظل قائمتك منظمة.",
+              "linkText": "شوف الإجراءات"
+            }
+          }
+        },
+        "automations": {
+          "title": "٤. الأتمتة والنقاط",
+          "items": {
+            "rules": {
+              "title": "اعمل قواعد السلوك",
+              "description": "ثبت قواعد أتمتة بتكشف أنماط اللاعبين (مثلاً 'مش نشط لأكتر من ٧ أيام' أو '٣+ عدم حضور'). القواعد بتولد إجراءات تلقائياً.",
+              "linkText": "اعمل قواعد"
+            },
+            "segments": {
+              "title": "افهم الشرائح",
+              "description": "الشرائح هي مجموعات لاعبين بتتعمل بالقواعد. تقدر تستهدف شرائح برسايل واتساب جماعية وتتابع تفاعلهم.",
+              "linkText": "إدارة الشرائح"
+            },
+            "scoring": {
+              "title": "اضبط أوزان النقاط",
+              "description": "خصص إزاي حساب نقاط اللاعبين. اضبط أوزان النشاط، التكرار، التفاعل، والاعتمادية عشان تناسب أولويات ناديك.",
+              "linkText": "اضبط النقاط"
+            }
+          }
+        }
+      }
     }
   },
   "sidebar": {
+    "sections": {
+      "overview": "نظرة عامة",
+      "operations": "العمليات",
+      "revenue": "الإيرادات",
+      "events": "الفعاليات",
+      "customers": "العملاء",
+      "management": "الإدارة"
+    },
     "dashboard": "الداشبورد",
     "branches": "الفروع",
     "courts": "الملاعب",
@@ -1645,7 +1842,7 @@
     "packageRequests": "طلبات الباكدجات",
     "events": "الإيفنتات",
     "tournaments": "البطولات",
-    "crm": "CRM",
+    "crm": "تسويق العملاء",
     "promoCodes": "الأكواد",
     "blockedSlots": "أوقات محجوبة",
     "reviews": "الريفيوهات",

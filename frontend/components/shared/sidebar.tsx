@@ -23,6 +23,17 @@ import { cn } from "@/lib/utils";
 import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
 
+interface NavItem {
+  name: string;
+  href: string;
+  icon: React.ComponentType<{ className?: string }>;
+}
+
+interface NavSection {
+  title: string;
+  items: NavItem[];
+}
+
 export function Sidebar() {
   const t = useTranslations("sidebar");
   const pathname = usePathname();
@@ -35,22 +46,52 @@ export function Sidebar() {
 
   const currentTheme = mounted ? (theme === "system" ? resolvedTheme : theme) : "light";
 
-  const navigation = [
-    { name: t("dashboard"), href: "/dashboard", icon: LayoutDashboard },
-    { name: t("branches"), href: "/branches", icon: MapPin },
-    { name: t("courts"), href: "/courts", icon: Building2 },
-    { name: t("bookings"), href: "/bookings", icon: CalendarDays },
-    { name: t("packages"), href: "/packages", icon: PackageSearch },
-    { name: t("packageRequests"), href: "/package-requests", icon: PackageOpen },
-    { name: t("events"), href: "/events", icon: CalendarRange },
-    { name: t("tournaments"), href: "/tournaments", icon: Trophy },
-    { name: t("crm"), href: "/crm", icon: Users },
-    { name: t("promoCodes"), href: "/promo-codes", icon: Percent },
-    { name: t("blockedSlots"), href: "/blocked-slots", icon: Lock },
-    { name: t("reviews"), href: "/reviews", icon: MessageSquare },
-    { name: t("ratings"), href: "/ratings", icon: Star },
-    { name: t("admins"), href: "/admins", icon: Users },
-    { name: t("settings"), href: "/settings", icon: Settings },
+  const navigation: NavSection[] = [
+    {
+      title: t("sections.overview"),
+      items: [
+        { name: t("dashboard"), href: "/dashboard", icon: LayoutDashboard },
+      ],
+    },
+    {
+      title: t("sections.operations"),
+      items: [
+        { name: t("branches"), href: "/branches", icon: MapPin },
+        { name: t("courts"), href: "/courts", icon: Building2 },
+        { name: t("bookings"), href: "/bookings", icon: CalendarDays },
+      ],
+    },
+    {
+      title: t("sections.revenue"),
+      items: [
+        { name: t("packages"), href: "/packages", icon: PackageSearch },
+        { name: t("packageRequests"), href: "/package-requests", icon: PackageOpen },
+        { name: t("promoCodes"), href: "/promo-codes", icon: Percent },
+      ],
+    },
+    {
+      title: t("sections.events"),
+      items: [
+        { name: t("events"), href: "/events", icon: CalendarRange },
+        { name: t("tournaments"), href: "/tournaments", icon: Trophy },
+      ],
+    },
+    {
+      title: t("sections.customers"),
+      items: [
+        { name: t("crm"), href: "/crm", icon: Users },
+        { name: t("reviews"), href: "/reviews", icon: MessageSquare },
+        { name: t("ratings"), href: "/ratings", icon: Star },
+      ],
+    },
+    {
+      title: t("sections.management"),
+      items: [
+        { name: t("blockedSlots"), href: "/blocked-slots", icon: Lock },
+        { name: t("admins"), href: "/admins", icon: Users },
+        { name: t("settings"), href: "/settings", icon: Settings },
+      ],
+    },
   ];
 
   return (
@@ -73,27 +114,36 @@ export function Sidebar() {
         </div>
 
         <div className="flex-1 overflow-auto py-4">
-          <nav className="grid items-start px-4 text-sm font-medium gap-1">
-            {navigation.map((item) => {
-              const isActive = pathname.startsWith(item.href);
-              const Icon = item.icon;
-              return (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className={cn(
-                    "flex items-center gap-3 rounded-md px-3 py-2.5 transition-all",
-                    isActive
-                      ? "bg-sidebar-accent text-sidebar-accent-foreground font-semibold"
-                      : "text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-accent-foreground",
-                  )}
-                  data-testid={`sidebar-link-${item.href.replace("/", "")}`}
-                >
-                  <Icon className="h-5 w-5" />
-                  {item.name}
-                </Link>
-              );
-            })}
+          <nav className="grid items-start px-4 text-sm font-medium">
+            {navigation.map((section, sectionIndex) => (
+              <div key={section.title} className={cn("flex flex-col", sectionIndex > 0 && "mt-4")}>
+                <h3 className="px-3 py-2 text-xs font-semibold text-sidebar-foreground/50 uppercase tracking-wider">
+                  {section.title}
+                </h3>
+                <div className="grid gap-1">
+                  {section.items.map((item) => {
+                    const isActive = pathname.startsWith(item.href);
+                    const Icon = item.icon;
+                    return (
+                      <Link
+                        key={item.href}
+                        href={item.href}
+                        className={cn(
+                          "flex items-center gap-3 rounded-md px-3 py-2.5 transition-all",
+                          isActive
+                            ? "bg-sidebar-accent text-sidebar-accent-foreground font-semibold"
+                            : "text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-accent-foreground",
+                        )}
+                        data-testid={`sidebar-link-${item.href.replace("/", "")}`}
+                      >
+                        <Icon className="h-5 w-5" />
+                        {item.name}
+                      </Link>
+                    );
+                  })}
+                </div>
+              </div>
+            ))}
           </nav>
         </div>
 

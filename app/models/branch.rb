@@ -10,6 +10,7 @@ class Branch < ApplicationRecord
   has_many :admins, dependent: :destroy
   has_many :courts, dependent: :destroy
   has_many :packages, dependent: :destroy
+  has_many :package_requests, dependent: :nullify
   has_many :events, dependent: :destroy
   has_many :tournaments, dependent: :destroy
   has_many :bookings, dependent: :destroy

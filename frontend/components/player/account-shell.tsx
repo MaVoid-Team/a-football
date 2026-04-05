@@ -2,26 +2,30 @@
 
 import { ReactNode, useEffect, useState } from "react";
 import { Bell, Calendar, ChevronLeft, CreditCard, Menu, Trophy, User2, Users, X } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { usePlayerAuthContext } from "@/contexts/player-auth-context";
 import { Link, usePathname, useRouter } from "@/i18n/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 
-const navItems = [
-    { href: "/account/profile", label: "Profile", icon: User2 },
-    { href: "/account/tournaments", label: "My Tournaments", icon: Trophy },
-    { href: "/account/matches", label: "My Matches", icon: Calendar },
-    { href: "/account/bookings", label: "My Bookings", icon: CreditCard },
-    { href: "/account/notifications", label: "Notifications", icon: Bell },
-    { href: "/account/teams", label: "My Teams", icon: Users },
-];
+function useNavItems() {
+    const t = useTranslations("playerAccount");
+    return [
+        { href: "/account/profile", label: t("profile"), icon: User2 },
+        { href: "/account/tournaments", label: t("tournaments"), icon: Trophy },
+        { href: "/account/matches", label: t("matches"), icon: Calendar },
+        { href: "/account/bookings", label: t("bookings"), icon: CreditCard },
+        { href: "/account/notifications", label: t("notifications"), icon: Bell },
+        { href: "/account/teams", label: t("teams"), icon: Users },
+    ];
+}
 
 export function AccountShell({
     title,
     description,
     backHref,
-    backLabel = "Back",
+    backLabel,
     children,
 }: {
     title: string;
@@ -30,6 +34,8 @@ export function AccountShell({
     backLabel?: string;
     children: ReactNode;
 }) {
+    const t = useTranslations("playerAccount.shell");
+    const navItems = useNavItems();
     const { player, loading, isAuthenticated } = usePlayerAuthContext();
     const router = useRouter();
     const pathname = usePathname();
@@ -42,7 +48,7 @@ export function AccountShell({
     }, [isAuthenticated, loading, router]);
 
     if (loading || !isAuthenticated || !player) {
-        return <div className="py-24 text-center text-muted-foreground">Loading your account...</div>;
+        return <div className="py-24 text-center text-muted-foreground">{t("loading")}</div>;
     }
 
     const renderNavLinks = () => (
@@ -79,7 +85,7 @@ export function AccountShell({
                         <Button asChild variant="ghost" className="px-0">
                             <Link href={backHref}>
                                 <ChevronLeft className="h-4 w-4" />
-                                {backLabel}
+                                {backLabel || t("back")}
                             </Link>
                         </Button>
                     ) : (
@@ -92,11 +98,11 @@ export function AccountShell({
                         onClick={() => setMobileNavOpen((current) => !current)}
                     >
                         {mobileNavOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
-                        Menu
+                        {t("menu")}
                     </Button>
                 </div>
                 <div className="space-y-2">
-                    <p className="text-sm uppercase tracking-[0.2em] text-muted-foreground">Player Account</p>
+                    <p className="text-sm uppercase tracking-[0.2em] text-muted-foreground">{t("playerAccount")}</p>
                     <h1 className="text-3xl md:text-4xl font-bold tracking-tight">{title}</h1>
                     <p className="text-sm md:text-base text-muted-foreground">{description}</p>
                 </div>

@@ -37,6 +37,13 @@ module Api
         render json: TournamentSerializer.new(tournament).serializable_hash, status: :ok
       end
 
+      def destroy
+        tournament = Tournament.find(params[:id])
+        authorize tournament
+        tournament.destroy!
+        head :no_content
+      end
+
       def start
         tournament = Tournament.find(params[:id])
         authorize tournament, :start?

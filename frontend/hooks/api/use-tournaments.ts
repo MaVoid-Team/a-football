@@ -443,6 +443,21 @@ export function useTournamentsAPI() {
         }
     };
 
+    const deleteTournament = async (id: string) => {
+        setLoading(true);
+        setError(null);
+        try {
+            await api.delete(`/api/admin/tournaments/${id}`);
+            return { success: true };
+        } catch (err: any) {
+            const message = getApiErrorMessage(err, "Failed to delete tournament");
+            setError(message);
+            return { success: false, error: err, errorMessage: message };
+        } finally {
+            setLoading(false);
+        }
+    };
+
     return {
         tournaments,
         tournament,
@@ -471,5 +486,6 @@ export function useTournamentsAPI() {
         autoScheduleTournament,
         scheduleMatch,
         lockMatch,
+        deleteTournament,
     };
 }

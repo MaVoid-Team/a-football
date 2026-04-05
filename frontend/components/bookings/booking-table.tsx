@@ -30,9 +30,12 @@ interface BookingTableProps {
     onCancel: (id: string) => Promise<void>;
     onMarkNoShow: (id: string) => Promise<void>;
     onDelete: (id: string) => Promise<void>;
+    selectedBookings: string[];
+    onSelectionChange: (selectedIds: string[]) => void;
+    onBatchDelete: (selectedIds: string[]) => Promise<void>;
 }
 
-export function BookingTable({ bookings, branches, courts, isLoading, onUpdatePayment, onCancel, onMarkNoShow, onDelete }: BookingTableProps) {
+export function BookingTable({ bookings, branches, courts, isLoading, onUpdatePayment, onCancel, onMarkNoShow, onDelete, selectedBookings, onSelectionChange, onBatchDelete }: BookingTableProps) {
     const t = useTranslations("bookings");
 
     const getBranchName = (branchId: number) => {
@@ -196,12 +199,35 @@ export function BookingTable({ bookings, branches, courts, isLoading, onUpdatePa
     ];
 
     return (
-        <DataTable
-            columns={columns}
-            data={bookings}
-            isLoading={isLoading}
-            emptyStateTitle={t("table.emptyTitle")}
-            emptyStateDescription={t("table.emptyDescription")}
-        />
+        <div className="space-y-4">
+            {selectedBookings.length > 0 && (
+                <div className="flex items-center justify-between bg-muted p-3 rounded-lg">
+                    <span className="text-sm font-medium">
+                        {selectedBookings.length} {t("table.selected")}
+                    </span>
+                    <ConfirmDialog
+                        title={t("table.batchDeleteTitle")}
+                        description={t("table.batchDeleteDescription", { count: selectedBookings.length })}
+                        onConfirm={() => onBatchDelete(selectedBookings)}
+                        triggerButton={
+                            <Button variant="destructive" size="sm">
+                                <Trash2 className="mr-2 h-4 w-4" />
+                                {t("table.deleteSelected", { count: selectedBookings.length })}
+                            </Button>
+                        }
+                    />
+                </div>
+            )}
+            <DataTable
+                columns={columns}
+                data={bookings}
+                isLoading={isLoading}
+                emptyStateTitle={t("table.emptyTitle")}
+                emptyStateDescription={t("table.emptyDescription")}
+                selectable={true}
+                selectedIds={selectedBookings}
+                onSelectionChange={onSelectionChange}
+            />
+        </div>
     );
 }

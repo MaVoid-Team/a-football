@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { useTranslations } from "next-intl";
 import { usePlayerAccountAPI } from "@/hooks/api/use-player-account";
 import { TournamentMatch } from "@/schemas/tournament.schema";
 import { AccountShell } from "@/components/player/account-shell";
@@ -9,6 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 export function MatchesPanel() {
+    const t = useTranslations("playerAccount.matchesPanel");
     const { fetchMatches } = usePlayerAccountAPI();
     const [matches, setMatches] = useState<TournamentMatch[]>([]);
 
@@ -23,28 +25,28 @@ export function MatchesPanel() {
         return { upcoming: upcomingMatches, past: pastMatches };
     }, [matches]);
 
-    const renderMatches = (items: TournamentMatch[], empty: string) => (
+    const renderMatches = (items: TournamentMatch[], emptyKey: string) => (
         items.length === 0 ? (
-            <Card><CardContent className="py-10 text-center text-muted-foreground">{empty}</CardContent></Card>
+            <Card><CardContent className="py-10 text-center text-muted-foreground">{t(emptyKey as any)}</CardContent></Card>
         ) : (
             <div className="space-y-4">
                 {items.map((match) => (
                     <Card key={match.id}>
                         <CardHeader className="flex flex-row items-center justify-between gap-3">
                             <div>
-                                <CardTitle className="text-lg">{match.tournament_name || "Tournament Match"}</CardTitle>
-                                <p className="text-sm text-muted-foreground">{match.team1_name || "TBD"} vs {match.team2_name || "TBD"}</p>
+                                <CardTitle className="text-lg">{match.tournament_name || t("tournamentMatch")}</CardTitle>
+                                <p className="text-sm text-muted-foreground">{match.team1_name || t("tbd")} {t("vs")} {match.team2_name || t("tbd")}</p>
                             </div>
                             <Badge variant="outline">{match.status}</Badge>
                         </CardHeader>
                         <CardContent className="space-y-2 text-sm">
-                            <div>Court: {match.court_name || "Unassigned"}</div>
-                            <div>Time: {match.scheduled_time ? new Date(match.scheduled_time).toLocaleString() : "Not scheduled yet"}</div>
+                            <div>{t("court")}: {match.court_name || t("unassigned")}</div>
+                            <div>{t("scheduledTime")}: {match.scheduled_time ? new Date(match.scheduled_time).toLocaleString() : t("notScheduled")}</div>
                             {match.score && Object.keys(match.score).length > 0 && (
-                                <div>Score: {JSON.stringify(match.score)}</div>
+                                <div>{t("score")}: {JSON.stringify(match.score)}</div>
                             )}
                             <Link href={`/tournament/${match.tournament_id}/live`} className="text-primary-text underline">
-                                Open Live Bracket
+                                {t("openLiveBracket")}
                             </Link>
                         </CardContent>
                     </Card>
@@ -55,19 +57,19 @@ export function MatchesPanel() {
 
     return (
         <AccountShell
-            title="My Matches"
-            description="See upcoming fixtures and revisit completed results."
+            title={t("title")}
+            description={t("description")}
             backHref="/account/tournaments"
-            backLabel="Back to My Tournaments"
+            backLabel={t("backToTournaments")}
         >
             <div className="space-y-6">
                 <section className="space-y-3">
-                    <h2 className="text-xl font-semibold">Upcoming</h2>
-                    {renderMatches(upcoming, "No upcoming matches yet.")}
+                    <h2 className="text-xl font-semibold">{t("upcoming")}</h2>
+                    {renderMatches(upcoming, "noUpcoming")}
                 </section>
                 <section className="space-y-3">
-                    <h2 className="text-xl font-semibold">Past</h2>
-                    {renderMatches(past, "No completed matches yet.")}
+                    <h2 className="text-xl font-semibold">{t("past")}</h2>
+                    {renderMatches(past, "noPast")}
                 </section>
             </div>
         </AccountShell>

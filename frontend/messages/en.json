@@ -314,15 +314,31 @@
   },
   "login": {
     "title": "Admin Login",
-    "subtitle": "Enter your email and password to access the dashboard.",
+    "subtitle": "Enter your credentials to access the dashboard",
     "emailLabel": "Email",
     "emailPlaceholder": "m@example.com",
     "passwordLabel": "Password",
     "loggingIn": "Logging in...",
-    "loginButton": "Login",
+    "loginButton": "Sign In",
     "toast": {
-      "success": "Logged in successfully"
+      "success": "Welcome! Login successful"
     }
+  },
+  "playerLogin": {
+    "title": "Let's Play!",
+    "subtitle": "Sign in to track tournaments, matches, and bookings",
+    "emailLabel": "Email",
+    "emailPlaceholder": "example@email.com",
+    "passwordLabel": "Password",
+    "passwordPlaceholder": "••••••••",
+    "signIn": "Sign In",
+    "signingIn": "Signing in...",
+    "welcomeBack": "Welcome back!",
+    "loginFailed": "Login failed. Please try again.",
+    "noAccount": "Don't have an account?",
+    "createAccount": "Create one",
+    "adminLogin": "Admin login",
+    "or": "or"
   },
   "promoInput": {
     "label": "Promo Code (Optional)",
@@ -881,7 +897,10 @@
           "createdFromBracket": "Matches are created from the bracket automatically. Auto-schedule fills multiple courts in the same time slot when possible.",
           "matchesTitle": "Match scheduling",
           "groupFallback": "Group"
-        }
+        },
+        "deleteConfirm": "Are you sure you want to delete this tournament? This will also delete all registrations, matches, and bracket data.",
+        "deleted": "Tournament deleted successfully.",
+        "deleteFailed": "Failed to delete tournament."
       }
     }
   },
@@ -1175,6 +1194,7 @@
       "batchDeleteTitle": "Delete Selected Bookings",
       "batchDeleteDescription": "Are you sure you want to delete {count} booking(s)? This action cannot be undone.",
       "deleteSelected": "Delete Selected ({count})",
+      "selected": "selected",
       "cancelTitle": "Cancel Booking",
       "cancelDescription": "Cancel booking for {userName}? This cannot be undone.",
       "screenshotHeader": "Screenshot",
@@ -1305,7 +1325,71 @@
     "matches": "My Matches",
     "bookings": "My Bookings",
     "notifications": "Notifications",
-    "teams": "My Teams"
+    "teams": "My Teams",
+    "shell": {
+      "back": "Back",
+      "menu": "Menu",
+      "playerAccount": "Player Account",
+      "loading": "Loading your account..."
+    },
+    "tournamentsPanel": {
+      "title": "My Tournaments",
+      "description": "Track every registration, approval, and tournament run from one place.",
+      "backToTournaments": "Back to Tournaments",
+      "noActivity": "No tournament activity yet.",
+      "branchUnavailable": "Branch unavailable",
+      "type": "Type",
+      "status": "Status",
+      "team": "Team",
+      "viewTournament": "View Tournament"
+    },
+    "bookingsPanel": {
+      "title": "My Bookings",
+      "description": "Your confirmed and cancelled court reservations live here.",
+      "backToBooking": "Back to Booking",
+      "noBookings": "No bookings yet.",
+      "branch": "Branch",
+      "court": "Court",
+      "time": "Time",
+      "total": "Total",
+      "bookAnother": "Book Another Court"
+    },
+    "matchesPanel": {
+      "title": "My Matches",
+      "description": "See upcoming fixtures and revisit completed results.",
+      "backToTournaments": "Back to My Tournaments",
+      "upcoming": "Upcoming",
+      "past": "Past",
+      "noUpcoming": "No upcoming matches yet.",
+      "noPast": "No completed matches yet.",
+      "tournamentMatch": "Tournament Match",
+      "vs": "vs",
+      "tbd": "TBD",
+      "court": "Court",
+      "unassigned": "Unassigned",
+      "scheduledTime": "Time",
+      "notScheduled": "Not scheduled yet",
+      "score": "Score",
+      "openLiveBracket": "Open Live Bracket"
+    },
+    "profilePanel": {
+      "title": "Profile",
+      "description": "Keep your player details ready for bookings and tournament joins.",
+      "backToTournaments": "Back to My Tournaments",
+      "basicInfo": "Basic Info",
+      "name": "Name",
+      "phone": "Phone",
+      "email": "Email",
+      "skillLevel": "Skill Level",
+      "skillBeginner": "Beginner",
+      "skillIntermediate": "Intermediate",
+      "skillAdvanced": "Advanced",
+      "newPassword": "New Password",
+      "saving": "Saving...",
+      "saveChanges": "Save Changes",
+      "profileUpdated": "Profile updated",
+      "profileUpdateFailed": "Failed to update profile"
+    }
   },
   "courts": {
     "page": {
@@ -1702,9 +1786,112 @@
       "requiredHint": "Name, WhatsApp number, and content are required.",
       "createFailed": "Failed to create template.",
       "updateFailed": "Failed to update template."
+    },
+    "onboarding": {
+      "title": "CRM Getting Started Guide",
+      "subtitle": "Follow this checklist to learn how to use Customer Relationship Management effectively",
+      "completedCount": "completed",
+      "completed": {
+        "title": "You're all set!",
+        "description": "You've completed the CRM onboarding. Start engaging with your players!"
+      },
+      "sections": {
+        "whatIsCrm": {
+          "title": "What is CRM?",
+          "items": {
+            "understand": {
+              "title": "Understand CRM Purpose",
+              "description": "CRM (Customer Relationship Management) helps you track player behavior, identify engagement opportunities, and communicate effectively via WhatsApp. It analyzes bookings, matches, and tournament activity to suggest who to contact and when."
+            }
+          }
+        },
+        "players": {
+          "title": "1. Browse & Manage Players",
+          "items": {
+            "browse": {
+              "title": "View Player Database",
+              "description": "Access the Players section to see all registered players. View their contact info, booking history, match participation, and activity status.",
+              "linkText": "Open Players"
+            },
+            "filter": {
+              "title": "Filter by Status & Segment",
+              "description": "Use filters to find Active, Warm, or Inactive players. Apply segment filters to target specific player groups based on behavior rules.",
+              "linkText": "Try Filters"
+            },
+            "tag": {
+              "title": "Tag Your Players",
+              "description": "Add custom tags like 'VIP', 'regular', 'beginner' to organize players. Tags help you quickly find and message specific groups.",
+              "linkText": "Tag Players"
+            },
+            "whatsapp": {
+              "title": "Send WhatsApp Messages",
+              "description": "Select a player and choose a message template to generate a WhatsApp link. This opens WhatsApp with a pre-filled personalized message.",
+              "linkText": "Message Players"
+            }
+          }
+        },
+        "templates": {
+          "title": "2. Create Message Templates",
+          "items": {
+            "create": {
+              "title": "Create Your First Template",
+              "description": "Go to Templates and create reusable WhatsApp messages. Add your business WhatsApp number, template name, and message content.",
+              "linkText": "Create Template"
+            },
+            "variables": {
+              "title": "Use Dynamic Variables",
+              "description": "Make messages personal with variables like [name], [last_played_days], [tournament_name], and [club_name]. These get replaced with actual player data.",
+              "linkText": "View Templates"
+            }
+          }
+        },
+        "actions": {
+          "title": "3. Action Center",
+          "items": {
+            "view": {
+              "title": "Check Suggested Actions",
+              "description": "The Action Center shows recommended contacts based on player behavior. See why a player needs attention and suggested message templates.",
+              "linkText": "Open Action Center"
+            },
+            "complete": {
+              "title": "Complete or Ignore Actions",
+              "description": "Open WhatsApp directly from an action, then mark it as Completed or Ignored to keep your queue organized.",
+              "linkText": "View Actions"
+            }
+          }
+        },
+        "automations": {
+          "title": "4. Automations & Scoring",
+          "items": {
+            "rules": {
+              "title": "Create Behavior Rules",
+              "description": "Set up automation rules that detect player patterns (e.g., 'inactive for 7+ days' or '3+ no-shows'). Rules generate actions automatically.",
+              "linkText": "Create Rules"
+            },
+            "segments": {
+              "title": "Understand Segments",
+              "description": "Segments are player groups created by rules. You can target segments with bulk WhatsApp messaging and track their engagement.",
+              "linkText": "Manage Segments"
+            },
+            "scoring": {
+              "title": "Adjust Scoring Weights",
+              "description": "Customize how player scores are calculated. Adjust weights for Activity, Frequency, Engagement, and Reliability to match your club's priorities.",
+              "linkText": "Adjust Scoring"
+            }
+          }
+        }
+      }
     }
   },
   "sidebar": {
+    "sections": {
+      "overview": "Overview",
+      "operations": "Operations",
+      "revenue": "Revenue",
+      "events": "Events",
+      "customers": "Customers",
+      "management": "Management"
+    },
     "dashboard": "Dashboard",
     "branches": "Branches",
     "courts": "Courts",

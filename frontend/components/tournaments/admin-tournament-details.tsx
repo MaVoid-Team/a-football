@@ -5,7 +5,7 @@ import { useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { Link, usePathname, useRouter } from "@/i18n/navigation";
 import { toast } from "sonner";
-import { ArrowLeft, CheckCircle2, Clock3, Loader2 } from "lucide-react";
+import { ArrowLeft, CheckCircle2, Clock3, Loader2, Trash2 } from "lucide-react";
 import { useTournamentsAPI } from "@/hooks/api/use-tournaments";
 import { useCourtsAPI } from "@/hooks/api/use-courts";
 import type { AdminTournamentRegistration, Tournament, TournamentMatch } from "@/schemas/tournament.schema";
@@ -59,6 +59,7 @@ export function AdminTournamentDetails({ id }: { id: string }) {
         autoScheduleTournament,
         scheduleMatch,
         lockMatch,
+        deleteTournament,
     } = useTournamentsAPI();
     const { courts, fetchCourts } = useCourtsAPI();
 
@@ -311,6 +312,19 @@ export function AdminTournamentDetails({ id }: { id: string }) {
         }
     };
 
+    const handleDelete = async () => {
+        if (!tournament) return;
+        if (!window.confirm(t("admin.details.deleteConfirm"))) return;
+
+        const result = await deleteTournament(tournament.id);
+        if (result.success) {
+            toast.success(t("admin.details.deleted"));
+            router.push("/tournaments");
+        } else {
+            toast.error(result.errorMessage || t("admin.details.deleteFailed"));
+        }
+    };
+
     if (!pageReady && loading) {
         return (
             <div className="flex items-center justify-center py-20">
@@ -361,6 +375,9 @@ export function AdminTournamentDetails({ id }: { id: string }) {
                     {tournament.status === "draft" && (
                         <Button onClick={handleOpenRegistration}>{t("admin.openForRegistration")}</Button>
                     )}
+                    <Button variant="destructive" size="sm" onClick={handleDelete} disabled={loading}>
+                        {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Trash2 className="h-4 w-4" />}
+                    </Button>
                 </div>
             </div>
 

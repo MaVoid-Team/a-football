@@ -2,6 +2,7 @@ class Package < ApplicationRecord
   include MeiliSearch::Rails
 
   belongs_to :branch, optional: true
+  has_many :package_requests, dependent: :destroy
 
   validates :title, presence: true
   validates :price, presence: true, numericality: { greater_than_or_equal_to: 0 }

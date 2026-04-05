@@ -1,6 +1,7 @@
 "use client";
 
 import { FormEvent, useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
 import { usePlayerAuthContext } from "@/contexts/player-auth-context";
 import { usePlayerAccountAPI } from "@/hooks/api/use-player-account";
 import { AccountShell } from "@/components/player/account-shell";
@@ -12,6 +13,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { toast } from "sonner";
 
 export function ProfilePanel() {
+    const t = useTranslations("playerAccount.profilePanel");
     const { player, updatePlayer } = usePlayerAuthContext();
     const { fetchProfile, updateProfile, loading } = usePlayerAccountAPI();
     const [form, setForm] = useState({
@@ -57,60 +59,60 @@ export function ProfilePanel() {
             });
             updatePlayer(profile);
             setForm((current) => ({ ...current, password: "" }));
-            toast.success("Profile updated");
+            toast.success(t("profileUpdated"));
         } catch (_error) {
-            toast.error("Failed to update profile");
+            toast.error(t("profileUpdateFailed"));
         }
     };
 
     return (
         <AccountShell
-            title="Profile"
-            description="Keep your player details ready for bookings and tournament joins."
+            title={t("title")}
+            description={t("description")}
             backHref="/account/tournaments"
-            backLabel="Back to My Tournaments"
+            backLabel={t("backToTournaments")}
         >
             <Card>
                 <CardHeader>
-                    <CardTitle>Basic Info</CardTitle>
+                    <CardTitle>{t("basicInfo")}</CardTitle>
                 </CardHeader>
                 <CardContent>
                     <form onSubmit={onSubmit} className="space-y-4">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div className="space-y-2">
-                                <Label>Name</Label>
+                                <Label>{t("name")}</Label>
                                 <Input value={form.name} onChange={(event) => setForm((current) => ({ ...current, name: event.target.value }))} />
                             </div>
                             <div className="space-y-2">
-                                <Label>Phone</Label>
+                                <Label>{t("phone")}</Label>
                                 <Input value={form.phone} onChange={(event) => setForm((current) => ({ ...current, phone: event.target.value }))} />
                             </div>
                         </div>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div className="space-y-2">
-                                <Label>Email</Label>
+                                <Label>{t("email")}</Label>
                                 <Input type="email" value={form.email} onChange={(event) => setForm((current) => ({ ...current, email: event.target.value }))} />
                             </div>
                             <div className="space-y-2">
-                                <Label>Skill Level</Label>
+                                <Label>{t("skillLevel")}</Label>
                                 <Select value={form.skill_level} onValueChange={(value) => setForm((current) => ({ ...current, skill_level: value }))}>
                                     <SelectTrigger>
                                         <SelectValue />
                                     </SelectTrigger>
                                     <SelectContent>
-                                        <SelectItem value="beginner">Beginner</SelectItem>
-                                        <SelectItem value="intermediate">Intermediate</SelectItem>
-                                        <SelectItem value="advanced">Advanced</SelectItem>
+                                        <SelectItem value="beginner">{t("skillBeginner")}</SelectItem>
+                                        <SelectItem value="intermediate">{t("skillIntermediate")}</SelectItem>
+                                        <SelectItem value="advanced">{t("skillAdvanced")}</SelectItem>
                                     </SelectContent>
                                 </Select>
                             </div>
                         </div>
                         <div className="space-y-2">
-                            <Label>New Password</Label>
+                            <Label>{t("newPassword")}</Label>
                             <Input type="password" value={form.password} onChange={(event) => setForm((current) => ({ ...current, password: event.target.value }))} />
                         </div>
                         <Button type="submit" disabled={loading}>
-                            {loading ? "Saving..." : "Save Changes"}
+                            {loading ? t("saving") : t("saveChanges")}
                         </Button>
                     </form>
                 </CardContent>

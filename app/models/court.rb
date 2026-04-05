@@ -13,6 +13,7 @@ class Court < ApplicationRecord
   has_many :perks, dependent: :destroy
   has_many :hourly_rates, class_name: "CourtHourlyRate", dependent: :destroy
   has_many :reviews, dependent: :destroy
+  has_many :tournament_matches, dependent: :nullify
 
   validates :name, presence: true
   validates :price_per_hour, presence: true, numericality: { greater_than: 0 }

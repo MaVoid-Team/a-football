@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Link } from "@/i18n/navigation";
 import { useCrmAPI } from "@/hooks/api/use-crm";
 import { formatDate } from "@/lib/format-date";
+import { CrmOnboardingChecklist } from "@/components/crm/crm-onboarding-checklist";
 
 export default function CrmDashboardPage() {
   const t = useTranslations("crm");
@@ -38,6 +39,8 @@ export default function CrmDashboardPage() {
           </Button>
         </div>
       </div>
+
+      <CrmOnboardingChecklist />
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         <Card>
