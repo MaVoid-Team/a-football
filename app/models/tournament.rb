@@ -4,10 +4,10 @@ class Tournament < ApplicationRecord
   belongs_to :branch
   belongs_to :created_by, class_name: "Admin", optional: true
 
-  has_many :tournament_players, dependent: :destroy
-  has_many :tournament_teams, dependent: :destroy
-  has_many :tournament_registrations, dependent: :destroy
   has_many :tournament_matches, dependent: :destroy
+  has_many :tournament_registrations, dependent: :destroy
+  has_many :tournament_teams, dependent: :destroy
+  has_many :tournament_players, dependent: :destroy
 
   enum :tournament_type, { knockout: 0, round_robin: 1, group_knockout: 2 }
   enum :status, { draft: 0, open: 1, full: 2, ongoing: 3, completed: 4 }
