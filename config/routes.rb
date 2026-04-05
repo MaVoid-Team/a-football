@@ -59,7 +59,7 @@ Rails.application.routes.draw do
       resources :packages
       resources :package_requests, only: %i[index show update]
       resources :events
-      resources :tournaments, only: %i[index show create update] do
+      resources :tournaments, only: %i[index show create update destroy] do
         member do
           post :start
           post :generate_bracket
