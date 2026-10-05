@@ -1,84 +1,28 @@
 # A Football
 
-A modern football court booking platform. Book your court in seconds, manage events, and purchase packages—all in one place.
+Book your football court online — see open times, grab a slot, and show up ready to play.
 
-## API Documentation
+## Who it's for
 
-- **[API Reference](docs/API.md)** — Full REST API documentation including authentication, endpoints, parameters, and response formats.
-- **Postman Collection** — Import `docs/Court_Management_API.postman_collection.json` into Postman to test the API. Run **Admin API → Auth → Login** first to obtain a token; it will be stored automatically for subsequent requests.
+Players, weekend teams, and court operators who are tired of booking by phone. The site works in English and Arabic.
 
-## Tournament Notifications
+- Check live availability across branches and courts, then lock in a time in a few taps.
+- Buy hour packages when you play often, or ask about a package that fits your group.
+- Join events and tournaments, register to compete, and follow brackets as matches go live.
+- Keep bookings, teams, fixtures, and tournament sign-ups in one player account.
 
-- `TOURNAMENT_NOTIFICATION_CHANNELS` controls active channels. Example: `log,email`.
-- `MAILER_ENABLED=true` must be set to allow outbound email delivery.
-- SMTP settings for production:
-	- `MAILER_FROM`
-	- `MAILER_SMTP_ADDRESS`
-	- `MAILER_SMTP_PORT` (default `587`)
-	- `MAILER_SMTP_DOMAIN`
-	- `MAILER_SMTP_USERNAME`
-	- `MAILER_SMTP_PASSWORD`
-	- `MAILER_SMTP_AUTH` (default `plain`)
-	- `MAILER_SMTP_STARTTLS` (`true`/`false`, default `true`)
+## Try it
 
-## Brand Identity
+Open the live site: [https://a-football.vercel.app](https://a-football.vercel.app)
 
-- **Primary Color**: Electric Lemon Yellow (#EFFD5F)
-- **Secondary Color**: Smoky Black (#2D2D2D)
-- **Typography**: Poppins (headings), Inter (body)
-- **Voice**: Energetic, simple, direct, premium
+## How it works
 
-## Tech Stack
+Pick a branch and court, choose adjacent time slots, and confirm. Events, tournaments, and packages sit alongside booking if you want more than a single session. Staff run locations, availability, and competition from the same product.
 
-- **Frontend**: Next.js 16 + React 19 + Tailwind CSS 4 + shadcn/ui
-- **Backend**: Rails 8 + JWT Auth + JSON:API
-- **Animations**: Anime.js + Framer Motion
-- **Internationalization**: next-intl (English/Arabic)
+Developer setup: see [docs/SETUP.md](docs/SETUP.md)
 
 ---
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+Built by [Ziad Ahmed](https://github.com/Ziad-NasrEldin) at [MaVoid](https://mavoid.com).
 
-## VPS Deployment Without BuildKit
-
-If you want to avoid BuildKit/buildx cache usage on your VPS, deploy with the
-classic Docker builder:
-
-1. Disable buildx redirection on the VPS (one-time):
-	 - `docker buildx uninstall || true`
-2. Disable Docker BuildKit at daemon level (one-time):
-	 - Create/update `/etc/docker/daemon.json` with:
-		 ```json
-		 {
-			 "features": {
-				 "buildkit": false
-			 }
-		 }
-		 ```
-	 - Restart Docker: `sudo systemctl restart docker`
-3. Run `chmod +x script/deploy_no_buildkit.sh` once on the server.
-4. Deploy with `./script/deploy_no_buildkit.sh`.
-
-This script sets `DOCKER_BUILDKIT=0`, `COMPOSE_DOCKER_CLI_BUILD=0`, and
-`BUILDX_BAKE=0`, and uses `docker-compose` when available.
-
-Things you may want to cover:
-
-* Ruby version
-
-* System dependencies
-
-* Configuration
-
-* Database creation
-
-* Database initialization
-
-* How to run the test suite
-
-* Services (job queues, cache servers, search engines, etc.)
-
-* Deployment instructions
-
-* ...
+[Website](https://mavoid.com) · [LinkedIn](https://linkedin.com/in/ziad-ahmed-634202332) · [GitHub](https://github.com/Ziad-NasrEldin)
